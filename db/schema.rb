@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_11_181935) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_11_195804) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "otps", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "purpose"
+    t.string "code_digest"
+    t.datetime "expires_at"
+    t.datetime "used_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_otps_on_user_id"
+  end
 
   create_table "system_settings", force: :cascade do |t|
     t.decimal "ai_threshold"
@@ -32,7 +43,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_11_181935) do
     t.integer "role"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "provider"
+    t.string "uid"
+    t.datetime "email_verified_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
+
+  add_foreign_key "otps", "users"
 end

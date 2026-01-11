@@ -1,0 +1,12 @@
+<h1>Verify your email</h1>
+<p>We sent an OTP to <b><%= current_user.email %></b>.</p>
+
+<%= form_with url: email_verification_path do %>
+  <div>
+    <label>OTP Code</label><br>
+    <%= text_field_tag :code %>
+  </div>
+  <%= submit_tag "Verify" %>
+<% end %>
+
+<%= button_to "Resend OTP", resend_email_verification_path, method: :post %>

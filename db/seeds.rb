@@ -17,10 +17,12 @@ User.find_or_create_by!(email: "admin@snapbid.local") do |u|
   u.name = "Admin"
   u.role = :admin
   u.password = "admin123456"
+  u.email_verified_at = Time.current
 end
 
 User.find_or_create_by!(email: "cs@snapbid.local") do |u|
   u.name = "Customer Support"
   u.role = :cs
   u.password = "cs123456"
+  u.email_verified_at = Time.current
 end
