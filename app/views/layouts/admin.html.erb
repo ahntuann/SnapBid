@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SnapBid Admin</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body>
+    <header style="padding:12px;border-bottom:1px solid #ddd;">
+      <strong>Admin Panel</strong>
+      <span style="margin-left:12px;">
+        <%= link_to "Settings", admin_settings_path %>
+      </span>
+    </header>
+    <main style="padding:16px;">
+      <%= yield %>
+    </main>
+  </body>
+</html>
