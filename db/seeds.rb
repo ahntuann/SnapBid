@@ -12,3 +12,15 @@ SystemSetting.first_or_create!(
   commission_percent: 5.0,
   min_bid_step: 10.0
 )
+
+User.find_or_create_by!(email: "admin@snapbid.local") do |u|
+  u.name = "Admin"
+  u.role = :admin
+  u.password = "admin123456"
+end
+
+User.find_or_create_by!(email: "cs@snapbid.local") do |u|
+  u.name = "Customer Support"
+  u.role = :cs
+  u.password = "cs123456"
+end
