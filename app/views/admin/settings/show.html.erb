@@ -1,0 +1,10 @@
+<h1>System Settings</h1>
+
+<p><b>AI threshold:</b> <%= @settings.ai_threshold %></p>
+<p><b>Commission %:</b> <%= @settings.commission_percent %></p>
+<p><b>Min bid step:</b> <%= @settings.min_bid_step %></p>
+
+<p><b>Admin QR payload (ENV):</b></p>
+<pre><%= @admin_qr_payload %></pre>
+
+<%= link_to "Edit", edit_admin_settings_path %>
