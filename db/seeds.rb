@@ -7,3 +7,8 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+SystemSetting.first_or_create!(
+  ai_threshold: 0.85,
+  commission_percent: 5.0,
+  min_bid_step: 10.0
+)
