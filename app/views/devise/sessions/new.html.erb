@@ -1,5 +1,36 @@
+<h1>Đăng nhập</h1>
+
+<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+  <div>
+    <%= f.label :email, "Email" %><br>
+    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+  </div>
+
+  <div>
+    <%= f.label :password, "Mật khẩu" %><br>
+    <%= f.password_field :password, autocomplete: "current-password" %>
+  </div>
+
+  <% if devise_mapping.rememberable? %>
+    <div>
+      <%= f.check_box :remember_me %>
+      <%= f.label :remember_me, "Ghi nhớ đăng nhập" %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.submit "Đăng nhập" %>
+  </div>
+<% end %>
+
 <hr>
-<%= button_to "Login with Google",
+
+<%= button_to "Đăng nhập bằng Google",
     user_google_oauth2_omniauth_authorize_path,
     method: :post,
     data: { turbo: false } %>
+
+<p>
+  Chưa có tài khoản?
+  <%= link_to "Đăng ký", new_user_registration_path %>
+</p>

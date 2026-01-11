@@ -3,7 +3,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :omniauthable, omniauth_providers: [:google_oauth2]
 
-  enum role: { user: 0, cs: 1, admin: 2 }
+  enum :role, { user: 0, cs: 1, admin: 2 }
 
   has_many :otps, dependent: :destroy
 
@@ -21,6 +21,7 @@ class User < ApplicationRecord
     user.email = auth.info.email
     user.name  = auth.info.name
     user.password = Devise.friendly_token[0, 20] if user.new_record?
+    user.email_verified_at ||= Time.current
     user.role ||= :user
     user.save!
     user
