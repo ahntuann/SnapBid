@@ -21,4 +21,16 @@ Rails.application.routes.draw do
   resource :email_verification, only: %i[new create] do
     post :resend
   end
+
+  namespace :seller do
+    get "listings/index"
+    get "listings/new"
+    get "listings/create"
+    get "listings/edit"
+    get "listings/update"
+    get "listings/show"
+    resources :listings do
+      post :submit_ai_verification, on: :member
+    end
+  end
 end

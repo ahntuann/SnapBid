@@ -1,0 +1,12 @@
+<h1><%= t("pages.seller.listings.index_title") %></h1>
+
+<p><%= link_to t("buttons.new_listing"), new_seller_listing_path %></p>
+
+<ul>
+  <% @listings.each do |listing| %>
+    <li>
+      <%= link_to listing.title, seller_listing_path(listing) %>
+      — <b><%= t("labels.listing.status") %>:</b> <%= listing.status_text %>
+    </li>
+  <% end %>
+</ul>

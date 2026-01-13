@@ -1,0 +1,8 @@
+<h1><%= t("pages.seller.listings.new_title") %></h1>
+
+<%= render "form",
+  listing: @listing,
+  url: seller_listings_path,
+  submit_text: t("buttons.save") %>
+
+<p><%= link_to t("buttons.back"), seller_listings_path %></p>

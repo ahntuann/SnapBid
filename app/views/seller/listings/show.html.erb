@@ -1,0 +1,30 @@
+<h1><%= @listing.title %></h1>
+
+<p><b><%= t("labels.listing.status") %>:</b> <%= @listing.status_text %></p>
+<p><b><%= t("labels.listing.category") %>:</b> <%= @listing.category %></p>
+<p><b><%= t("labels.listing.condition") %>:</b> <%= @listing.condition %></p>
+
+<p><b><%= t("labels.listing.seller_note") %>:</b></p>
+<pre><%= @listing.seller_note %></pre>
+
+<% if @listing.ai_note.present? %>
+  <p><b><%= t("labels.listing.ai_note") %>:</b></p>
+  <pre><%= @listing.ai_note %></pre>
+<% end %>
+
+<h3><%= t("pages.seller.listings.images_title") %></h3>
+<ul>
+  <% @listing.images.each do |img| %>
+    <li><%= image_tag img, style: "max-width:240px;height:auto;" %></li>
+  <% end %>
+</ul>
+
+<p><%= link_to t("buttons.edit"), edit_seller_listing_path(@listing) %></p>
+
+<% if @listing.draft? %>
+  <%= button_to t("buttons.submit_ai"),
+    submit_ai_verification_seller_listing_path(@listing),
+    method: :post %>
+<% end %>
+
+<p><%= link_to t("buttons.back"), seller_listings_path %></p>

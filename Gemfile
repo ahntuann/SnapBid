@@ -21,6 +21,7 @@ gem "jbuilder"
 gem "devise"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
+gem "faraday"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
@@ -61,6 +62,8 @@ end
 
 group :development, :test do
   gem "dotenv-rails"
+  gem "pry-rails"
+  gem "pry-byebug"
 end
 
 group :development do

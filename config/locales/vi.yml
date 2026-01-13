@@ -1,13 +1,15 @@
 vi:
   app:
     name: "SnapBid"
+
   buttons:
+    new_listing: "Tạo tin mới"
     save: "Lưu"
     update: "Cập nhật"
     back: "Quay lại"
     edit: "Chỉnh sửa"
     submit_ai: "Gửi xác thực AI"
-    new_listing: "Tạo tin mới"
+
   flash:
     listing:
       created: "Tạo tin đăng thành công."
@@ -15,6 +17,11 @@ vi:
     ai:
       submitted: "Đã gửi yêu cầu xác thực AI."
       error: "Lỗi AI: %{message}"
+
+  errors:
+    listing:
+      invalid: "Vui lòng kiểm tra lại thông tin."
+
   labels:
     listing:
       title: "Tiêu đề"
@@ -24,21 +31,21 @@ vi:
       images: "Ảnh sản phẩm"
       status: "Trạng thái"
       ai_note: "Ghi chú từ AI"
+
   pages:
     seller:
       listings:
         index_title: "Tin đăng của tôi"
         new_title: "Tạo tin đăng"
-        show_images: "Ảnh sản phẩm"
+        edit_title: "Chỉnh sửa tin đăng"
+        images_title: "Ảnh sản phẩm"
+
   enums:
     listing:
       status:
-        nhap: "Nháp"
-        da_gui_ai: "Đã gửi AI"
-        da_xac_thuc: "Đã xác thực"
-        bi_tu_choi: "Bị từ chối"
-        can_duyet_thu_cong: "Cần duyệt thủ công"
-        da_dang: "Đã đăng"
-  errors:
-    listing:
-      invalid: "Vui lòng kiểm tra lại thông tin."
+        draft: "Nháp"
+        submitted_for_ai: "Đã gửi AI"
+        verified: "Đã xác thực"
+        rejected: "Bị từ chối"
+        manual_review: "Cần duyệt thủ công"
+        published: "Đã đăng"

@@ -6,6 +6,7 @@ class User < ApplicationRecord
   enum :role, { user: 0, cs: 1, admin: 2 }
 
   has_many :otps, dependent: :destroy
+  has_many :listings
 
   after_initialize do
     self.role ||= :user if new_record?
