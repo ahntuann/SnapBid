@@ -2,6 +2,11 @@ vi:
   app:
     name: "SnapBid"
 
+  time:
+    formats:
+      default: "%d/%m/%Y %H:%M"
+      short: "%d/%m %H:%M"
+
   buttons:
     new_listing: "Tạo tin mới"
     save: "Lưu"
@@ -9,6 +14,9 @@ vi:
     back: "Quay lại"
     edit: "Chỉnh sửa"
     submit_ai: "Gửi xác thực AI"
+    place_bid: "Đặt giá"
+    buy_now: "Mua ngay"
+    view_listing: "Xem sản phẩm"
 
   flash:
     listing:
@@ -17,20 +25,48 @@ vi:
     ai:
       submitted: "Đã gửi yêu cầu xác thực AI."
       error: "Lỗi AI: %{message}"
+    bid:
+      placed: "Đặt giá thành công."
+    buy_now:
+      success: "Mua ngay thành công. Đơn hàng đã được tạo."
 
   errors:
     listing:
       invalid: "Vui lòng kiểm tra lại thông tin."
+    bid:
+      own_listing: "Bạn không thể đặt giá cho sản phẩm của chính mình."
+      listing_sold: "Sản phẩm đã được bán."
+      auction_ended: "Phiên đấu giá đã kết thúc."
+      not_published: "Sản phẩm chưa được hiển thị công khai."
+      too_low: "Giá đặt quá thấp. Giá tối thiểu là %{min}."
+    buy_now:
+      own_listing: "Bạn không thể mua ngay sản phẩm của chính mình."
+      sold: "Sản phẩm đã được bán."
+      not_enabled: "Sản phẩm này không hỗ trợ mua ngay."
+    order:
+      forbidden: "Bạn không có quyền xem đơn hàng này."
 
   labels:
     listing:
       title: "Tiêu đề"
       category: "Danh mục"
       condition: "Tình trạng"
-      seller_note: "Mô tả phân loại (bạn tự viết để AI đánh giá)"
+      # seller_note: "Mô tả phân loại (bạn tự viết để AI đánh giá)"
       images: "Ảnh sản phẩm"
       status: "Trạng thái"
       ai_note: "Ghi chú từ AI"
+      sold: "Đã bán"
+      ended: "Đã kết thúc"
+      seller_note: "Mô tả từ người bán"
+      start_price: "Giá khởi điểm"
+      current_price: "Giá hiện tại"
+      auction_ends_at: "Kết thúc lúc"
+      buy_now_price: "Giá mua ngay"
+    order:
+      code: "Mã đơn"
+      kind: "Loại đơn"
+      status: "Trạng thái"
+      price: "Giá"
 
   pages:
     seller:
@@ -39,7 +75,17 @@ vi:
         new_title: "Tạo tin đăng"
         edit_title: "Chỉnh sửa tin đăng"
         images_title: "Ảnh sản phẩm"
-
+    listings:
+      pricing: "Thông tin giá"
+      place_bid: "Đặt giá"
+      min_next_bid: "Giá tối thiểu để đặt tiếp theo: %{min}"
+      buy_now: "Mua ngay"
+      images: "Hình ảnh"
+      recent_bids: "Các lượt đặt giá gần đây"
+      login_to_bid: "Bạn cần đăng nhập để đặt giá hoặc mua ngay."
+    orders:
+      title: "Chi tiết đơn hàng"
+      
   enums:
     listing:
       status:
@@ -49,6 +95,14 @@ vi:
         rejected: "Bị từ chối"
         manual_review: "Cần duyệt thủ công"
         published: "Đã đăng"
+    order:
+      kind:
+        auction_win: "Trúng đấu giá"
+        buy_now: "Mua ngay"
+      status:
+        pending: "Chờ thanh toán"
+        paid: "Đã thanh toán"
+        cancelled: "Đã hủy"
 
   home:
     search_placeholder: "Tìm kiếm sản phẩm..."
@@ -76,3 +130,6 @@ vi:
       empty: "(Chưa có)"
     guest:
       detail_note: "Bạn đang xem với tư cách khách. Đăng nhập để tham gia đấu giá / mua ngay (nếu có)."
+
+  confirmations:
+    buy_now: "Bạn chắc chắn muốn mua ngay sản phẩm này chứ?"

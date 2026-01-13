@@ -23,14 +23,15 @@ Rails.application.routes.draw do
     post :resend
   end
 
+  resources :listings, only: [:index, :show] do
+    resources :bids, only: [:create]
+    post :buy_now, on: :member
+  end
+
+  resources :orders, only: [:show]
+
   namespace :seller do
-    get "listings/index"
-    get "listings/new"
-    get "listings/create"
-    get "listings/edit"
-    get "listings/update"
-    get "listings/show"
-    resources :listings, only: [:show] do
+    resources :listings do
       post :submit_ai_verification, on: :member
     end
   end

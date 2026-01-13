@@ -1,0 +1,10 @@
+<h1><%= t("pages.orders.title") %></h1>
+
+<p><b><%= t("labels.order.code") %>:</b> #<%= @order.id %></p>
+<p><b><%= t("labels.order.kind") %>:</b> <%= t("enums.order.kind.#{@order.kind}") %></p>
+<p><b><%= t("labels.order.status") %>:</b> <%= t("enums.order.status.#{@order.status}") %></p>
+<p><b><%= t("labels.order.price") %>:</b> <%= @order.price %></p>
+
+<p>
+  <%= link_to t("buttons.view_listing"), listing_path(@order.listing) %>
+</p>

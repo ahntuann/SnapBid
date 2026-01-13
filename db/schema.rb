@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_13_093159) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_13_182135) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -53,6 +53,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_13_093159) do
     t.index ["listing_id"], name: "index_ai_verifications_on_listing_id"
   end
 
+  create_table "bids", force: :cascade do |t|
+    t.bigint "listing_id", null: false
+    t.bigint "user_id", null: false
+    t.decimal "amount", precision: 12, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["listing_id", "amount"], name: "index_bids_on_listing_id_and_amount"
+    t.index ["listing_id"], name: "index_bids_on_listing_id"
+    t.index ["user_id"], name: "index_bids_on_user_id"
+  end
+
   create_table "listings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "title"
@@ -65,7 +76,25 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_13_093159) do
     t.datetime "updated_at", null: false
     t.decimal "start_price"
     t.datetime "published_at"
+    t.decimal "reserve_price"
+    t.decimal "bid_increment"
+    t.datetime "auction_ends_at"
+    t.decimal "buy_now_price", precision: 12
+    t.index ["published_at"], name: "index_listings_on_published_at"
+    t.index ["status"], name: "index_listings_on_status"
     t.index ["user_id"], name: "index_listings_on_user_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.bigint "listing_id", null: false
+    t.bigint "buyer_id", null: false
+    t.decimal "price"
+    t.integer "kind"
+    t.integer "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["buyer_id"], name: "index_orders_on_buyer_id"
+    t.index ["listing_id"], name: "index_orders_on_listing_id", unique: true
   end
 
   create_table "otps", force: :cascade do |t|
@@ -107,6 +136,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_13_093159) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "ai_verifications", "listings"
+  add_foreign_key "bids", "listings"
+  add_foreign_key "bids", "users"
   add_foreign_key "listings", "users"
+  add_foreign_key "orders", "listings"
+  add_foreign_key "orders", "users", column: "buyer_id"
   add_foreign_key "otps", "users"
 end
