@@ -2,13 +2,12 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
-  before_action :require_verified_email!
+  before_action :require_verified_email!, if: :user_signed_in?
 
   def after_sign_in_path_for(resource)
     return new_email_verification_path if resource.is_a?(User) && !resource.email_verified?
     root_path
   end
-
 
   private
 

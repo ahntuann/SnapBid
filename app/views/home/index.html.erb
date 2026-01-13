@@ -1,2 +1,108 @@
-<h1>Home#index</h1>
-<p>Find me in app/views/home/index.html.erb</p>
+<div style="max-width: 1100px; margin: 0 auto; padding: 24px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom: 18px;">
+    <div style="font-weight:700; font-size:20px;">
+      <%= t("app.name") %>
+    </div>
+
+    <form method="get" action="<%= root_path %>" style="flex:1; display:flex; gap:10px; align-items:center;">
+      <input
+        type="text"
+        name="q"
+        value="<%= @q %>"
+        placeholder="<%= t("home.search_placeholder") %>"
+        style="flex:1; padding:10px 12px; border:1px solid #ddd; border-radius:10px;"
+      />
+
+      <select name="sort" style="padding:10px 12px; border:1px solid #ddd; border-radius:10px;">
+        <option value="newest" <%= "selected" if @sort=="newest" %>><%= t("home.filters.newest") %></option>
+        <option value="price_asc" <%= "selected" if @sort=="price_asc" %>><%= t("home.filters.price_asc") %></option>
+        <option value="price_desc" <%= "selected" if @sort=="price_desc" %>><%= t("home.filters.price_desc") %></option>
+      </select>
+
+      <button type="submit" style="padding:10px 14px; border-radius:10px; border:1px solid #ddd; cursor:pointer;">
+        Search
+      </button>
+    </form>
+  </div>
+
+  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 18px;">
+    <form method="get" action="<%= root_path %>" style="display:flex; gap:10px; flex-wrap:wrap;">
+      <input type="hidden" name="q" value="<%= @q %>">
+      <input type="hidden" name="sort" value="<%= @sort %>">
+
+      <select name="category" style="padding:10px 12px; border:1px solid #ddd; border-radius:10px;">
+        <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.category") %></option>
+        <% @categories.each do |c| %>
+          <option value="<%= c %>" <%= "selected" if @category==c %>><%= c %></option>
+        <% end %>
+      </select>
+
+      <select name="condition" style="padding:10px 12px; border:1px solid #ddd; border-radius:10px;">
+        <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.condition") %></option>
+        <% @conditions.each do |c| %>
+          <option value="<%= c %>" <%= "selected" if @condition==c %>><%= c %></option>
+        <% end %>
+      </select>
+
+      <button type="submit" style="padding:10px 14px; border-radius:10px; border:1px solid #ddd; cursor:pointer;">
+        Lọc
+      </button>
+
+      <a href="<%= root_path %>" style="padding:10px 14px; border-radius:10px; border:1px solid #ddd; text-decoration:none;">
+        Làm mới
+      </a>
+    </form>
+  </div>
+
+    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:18px;">
+        <% @listings.each do |listing| %>
+            <%= link_to listing_path(listing),
+            style: "text-decoration:none; color:inherit;" do %>
+
+            <div style="
+                border:1px solid #eee;
+                border-radius:16px;
+                padding:12px;
+                background:#fff;
+                transition: box-shadow .2s, transform .2s;
+            "
+            onmouseover="this.style.boxShadow='0 8px 24px rgba(0,0,0,.08)'; this.style.transform='translateY(-2px)'"
+            onmouseout="this.style.boxShadow='none'; this.style.transform='none'">
+
+                <!-- Image -->
+                <div style="
+                border-radius:12px;
+                overflow:hidden;
+                aspect-ratio:1/1;
+                background:#f5f5f5;
+                margin-bottom:10px;
+                ">
+                <% if listing.images.attached? %>
+                    <%= image_tag listing.images.first,
+                    style: "width:100%; height:100%; object-fit:cover;" %>
+                <% end %>
+                </div>
+
+                <!-- Title -->
+                <div style="font-weight:700; margin-bottom:6px;">
+                <%= listing.title %>
+                </div>
+
+                <!-- Price -->
+                <div style="color:#2563eb; font-weight:600; font-size:14px;">
+                <%= t("ui.listing.start_price") %>:
+                <%= listing.start_price.present? ?
+                    number_to_currency(listing.start_price, unit: "₫", precision: 0) :
+                    "—" %>
+                </div>
+
+            </div>
+            <% end %>
+        <% end %>
+    </div>
+
+
+  <div style="margin-top:18px; display:flex; justify-content:center;">
+    <%= paginate @listings %>
+  </div>
+</div>

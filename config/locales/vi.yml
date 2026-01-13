@@ -49,3 +49,30 @@ vi:
         rejected: "Bị từ chối"
         manual_review: "Cần duyệt thủ công"
         published: "Đã đăng"
+
+  home:
+    search_placeholder: "Tìm kiếm sản phẩm..."
+    results: "Kết quả tìm kiếm"
+    filters:
+      category: "Danh mục"
+      condition: "Tình trạng"
+      sort: "Sắp xếp"
+      newest: "Mới nhất"
+      price_asc: "Giá tăng dần"
+      price_desc: "Giá giảm dần"
+      all: "Tất cả"
+    listing:
+      price_from: "Giá khởi điểm"
+      view_detail: "Xem chi tiết"
+    auth:
+      login_to_bid: "Đăng nhập để tham gia đấu giá"
+
+  ui:
+    actions:
+      back_home: "Quay lại trang chủ"
+    listing:
+      start_price: "Giá khởi điểm"
+    common:
+      empty: "(Chưa có)"
+    guest:
+      detail_note: "Bạn đang xem với tư cách khách. Đăng nhập để tham gia đấu giá / mua ngay (nếu có)."

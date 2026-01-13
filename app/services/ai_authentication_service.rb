@@ -46,7 +46,7 @@ class AiAuthenticationService
   end
 
   def self.call_openai_vision!(listing)
-    binding.pry
+    # binding.pry
     api_key = ENV.fetch("OPENAI_API_KEY")
 
     images = listing.images.first(4).map do |img|

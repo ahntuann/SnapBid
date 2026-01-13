@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
    root "home#index"
+   resources :listings, only: [:show]
 
   namespace :admin do
     resource :settings, only: %i[show edit update]
@@ -29,7 +30,7 @@ Rails.application.routes.draw do
     get "listings/edit"
     get "listings/update"
     get "listings/show"
-    resources :listings do
+    resources :listings, only: [:show] do
       post :submit_ai_verification, on: :member
     end
   end
