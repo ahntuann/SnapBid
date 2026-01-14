@@ -47,6 +47,8 @@ vi:
       cannot_buy_own: "Bạn không thể mua sản phẩm do bạn bán."
     order:
       forbidden: "Bạn không có quyền xem đơn hàng này."
+    messages:
+      greater_than: "Giá đặt quá thấp. Giá tối thiểu là 2200.0."
 
   labels:
     listing:

@@ -1,6 +1,8 @@
 <div
   data-controller="listing"
   data-listing-id-value="<%= @listing.id %>"
+  data-listing-buy-now-enabled-value="<%= @listing.buy_now_enabled? %>"
+  data-listing-buy-now-price-value="<%= @listing.buy_now_price.to_i || 0 %>"
 >
   <div data-listing-target="flash" class="hidden" style="margin-bottom:12px;padding:10px;border:1px solid #eee;border-radius:10px;">
   </div>
@@ -50,22 +52,33 @@
             <h3><%= t("pages.listings.place_bid") %></h3>
             <p><%= t("pages.listings.min_next_bid", min: @listing.min_next_bid) %></p>
 
-            <%= form_with model: [@listing, @bid], local: true do |f| %>
-              <%= f.number_field :amount, step: "0.01" %>
-              <%= f.submit t("buttons.place_bid") %>
+            <%= form_with model: [@listing, @bid], local: true, data: { action: "submit->listing#submitBid" } do |f| %>
+                <%= f.number_field :amount,
+                        step: "0.01",
+                        data: { listing_target: "amount", action: "input->listing#checkBuyNowThreshold" } %>
+
+                <%= hidden_field_tag :confirm_buy_now, "0", data: { listing_target: "confirmBuyNow" } %>
+
+                <%= f.submit t("buttons.place_bid") %>
             <% end %>
+
           </div>
 
-          <% if @listing.buy_now_enabled? %>
+          <% if !@listing.sold? && !@listing.auction_ended? && @listing.buy_now_enabled? %>
             <div data-listing-target="buyNowBox">
-              <hr/>
-              <h3><%= t("pages.listings.buy_now") %></h3>
-              <p><b><%= t("labels.listing.buy_now_price") %>:</b> <%= @listing.buy_now_price %></p>
+                <hr/>
 
-              <%= button_to t("buttons.buy_now"),
-                    buy_now_listing_path(@listing),
-                    method: :post,
-                    data: { turbo_confirm: t("confirmations.buy_now") } %>
+                <h3><%= t("pages.listings.buy_now") %></h3>
+
+                <p>
+                <b><%= t("labels.listing.buy_now_price") %>:</b>
+                <%= @listing.buy_now_price %>
+                </p>
+
+                <%= button_to t("buttons.buy_now"),
+                buy_now_listing_path(@listing),
+                method: :post,
+                data: { turbo_confirm: t("confirmations.buy_now") } %>
             </div>
           <% end %>
 

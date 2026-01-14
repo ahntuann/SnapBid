@@ -18,6 +18,19 @@
   </head>
 
   <body>
+
+    <% if notice.present? %>
+      <div style="margin:12px;padding:10px;border:1px solid #cce;border-radius:8px;background:#eef;">
+        <%= notice %>
+      </div>
+    <% end %>
+
+    <% if alert.present? %>
+      <div style="margin:12px;padding:10px;border:1px solid #ecc;border-radius:8px;background:#fee;">
+        <%= alert %>
+      </div>
+    <% end %>
+  
     <%= yield %>
     <div style="padding:12px;border-bottom:1px solid #ddd;">
       <% if user_signed_in? %>

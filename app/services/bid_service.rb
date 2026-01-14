@@ -9,10 +9,10 @@ class BidService
       listing.reload
 
       # If bid reaches/exceeds buy-now => execute buy-now at buy-now price
-      if listing.buy_now_available? && amount >= listing.buy_now_price.to_d
-        order = BuyNowService.call!(listing: listing, user: user)
-        return Result.new(status: :bought_now, order: order)
-      end
+    #   if listing.buy_now_available? && amount >= listing.buy_now_price.to_d
+    #     order = BuyNowService.call!(listing: listing, user: user)
+    #     return Result.new(status: :bought_now, order: order)
+    #   end
 
       bid = listing.bids.create!(user: user, amount: amount)
       Result.new(status: :bid_placed, bid: bid)
