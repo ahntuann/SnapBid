@@ -1,72 +1,99 @@
-<h1><%= @listing.title %></h1>
-
-<p>
-  <b><%= t("labels.listing.category") %>:</b> <%= @listing.category %> |
-  <b><%= t("labels.listing.condition") %>:</b> <%= @listing.condition %>
-</p>
-
-<p><b><%= t("labels.listing.seller_note") %>:</b></p>
-<pre><%= @listing.seller_note %></pre>
-
-<div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:16px;">
-  <div>
-    <h3><%= t("pages.listings.pricing") %></h3>
-    <p><b><%= t("labels.listing.start_price") %>:</b> <%= @listing.start_price || "-" %></p>
-    <p><b><%= t("labels.listing.current_price") %>:</b> <%= @listing.current_price %></p>
-    <p><b><%= t("labels.listing.auction_ends_at") %>:</b> <%= @listing.auction_ends_at || "-" %></p>
-
-    <% if @listing.sold? %>
-      <p><b><%= t("labels.listing.status") %>:</b> <%= t("labels.listing.sold") %></p>
-    <% elsif @listing.auction_ended? %>
-      <p><b><%= t("labels.listing.status") %>:</b> <%= t("labels.listing.ended") %></p>
-    <% end %>
-
-    <hr/>
-
-    <% if user_signed_in? %>
-      <% if !@listing.sold? && !@listing.auction_ended? %>
-        <h3><%= t("pages.listings.place_bid") %></h3>
-        <p><%= t("pages.listings.min_next_bid", min: @listing.min_next_bid) %></p>
-
-        <%= form_with model: [@listing, @bid], local: true do |f| %>
-          <%= f.number_field :amount, step: "0.01" %>
-          <%= f.submit t("buttons.place_bid") %>
-        <% end %>
-
-        <% if @listing.buy_now_enabled? %>
-          <hr/>
-          <h3><%= t("pages.listings.buy_now") %></h3>
-          <p><b><%= t("labels.listing.buy_now_price") %>:</b> <%= @listing.buy_now_price %></p>
-
-          <%= button_to t("buttons.buy_now"),
-                buy_now_listing_path(@listing),
-                method: :post,
-                data: { turbo_confirm: t("confirmations.buy_now") } %>
-        <% end %>
-      <% end %>
-    <% else %>
-      <p><%= t("pages.listings.login_to_bid") %></p>
-    <% end %>
+<div
+  data-controller="listing"
+  data-listing-id-value="<%= @listing.id %>"
+>
+  <div data-listing-target="flash" class="hidden" style="margin-bottom:12px;padding:10px;border:1px solid #eee;border-radius:10px;">
   </div>
 
-  <div>
-    <h3><%= t("pages.listings.images") %></h3>
-    <div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:12px;">
-      <% @listing.images.each do |img| %>
-        <%= image_tag img, style: "width:100%;height:auto;border-radius:12px;" %>
+  <h1><%= @listing.title %></h1>
+
+  <p>
+    <b><%= t("labels.listing.category") %>:</b> <%= @listing.category %> |
+    <b><%= t("labels.listing.condition") %>:</b> <%= @listing.condition %>
+  </p>
+
+  <p><b><%= t("labels.listing.seller_note") %>:</b></p>
+  <pre><%= @listing.seller_note %></pre>
+
+  <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:16px;">
+    <div>
+      <h3><%= t("pages.listings.pricing") %></h3>
+
+      <p><b><%= t("labels.listing.start_price") %>:</b> <%= @listing.start_price || "-" %></p>
+
+      <p>
+        <b><%= t("labels.listing.current_price") %>:</b>
+        <span data-listing-target="currentPrice"><%= @listing.current_price %></span>
+      </p>
+
+      <p><b><%= t("labels.listing.auction_ends_at") %>:</b> <%= @listing.auction_ends_at || "-" %></p>
+
+      <p>
+        <b><%= t("labels.listing.status") %>:</b>
+        <span data-listing-target="status">
+          <% if @listing.sold? %>
+            <%= t("labels.listing.sold") %>
+          <% elsif @listing.auction_ended? %>
+            <%= t("labels.listing.ended") %>
+          <% else %>
+            <%= t("labels.listing.active") %>
+          <% end %>
+        </span>
+      </p>
+
+      <hr/>
+
+      <% if user_signed_in? %>
+        <% if !@listing.sold? && !@listing.auction_ended? %>
+
+          <div data-listing-target="bidForm">
+            <h3><%= t("pages.listings.place_bid") %></h3>
+            <p><%= t("pages.listings.min_next_bid", min: @listing.min_next_bid) %></p>
+
+            <%= form_with model: [@listing, @bid], local: true do |f| %>
+              <%= f.number_field :amount, step: "0.01" %>
+              <%= f.submit t("buttons.place_bid") %>
+            <% end %>
+          </div>
+
+          <% if @listing.buy_now_enabled? %>
+            <div data-listing-target="buyNowBox">
+              <hr/>
+              <h3><%= t("pages.listings.buy_now") %></h3>
+              <p><b><%= t("labels.listing.buy_now_price") %>:</b> <%= @listing.buy_now_price %></p>
+
+              <%= button_to t("buttons.buy_now"),
+                    buy_now_listing_path(@listing),
+                    method: :post,
+                    data: { turbo_confirm: t("confirmations.buy_now") } %>
+            </div>
+          <% end %>
+
+        <% end %>
+      <% else %>
+        <p><%= t("pages.listings.login_to_bid") %></p>
       <% end %>
     </div>
+
+    <div>
+      <h3><%= t("pages.listings.images") %></h3>
+      <div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:12px;">
+        <% @listing.images.each do |img| %>
+          <%= image_tag img, style: "width:100%;height:auto;border-radius:12px;" %>
+        <% end %>
+      </div>
+    </div>
   </div>
+
+  <hr/>
+  <h3><%= t("pages.listings.recent_bids") %></h3>
+  <ul data-listing-target="bids">
+    <% @listing.bids.order(created_at: :desc).limit(10).each do |bid| %>
+      <li>
+        <%= bid.user.name %>: <%= bid.amount %> - <%= l(bid.created_at, format: :short) %>
+      </li>
+    <% end %>
+  </ul>
+
+  <p><%= link_to t("buttons.back"), root_path %></p>
 </div>
-
-<hr/>
-<h3><%= t("pages.listings.recent_bids") %></h3>
-<ul>
-  <% @listing.bids.order(created_at: :desc).limit(10).each do |bid| %>
-    <li>
-      <%= bid.amount %> - <%= l(bid.created_at) %>
-    </li>
-  <% end %>
-</ul>
-
-<p><%= link_to t("buttons.back"), root_path %></p>

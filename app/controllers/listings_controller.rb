@@ -1,49 +1,38 @@
 class ListingsController < ApplicationController
   skip_before_action :require_verified_email!, only: [:index, :show]
+  before_action :set_listing, only: [:show, :buy_now]
+  before_action :authenticate_user!, only: [:buy_now]
 
   def index
     @listings = Listing.published
   end
 
   def show
-    @listing = Listing.find(params[:id])
     @bid = Bid.new
   end
 
   def buy_now
-    @listing = Listing.find(params[:id])
-    authenticate_user!
-
     if @listing.user_id == current_user.id
-      redirect_to listing_path(@listing), alert: t("errors.buy_now.own_listing")
+      redirect_to listing_path(@listing), alert: t("errors.buy_now.cannot_buy_own")
       return
     end
 
-    if @listing.sold?
-      redirect_to listing_path(@listing), alert: t("errors.buy_now.sold")
+    unless @listing.buy_now_available?
+      redirect_to listing_path(@listing), alert: t("errors.buy_now.not_available")
       return
     end
 
-    unless @listing.buy_now_enabled?
-      redirect_to listing_path(@listing), alert: t("errors.buy_now.not_enabled")
-      return
-    end
+    order = BuyNowService.call!(listing: @listing, user: current_user)
+    redirect_to order_path(order), notice: t("notices.buy_now.success")
+  rescue BuyNowService::NotAvailable
+    redirect_to listing_path(@listing), alert: t("errors.buy_now.not_available")
+  rescue ActiveRecord::RecordNotUnique
+    redirect_to listing_path(@listing), alert: t("errors.listing.already_sold")
+  end
 
-    Order.transaction do
-      Order.create!(
-        listing: @listing,
-        buyer: current_user,
-        kind: :buy_now,
-        status: :pending,
-        price: @listing.buy_now_price
-      )
+  private
 
-      # end auction immediately (optional but practical)
-      @listing.update!(auction_ends_at: Time.current)
-    end
-
-    redirect_to order_path(@listing.order), notice: t("flash.buy_now.success")
-  rescue ActiveRecord::RecordInvalid => e
-    redirect_to listing_path(@listing), alert: e.record.errors.full_messages.first
+  def set_listing
+    @listing = Listing.find(params[:id])
   end
 end

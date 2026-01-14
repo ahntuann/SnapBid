@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     registrations: "users/registrations",
     omniauth_callbacks: "users/omniauth_callbacks"
   }
+  mount ActionCable.server => "/cable"
 
   get "home/index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

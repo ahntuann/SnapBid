@@ -4,7 +4,7 @@ class Listing < ApplicationRecord
   has_many_attached :images
 
   has_many :bids, dependent: :destroy
-  has_one :order, dependent: :nullify # when sold, create an order
+  has_one :order, dependent: :restrict_with_error # when sold, create an order
 
   enum :status, {
     draft: 0,
@@ -37,6 +37,10 @@ class Listing < ApplicationRecord
 
   # --- Auction helpers ---
 
+  def published?
+    published_at.present?
+  end
+
   def auction_configured?
     start_price.present? && bid_increment.present? && auction_ends_at.present?
   end
@@ -53,13 +57,28 @@ class Listing < ApplicationRecord
     buy_now_price.present? && buy_now_price.to_d > 0
   end
 
+  def buy_now_available?
+    buy_now_enabled? &&
+      published_at.present? &&
+      order.nil? &&
+      !auction_ended?
+  end
+
   def current_price
+    return order.price.to_d if order.present?
+
     highest = bids.maximum(:amount)
-    (highest || start_price || 0).to_d
+    if highest.present?
+      highest.to_d
+    else
+      (start_price || 0).to_d
+    end
   end
 
   def min_next_bid
-    (current_price + (bid_increment || 1)).to_d
+    base = current_price
+    inc  = (bid_increment || 0).to_d
+    base + inc
   end
 
   def highest_bid

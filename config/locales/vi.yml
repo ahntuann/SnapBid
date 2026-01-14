@@ -33,6 +33,7 @@ vi:
   errors:
     listing:
       invalid: "Vui lòng kiểm tra lại thông tin."
+      already_sold: "Sản phảm này đã được bán."
     bid:
       own_listing: "Bạn không thể đặt giá cho sản phẩm của chính mình."
       listing_sold: "Sản phẩm đã được bán."
@@ -43,6 +44,7 @@ vi:
       own_listing: "Bạn không thể mua ngay sản phẩm của chính mình."
       sold: "Sản phẩm đã được bán."
       not_enabled: "Sản phẩm này không hỗ trợ mua ngay."
+      cannot_buy_own: "Bạn không thể mua sản phẩm do bạn bán."
     order:
       forbidden: "Bạn không có quyền xem đơn hàng này."
 
@@ -133,3 +135,10 @@ vi:
 
   confirmations:
     buy_now: "Bạn chắc chắn muốn mua ngay sản phẩm này chứ?"
+
+  notices:
+    bid:
+      placed: "Đấu giá thành công"
+    buy_now:
+      success: "Đã mua thành công."
+    

@@ -7,7 +7,7 @@ def create_listing(attrs)
       title: attrs[:title],
       category: "test",
       condition: "good",
-      seller_note: "Seed data for step 10 testing",
+      seller_note: "Seed data for step 10 testing-p2",
       user: attrs[:user],
       status: :published,
       published_at: Time.current
@@ -19,7 +19,7 @@ puts "== Seeding Step 10 listings =="
 
 # A. Auction open
 create_listing(
-  title: "Auction Only - Open",
+  title: "Auction Only - Open-3",
   user: seller,
   start_price: 1000,
   bid_increment: 100,
@@ -28,7 +28,7 @@ create_listing(
 
 # B. Auction + Buy Now
 create_listing(
-  title: "Auction + Buy Now",
+  title: "Auction + Buy Now-3",
   user: seller,
   start_price: 2000,
   bid_increment: 200,
@@ -38,7 +38,7 @@ create_listing(
 
 # C. Auction ended
 create_listing(
-  title: "Auction Ended",
+  title: "Auction Ended-3",
   user: seller,
   start_price: 1000,
   bid_increment: 100,
@@ -48,14 +48,14 @@ create_listing(
 
 # D. Buy Now only
 create_listing(
-  title: "Buy Now Only",
+  title: "Buy Now Only-3",
   user: seller,
   buy_now_price: 4000
 )
 
 # E. Not published
 Listing.create!(
-  title: "Draft Listing",
+  title: "Draft Listing-3",
   category: "test",
   condition: "new",
   seller_note: "Not published yet",
