@@ -2,11 +2,12 @@ import { Controller } from "@hotwired/stimulus"
 import consumer from "../channels/consumer"
 
 export default class extends Controller {
-  static targets = ["currentPrice", "bids", "bidForm", "status", "flash", "amount", "confirmBuyNow"]
+  static targets = ["currentPrice", "bids", "bidForm", "status", "flash", "amount", "confirmBuyNow", "buyNowBox"]
   static values = {
     id: Number,
     buyNowEnabled: Boolean,
-    buyNowPrice: Number
+    buyNowPrice: Number,
+    auctionEndsAt: String
   }
 
   connect() {
@@ -16,10 +17,12 @@ export default class extends Controller {
       { channel: "ListingsChannel", listing_id: listingId },
       { received: (data) => this.handleMessage(data) }
     )
+    this.scheduleAuctionEnd()
   }
 
   disconnect() {
     if (this.subscription) consumer.subscriptions.remove(this.subscription)
+    if (this._endTimer) clearTimeout(this._endTimer)
   }
 
   // --- UI warning khi gõ ---
@@ -38,35 +41,6 @@ export default class extends Controller {
   }
 
   // --- chặn submit để hỏi confirm ---
-  // submitBid(event) {
-  //   if (!this.buyNowEnabledValue) return
-  //   if (!this.hasAmountTarget || !this.hasConfirmBuyNowTarget) return
-
-  //   const amount = parseFloat(this.amountTarget.value || "0")
-  //   const buyNow = parseFloat(this.buyNowPriceValue || "0")
-  //   if (!buyNow || amount < buyNow) return
-
-  //   // nếu user chưa confirm, chặn submit và hỏi
-  //   if (this.confirmBuyNowTarget.value !== "1") {
-  //     event.preventDefault()
-
-  //     const ok = window.confirm(
-  //       `Giá bạn nhập (${amount}) ≥ giá mua ngay (${buyNow}).\n` +
-  //       `Nếu tiếp tục, bạn sẽ MUA NGAY với giá ${buyNow}.\n\n` +
-  //       `Bạn có muốn mua ngay không?`
-  //     )
-
-  //     if (ok) {
-  //       this.confirmBuyNowTarget.value = "1"
-  //       // submit lại form
-  //       event.target.requestSubmit()
-  //     } else {
-  //       // từ chối: không submit, reset flag
-  //       this.confirmBuyNowTarget.value = "0"
-  //     }
-  //   }
-  // }
-
   submitBid(event) {
     const form = event.target
 
@@ -119,6 +93,44 @@ export default class extends Controller {
   beforeBidSubmit(event) {
     return this.submitBid(event)
   }
+
+  scheduleAuctionEnd() {
+    if (!this.hasAuctionEndsAtValue) return
+    if (!this.auctionEndsAtValue) return
+
+    const endsAt = Date.parse(this.auctionEndsAtValue)
+    if (Number.isNaN(endsAt)) return
+
+    const delay = endsAt - Date.now()
+
+    // Nếu đã quá giờ => update UI ngay
+    if (delay <= 0) {
+      this.markAsEndedUI()
+      return
+    }
+
+    // Đến giờ thì tự đổi UI (không cần reload)
+    this._endTimer = setTimeout(() => {
+      this.markAsEndedUI()
+    }, delay)
+  }
+
+markAsEndedUI() {
+  // Tránh chạy lại nhiều lần
+  if (this._alreadyEnded) return
+  this._alreadyEnded = true
+
+  if (this.hasStatusTarget) this.statusTarget.innerText = "Đã kết thúc"
+
+  // Ẩn form bid
+  if (this.hasBidFormTarget) this.bidFormTarget.remove()
+
+  // Ẩn box mua ngay (nếu có)
+  if (this.hasBuyNowBoxTarget) this.buyNowBoxTarget.remove()
+
+  this.showFlash("Phiên đấu giá đã kết thúc.")
+}
+
 
   // --- realtime handlers ---
   handleMessage(data) {

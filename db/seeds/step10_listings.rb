@@ -28,85 +28,85 @@ puts "== Seeding Step 10 listings =="
 
 # B. Auction + Buy Now
 create_listing(
-  title: "Auction + Buy Now-12",
+  title: "Auction + Buy Now-1xx",
   user: seller,
   start_price: 2000,
   bid_increment: 200,
   buy_now_price: 5000,
-  auction_ends_at: 2.days.from_now
+  auction_ends_at: Time.current + 1.minutes
 )
 
-create_listing(
-  title: "Auction + Buy Now-13",
-  user: seller,
-  start_price: 2000,
-  bid_increment: 200,
-  buy_now_price: 5000,
-  auction_ends_at: 2.days.from_now
-)
+# create_listing(
+#   title: "Auction + Buy Now-13",
+#   user: seller,
+#   start_price: 2000,
+#   bid_increment: 200,
+#   buy_now_price: 5000,
+#   auction_ends_at: 2.days.from_now
+# )
 
-create_listing(
-  title: "Auction + Buy Now-14",
-  user: seller,
-  start_price: 2000,
-  bid_increment: 200,
-  buy_now_price: 5000,
-  auction_ends_at: 2.days.from_now
-)
+# create_listing(
+#   title: "Auction + Buy Now-14",
+#   user: seller,
+#   start_price: 2000,
+#   bid_increment: 200,
+#   buy_now_price: 5000,
+#   auction_ends_at: 2.days.from_now
+# )
 
-create_listing(
-  title: "Auction + Buy Now-15",
-  user: seller,
-  start_price: 2000,
-  bid_increment: 200,
-  buy_now_price: 5000,
-  auction_ends_at: 2.days.from_now
-)
+# create_listing(
+#   title: "Auction + Buy Now-15",
+#   user: seller,
+#   start_price: 2000,
+#   bid_increment: 200,
+#   buy_now_price: 5000,
+#   auction_ends_at: 2.days.from_now
+# )
 
-create_listing(
-  title: "Auction + Buy Now-16",
-  user: seller,
-  start_price: 2000,
-  bid_increment: 200,
-  buy_now_price: 5000,
-  auction_ends_at: 2.days.from_now
-)
+# create_listing(
+#   title: "Auction + Buy Now-16",
+#   user: seller,
+#   start_price: 2000,
+#   bid_increment: 200,
+#   buy_now_price: 5000,
+#   auction_ends_at: 2.days.from_now
+# )
 
-create_listing(
-  title: "Auction + Buy Now-17",
-  user: seller,
-  start_price: 2000,
-  bid_increment: 200,
-  buy_now_price: 5000,
-  auction_ends_at: 2.days.from_now
-)
+# create_listing(
+#   title: "Auction + Buy Now-17",
+#   user: seller,
+#   start_price: 2000,
+#   bid_increment: 200,
+#   buy_now_price: 5000,
+#   auction_ends_at: 2.days.from_now
+# )
 
-create_listing(
-  title: "Auction + Buy Now-18",
-  user: seller,
-  start_price: 2000,
-  bid_increment: 200,
-  buy_now_price: 5000,
-  auction_ends_at: 2.days.from_now
-)
+# create_listing(
+#   title: "Auction + Buy Now-18",
+#   user: seller,
+#   start_price: 2000,
+#   bid_increment: 200,
+#   buy_now_price: 5000,
+#   auction_ends_at: 2.days.from_now
+# )
 
-create_listing(
-  title: "Auction + Buy Now-19",
-  user: seller,
-  start_price: 2000,
-  bid_increment: 200,
-  buy_now_price: 5000,
-  auction_ends_at: 2.days.from_now
-)
+# create_listing(
+#   title: "Auction + Buy Now-19",
+#   user: seller,
+#   start_price: 2000,
+#   bid_increment: 200,
+#   buy_now_price: 5000,
+#   auction_ends_at: 2.days.from_now
+# )
 
-create_listing(
-  title: "Auction + Buy Now-19",
-  user: seller,
-  start_price: 2000,
-  bid_increment: 200,
-  buy_now_price: 5000,
-  auction_ends_at: 2.days.from_now
-)
+# create_listing(
+#   title: "Auction + Buy Now-19",
+#   user: seller,
+#   start_price: 2000,
+#   bid_increment: 200,
+#   buy_now_price: 5000,
+#   auction_ends_at: 2.days.from_now
+# )
 
 # C. Auction ended
 # create_listing(

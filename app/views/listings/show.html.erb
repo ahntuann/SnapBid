@@ -3,6 +3,7 @@
   data-listing-id-value="<%= @listing.id %>"
   data-listing-buy-now-enabled-value="<%= @listing.buy_now_enabled? %>"
   data-listing-buy-now-price-value="<%= @listing.buy_now_price.to_i || 0 %>"
+  data-listing-auction-ends-at-value="<%= @listing.auction_ends_at&.iso8601 %>"
 >
   <div data-listing-target="flash" class="hidden" style="margin-bottom:12px;padding:10px;border:1px solid #eee;border-radius:10px;">
   </div>
