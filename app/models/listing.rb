@@ -4,7 +4,7 @@ class Listing < ApplicationRecord
   has_many_attached :images
 
   has_many :bids, dependent: :destroy
-  has_one :order, dependent: :restrict_with_error # when sold, create an order
+  has_one :order, dependent: :restrict_with_exception
 
   enum :status, {
     draft: 0,
@@ -20,6 +20,8 @@ class Listing < ApplicationRecord
   after_initialize do
     self.status ||= :draft if new_record?
   end
+
+  after_commit :schedule_close_auction, on: [:create, :update]
 
   validates :title, presence: true
   validates :seller_note, presence: true
@@ -92,5 +94,14 @@ class Listing < ApplicationRecord
     if buy_now_price.to_d < start_price.to_d
       errors.add(:buy_now_price, :greater_than_or_equal_to, count: start_price)
     end
+  end
+
+  def schedule_close_auction
+    return if auction_ends_at.blank?
+
+    # Job tự check thời gian + trạng thái nên gọi nhiều lần vẫn an toàn
+    CloseAuctionJob
+      .set(wait_until: auction_ends_at)
+      .perform_later(id)
   end
 end

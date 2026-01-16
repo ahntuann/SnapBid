@@ -1,0 +1,28 @@
+<h1>Đấu giá của tôi</h1>
+
+<ul>
+  <% @listings.each do |listing| %>
+    <% my_max = listing.bids.where(user_id: current_user.id).maximum(:amount) || 0 %>
+    <% top_bid = listing.bids.maximum(:amount) || 0 %>
+
+    <% status_text =
+      if listing.order.present?
+        listing.order.buyer_id == current_user.id ? "THẮNG - có đơn hàng" : "THUA"
+      elsif listing.auction_ended?
+        "KẾT THÚC - không có người thắng"
+      else
+        "ĐANG DIỄN RA"
+      end
+    %>
+
+    <li style="margin-bottom:10px;">
+      <%= link_to listing.title, listing_path(listing) %><br/>
+      Trạng thái: <b><%= status_text %></b><br/>
+      Bid cao nhất của bạn: <%= my_max %> |
+      Bid cao nhất hiện tại: <%= top_bid %>
+      <% if listing.order.present? && listing.order.buyer_id == current_user.id %>
+        | <%= link_to "Xem order", order_path(listing.order) %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

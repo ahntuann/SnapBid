@@ -28,13 +28,22 @@ puts "== Seeding Step 10 listings =="
 
 # B. Auction + Buy Now
 create_listing(
-  title: "Auction + Buy Now-1xx",
+  title: "Auction + Buy Now - 3min-2",
   user: seller,
   start_price: 2000,
   bid_increment: 200,
   buy_now_price: 5000,
-  auction_ends_at: Time.current + 1.minutes
+  auction_ends_at: Time.current + 2.minutes
 )
+
+# create_listing(
+#   title: "Auction + Buy Now - 2min-2",
+#   user: seller,
+#   start_price: 2000,
+#   bid_increment: 200,
+#   buy_now_price: 5000,
+#   auction_ends_at: Time.current + 1.minutes
+# )
 
 # create_listing(
 #   title: "Auction + Buy Now-13",

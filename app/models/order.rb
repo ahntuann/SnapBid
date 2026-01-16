@@ -22,6 +22,24 @@ class Order < ApplicationRecord
     (total.presence || price || 0).to_d
   end
 
+  def buyer_marked_paid?
+    buyer_marked_paid_at.present?
+  end
+
+  def admin_confirmed_paid?
+    admin_confirmed_paid_at.present?
+  end
+
+  def mark_paid_by_buyer!
+    return if buyer_marked_paid?
+    update!(buyer_marked_paid_at: Time.current)
+  end
+
+  def confirm_paid_by_admin!
+    return if paid?
+    update!(admin_confirmed_paid_at: Time.current, status: :paid)
+  end
+
   private
 
   def broadcast_sold

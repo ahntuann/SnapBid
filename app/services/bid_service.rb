@@ -8,11 +8,8 @@ class BidService
       listing.lock!
       listing.reload
 
-      # If bid reaches/exceeds buy-now => execute buy-now at buy-now price
-    #   if listing.buy_now_available? && amount >= listing.buy_now_price.to_d
-    #     order = BuyNowService.call!(listing: listing, user: user)
-    #     return Result.new(status: :bought_now, order: order)
-    #   end
+      return Result.new(status: :error, error: I18n.t("errors.bid.auction_ended")) if listing.auction_ended?
+      return Result.new(status: :error, error: I18n.t("errors.bid.listing_sold")) if listing.sold?
 
       bid = listing.bids.create!(user: user, amount: amount)
       Result.new(status: :bid_placed, bid: bid)
@@ -22,7 +19,6 @@ class BidService
   rescue BuyNowService::NotAvailable
     Result.new(status: :error, error: I18n.t("errors.buy_now.not_available"))
   rescue ActiveRecord::RecordNotUnique
-    # someone else already bought in the same moment
     Result.new(status: :error, error: I18n.t("errors.listing.already_sold"))
   end
 end

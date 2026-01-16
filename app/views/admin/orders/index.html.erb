@@ -1,0 +1,12 @@
+<h1>Danh sách đơn hàng cần xác nhận</h1>
+
+<ul>
+  <% @orders.each do |o| %>
+    <li>
+      <%= link_to "Order ##{o.id}", admin_order_path(o) %> -
+      <%= o.kind %> -
+      <%= o.status %> -
+      <%= o.price %>
+    </li>
+  <% end %>
+</ul>

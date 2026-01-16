@@ -61,7 +61,11 @@ Rails.application.configure do
   config.active_record.verbose_query_logs = true
 
   # Highlight code that enqueued background job in logs.
-  config.active_job.verbose_enqueue_logs = true
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = {
+    database: { writing: :queue }
+  }
+  # config.active_job.verbose_enqueue_logs = true
 
   # Suppress logger output for asset requests.
   config.assets.quiet = true

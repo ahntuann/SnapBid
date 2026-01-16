@@ -14,7 +14,9 @@ class BuyNowService
       Order.create!(
         listing: listing,
         buyer: user,
-        price: listing.buy_now_price
+        kind: :buy_now,
+        status: :pending,
+        price: listing.buy_now_price,
       )
     end
   end

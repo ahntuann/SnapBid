@@ -1,0 +1,22 @@
+<h1>Admin - Order #<%= @order.id %></h1>
+
+<p><b>Buyer:</b> <%= @order.buyer.name %></p>
+<p><b>Listing:</b> <%= link_to @order.listing.title, listing_path(@order.listing) %></p>
+<p><b>Status:</b> <%= @order.status %></p>
+
+<p><b>Buyer marked paid:</b>
+  <%= @order.buyer_marked_paid? ? l(@order.buyer_marked_paid_at, format: :short) : "Chưa" %>
+</p>
+
+<p><b>Admin confirmed:</b>
+  <%= @order.admin_confirmed_paid? ? l(@order.admin_confirmed_paid_at, format: :short) : "Chưa" %>
+</p>
+
+<% if @order.pending? %>
+  <% if @order.buyer_marked_paid? %>
+    <%= button_to "Đã nhận tiền", confirm_paid_admin_order_path(@order), method: :post,
+          data: { turbo_confirm: "Xác nhận đã nhận tiền đơn ##{@order.id}?" } %>
+  <% else %>
+    <p>Chờ buyer xác nhận đã chuyển tiền.</p>
+  <% end %>
+<% end %>

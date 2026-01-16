@@ -1,6 +1,6 @@
 class BidsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_listing
+  before_action :set_listing, except: [:mine]
 
   def create
     @listing = Listing.find(params[:listing_id])
@@ -27,6 +27,10 @@ class BidsController < ApplicationController
     end
   end
 
+  def mine
+    bids = current_user.bids.includes(:listing).order(created_at: :desc)
+    @listings = bids.map(&:listing).uniq
+  end
 
   private
 

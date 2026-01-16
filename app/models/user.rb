@@ -7,6 +7,8 @@ class User < ApplicationRecord
 
   has_many :otps, dependent: :destroy
   has_many :listings
+  has_many :orders, foreign_key: :buyer_id, dependent: :nullify
+  has_many :bids, dependent: :destroy
 
   after_initialize do
     self.role ||= :user if new_record?

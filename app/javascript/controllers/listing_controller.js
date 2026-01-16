@@ -115,21 +115,21 @@ export default class extends Controller {
     }, delay)
   }
 
-markAsEndedUI() {
-  // Tránh chạy lại nhiều lần
-  if (this._alreadyEnded) return
-  this._alreadyEnded = true
+  markAsEndedUI() {
+    // Tránh chạy lại nhiều lần
+    if (this._alreadyEnded) return
+    this._alreadyEnded = true
 
-  if (this.hasStatusTarget) this.statusTarget.innerText = "Đã kết thúc"
+    if (this.hasStatusTarget) this.statusTarget.innerText = "Đã kết thúc"
 
-  // Ẩn form bid
-  if (this.hasBidFormTarget) this.bidFormTarget.remove()
+    // Ẩn form bid
+    if (this.hasBidFormTarget) this.bidFormTarget.remove()
 
-  // Ẩn box mua ngay (nếu có)
-  if (this.hasBuyNowBoxTarget) this.buyNowBoxTarget.remove()
+    // Ẩn box mua ngay (nếu có)
+    if (this.hasBuyNowBoxTarget) this.buyNowBoxTarget.remove()
 
-  this.showFlash("Phiên đấu giá đã kết thúc.")
-}
+    this.showFlash("Phiên đấu giá đã kết thúc.")
+  }
 
 
   // --- realtime handlers ---
@@ -142,8 +142,29 @@ markAsEndedUI() {
       case "sold":
         this.markAsSold(data)
         break
+      case "ended":
+        this.markAsEnded(data)
+        break
     }
   }
+
+  markAsEnded(data) {
+  if (this.hasStatusTarget) {
+    this.statusTarget.innerText = "Đã kết thúc"
+  }
+
+  if (this.hasBidFormTarget) {
+    this.bidFormTarget.remove()
+  }
+
+  if (this.hasBuyNowBoxTarget) this.buyNowBoxTarget.remove()
+
+  if (data?.has_winner === false) {
+    this.showFlash("Phiên đấu giá đã kết thúc và không có người thắng.")
+  } else {
+    this.showFlash("Phiên đấu giá đã kết thúc.")
+  }
+}
 
   updatePrice(price) {
     if (this.hasCurrentPriceTarget) this.currentPriceTarget.innerText = price

@@ -29,11 +29,25 @@ Rails.application.routes.draw do
     post :buy_now, on: :member
   end
 
-  resources :orders, only: [:show]
+  resources :orders, only: [:index, :show] do
+    member do
+      post :mark_paid  # buyer bấm "Tôi đã chuyển tiền"
+    end
+  end
+
+  namespace :admin do
+    resources :orders, only: [:index, :show] do
+      member do
+        post :confirm_paid  # admin bấm "Đã nhận tiền"
+      end
+    end
+  end
 
   namespace :seller do
     resources :listings do
       post :submit_ai_verification, on: :member
     end
   end
+
+  get "/my-bids", to: "bids#mine", as: :my_bids
 end
