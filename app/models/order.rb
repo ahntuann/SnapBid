@@ -15,6 +15,9 @@ class Order < ApplicationRecord
 
   validates :price, numericality: { greater_than: 0 }
   validates :listing_id, uniqueness: true
+  # validates :recipient_name, presence: true, if: :pending?
+  # validates :recipient_phone, presence: true, if: :pending?
+  # validates :shipping_address, presence: true, if: :pending?
 
   after_create_commit :broadcast_sold
   after_update_commit :broadcast_payment_updates
@@ -39,6 +42,10 @@ class Order < ApplicationRecord
   def confirm_paid_by_admin!
     return if paid?
     update!(admin_confirmed_paid_at: Time.current, status: :paid)
+  end
+
+  def shipping_info_complete?
+    recipient_name.present? && recipient_phone.present? && shipping_address.present?
   end
 
   private

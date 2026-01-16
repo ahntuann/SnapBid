@@ -29,7 +29,7 @@ Rails.application.routes.draw do
     post :buy_now, on: :member
   end
 
-  resources :orders, only: [:index, :show] do
+  resources :orders, only: [:index, :show, :update] do
     member do
       post :mark_paid  # buyer bấm "Tôi đã chuyển tiền"
     end

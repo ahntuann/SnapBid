@@ -11,6 +11,39 @@
 
   <hr/>
 
+  <h3>Thông tin nhận hàng</h3>
+
+  <% if @order.pending? %>
+    <%= form_with model: @order, url: order_path(@order), method: :patch, local: true do |f| %>
+      <div style="display:grid;gap:10px;max-width:520px;">
+        <div>
+          <label>Họ tên người nhận</label><br/>
+          <%= f.text_field :recipient_name, value: @order.recipient_name, style: "width:100%;" %>
+        </div>
+
+        <div>
+          <label>Số điện thoại</label><br/>
+          <%= f.text_field :recipient_phone, value: @order.recipient_phone, style: "width:100%;" %>
+        </div>
+
+        <div>
+          <label>Địa chỉ giao hàng</label><br/>
+          <%= f.text_area :shipping_address, value: @order.shipping_address, rows: 3, style: "width:100%;" %>
+        </div>
+
+        <div>
+          <%= f.submit "Lưu thông tin", data: { turbo: false } %>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <p><b>Người nhận:</b> <%= @order.recipient_name.presence || "-" %></p>
+    <p><b>SĐT:</b> <%= @order.recipient_phone.presence || "-" %></p>
+    <p><b>Địa chỉ:</b> <%= @order.shipping_address.presence || "-" %></p>
+  <% end %>
+
+  <hr/>
+
   <h3>Thanh toán chuyển khoản (QR admin)</h3>
   <p>Quét QR để chuyển khoản. Nội dung chuyển khoản gợi ý: <b>ORDER <%= @order.id %></b></p>
 
@@ -26,8 +59,16 @@
           Đang chờ admin xác nhận.
         </p>
       <% else %>
+        <% disabled = !@order.shipping_info_complete? %>
         <%= button_to "Tôi đã chuyển tiền", mark_paid_order_path(@order), method: :post,
+              disabled: disabled,
               data: { turbo_confirm: "Bạn chắc chắn đã chuyển khoản cho đơn ##{@order.id}?" } %>
+
+        <% if disabled %>
+          <p style="margin-top:8px;color:#b02a37;">
+            * Vui lòng nhập đầy đủ thông tin nhận hàng và bấm “Lưu thông tin” trước.
+          </p>
+        <% end %>
       <% end %>
     <% end %>
   </div>
