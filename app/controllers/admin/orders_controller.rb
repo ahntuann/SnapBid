@@ -6,6 +6,8 @@ module Admin
 
     def index
       @orders = Order.order(created_at: :desc)
+      @orders = @orders.where(kind: Order.kinds[params[:kind]]) if params[:kind].present?
+      @orders = @orders.where(status: Order.statuses[params[:status]]) if params[:status].present?
     end
 
     def show

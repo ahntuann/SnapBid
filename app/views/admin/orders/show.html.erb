@@ -12,11 +12,9 @@
   <%= @order.admin_confirmed_paid? ? l(@order.admin_confirmed_paid_at, format: :short) : "Chưa" %>
 </p>
 
-<% if @order.pending? %>
-  <% if @order.buyer_marked_paid? %>
+<% if @order.pending? && @order.buyer_marked_paid? && !@order.admin_confirmed_paid? %>
     <%= button_to "Đã nhận tiền", confirm_paid_admin_order_path(@order), method: :post,
           data: { turbo_confirm: "Xác nhận đã nhận tiền đơn ##{@order.id}?" } %>
-  <% else %>
+<% else %>
     <p>Chờ buyer xác nhận đã chuyển tiền.</p>
-  <% end %>
 <% end %>

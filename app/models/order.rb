@@ -17,6 +17,7 @@ class Order < ApplicationRecord
   validates :listing_id, uniqueness: true
 
   after_create_commit :broadcast_sold
+  after_update_commit :broadcast_payment_updates
 
   def total_price
     (total.presence || price || 0).to_d
@@ -55,5 +56,31 @@ class Order < ApplicationRecord
         }
       }
     )
+  end
+
+  def broadcast_payment_updates
+    changed_payment =
+      saved_change_to_buyer_marked_paid_at? ||
+      saved_change_to_admin_confirmed_paid_at? ||
+      saved_change_to_status?
+
+    return unless changed_payment
+
+    payload = {
+      type: "order_payment_updated",
+      order: {
+        id: id,
+        status: status,
+        kind: kind,
+        buyer_marked_paid_at: buyer_marked_paid_at&.iso8601,
+        admin_confirmed_paid_at: admin_confirmed_paid_at&.iso8601
+      }
+    }
+
+    # Buyer nhận realtime (đang mở orders/:id)
+    OrdersChannel.broadcast_to(buyer, payload)
+
+    # Admin nhận realtime (đang mở admin/orders hoặc show)
+    ActionCable.server.broadcast("admin_orders", payload)
   end
 end

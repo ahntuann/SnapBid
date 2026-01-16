@@ -1,31 +1,40 @@
-<h1>Chi tiết đơn hàng</h1>
+<div data-controller="order" data-order-id-value="<%= @order.id %>">
+  <h1>Chi tiết đơn hàng</h1>
 
-<p><b>Mã đơn:</b> <%= @order.id %></p>
-<p><b>Loại:</b> <%= @order.kind %></p>
-<p><b>Trạng thái:</b> <%= @order.status %></p>
-<p><b>Giá:</b> <%= @order.price %></p>
+  <p><b>Mã đơn:</b> <%= @order.id %></p>
+  <p><b>Loại:</b> <%= @order.kind %></p>
+  <p>
+    <b>Trạng thái:</b>
+    <span data-order-target="statusText"><%= @order.status %></span>
+  </p>
+  <p><b>Giá:</b> <%= @order.price %></p>
 
-<hr/>
+  <hr/>
 
-<h3>Thanh toán chuyển khoản (QR admin)</h3>
-<p>Quét QR để chuyển khoản. Nội dung chuyển khoản gợi ý: <b>ORDER <%= @order.id %></b></p>
+  <h3>Thanh toán chuyển khoản (QR admin)</h3>
+  <p>Quét QR để chuyển khoản. Nội dung chuyển khoản gợi ý: <b>ORDER <%= @order.id %></b></p>
 
-<div style="margin:12px 0;">
-  <%= image_tag "admin_qr.png", style: "max-width:240px;border:1px solid #eee;border-radius:10px;" %>
+  <div style="margin:12px 0;">
+    <%= image_tag "admin_qr.png", style: "max-width:240px;border:1px solid #eee;border-radius:10px;" %>
+  </div>
+
+  <div data-order-target="buyerSection" class="<%= 'hidden' if @order.paid? %>">
+    <% if @order.pending? %>
+      <% if @order.buyer_marked_paid? %>
+        <p style="padding:10px;border:1px solid #eee;border-radius:10px;">
+          Bạn đã bấm xác nhận chuyển tiền lúc: <%= l(@order.buyer_marked_paid_at, format: :short) %>.
+          Đang chờ admin xác nhận.
+        </p>
+      <% else %>
+        <%= button_to "Tôi đã chuyển tiền", mark_paid_order_path(@order), method: :post,
+              data: { turbo_confirm: "Bạn chắc chắn đã chuyển khoản cho đơn ##{@order.id}?" } %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div data-order-target="doneSection" class="<%= @order.paid? ? '' : 'hidden' %>">
+    <p>Đơn hàng đã xử lý xong.</p>
+  </div>
+
+  <p style="margin-top:16px;"><%= link_to "Xem sản phẩm", listing_path(@order.listing) %></p>
 </div>
-
-<% if @order.pending? %>
-  <% if @order.buyer_marked_paid? %>
-    <p style="padding:10px;border:1px solid #eee;border-radius:10px;">
-      Bạn đã bấm xác nhận chuyển tiền lúc: <%= l(@order.buyer_marked_paid_at, format: :short) %>.
-      Đang chờ admin xác nhận.
-    </p>
-  <% else %>
-    <%= button_to "Tôi đã chuyển tiền", mark_paid_order_path(@order), method: :post,
-          data: { turbo_confirm: "Bạn chắc chắn đã chuyển khoản cho đơn ##{@order.id}?" } %>
-  <% end %>
-<% else %>
-  <p>Đơn hàng đã xử lý xong.</p>
-<% end %>
-
-<p style="margin-top:16px;"><%= link_to "Xem sản phẩm", listing_path(@order.listing) %></p>

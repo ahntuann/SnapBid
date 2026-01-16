@@ -1,12 +1,38 @@
 <h1>Danh sách đơn hàng cần xác nhận</h1>
 
-<ul>
-  <% @orders.each do |o| %>
-    <li>
-      <%= link_to "Order ##{o.id}", admin_order_path(o) %> -
-      <%= o.kind %> -
-      <%= o.status %> -
-      <%= o.price %>
-    </li>
-  <% end %>
-</ul>
+<%= form_with url: admin_orders_path, method: :get, local: true do %>
+  <div style="display:flex;gap:12px;align-items:center;margin:12px 0;">
+    <div>
+      <label>Kind</label>
+      <%= select_tag :kind,
+            options_for_select([["(all)", ""], ["auction_win", "auction_win"], ["buy_now", "buy_now"]], params[:kind]),
+            onchange: "this.form.requestSubmit()" %>
+    </div>
+
+    <div>
+      <label>Status</label>
+      <%= select_tag :status,
+            options_for_select([["(all)", ""], ["pending", "pending"], ["paid", "paid"], ["cancelled", "cancelled"]], params[:status]),
+            onchange: "this.form.requestSubmit()" %>
+    </div>
+
+    <div>
+      <%= link_to "Reset", admin_orders_path %>
+    </div>
+  </div>
+<% end %>
+
+<div data-controller="admin-orders">
+  <ul>
+    <% @orders.each do |o| %>
+      <li data-order-id="<%= o.id %>" style="padding:6px;border-radius:8px;">
+        <%= link_to "Order ##{o.id}", admin_order_path(o) %>
+        - <%= o.kind %> -
+        <span data-role="status"><%= o.status %></span> -
+        <span data-role="buyer_paid"><%= o.buyer_marked_paid? ? "yes" : "no" %></span>
+        - <%= o.price %>
+      </li>
+    <% end %>
+  </ul>
+</div>
+
