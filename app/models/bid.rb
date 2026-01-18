@@ -8,6 +8,7 @@ class Bid < ApplicationRecord
   validate :must_be_higher_than_minimum
 
   after_create_commit :broadcast_new_bid
+  after_create_commit :notify_outbid
 
   private
 
@@ -25,6 +26,32 @@ class Bid < ApplicationRecord
         }
       }
     )
+  end
+
+  # ✅ Notify người vừa bị vượt giá (previous top bid)
+  def notify_outbid
+    # Bid cao nhất trước đó (loại trừ bid hiện tại)
+    previous = listing.bids
+                      .where.not(id: id)
+                      .order(amount: :desc, created_at: :asc)
+                      .first
+    return if previous.nil?
+
+    outbid_user = previous.user
+    return if outbid_user.id == user_id      # đừng tự notify chính mình
+    return if listing.user_id == outbid_user.id # nếu seller có bid (hiếm) thì bỏ
+
+    NotificationService.notify!(
+      recipient: outbid_user,
+      actor: user,
+      action: :outbid,
+      notifiable: listing,
+      url: Rails.application.routes.url_helpers.listing_path(listing),
+      message: "Có người đã trả giá cao hơn bạn cho sản phẩm “#{listing.title}”."
+    )
+    Rails.logger.info("############################################################################################################################")
+    Rails.logger.info("[notify_outbid] bid=#{id} actor=#{user_id} prev=#{previous&.id} recipient=#{previous&.user_id}")
+    Rails.logger.info("############################################################################################################################")
   end
 
   # ===== Validations =====

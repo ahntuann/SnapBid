@@ -7,6 +7,12 @@ vi:
       default: "%d/%m/%Y %H:%M"
       short: "%d/%m %H:%M"
 
+  devise:
+    registrations:
+      signed_up: "Đăng ký thành công."
+      signed_up_but_inactive: "Đăng ký thành công. Tài khoản chưa được kích hoạt."
+      signed_up_but_unconfirmed: "Đăng ký thành công. Vui lòng kiểm tra email để xác minh."
+
   buttons:
     new_listing: "Tạo tin mới"
     save: "Lưu"

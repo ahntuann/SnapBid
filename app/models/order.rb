@@ -42,6 +42,15 @@ class Order < ApplicationRecord
   def confirm_paid_by_admin!
     return if paid?
     update!(admin_confirmed_paid_at: Time.current, status: :paid)
+
+    NotificationService.notify!(
+      recipient: buyer,
+      actor: nil,
+      action: :payment_confirmed,
+      notifiable: self,
+      url: Rails.application.routes.url_helpers.order_path(self),
+      message: "Admin đã xác nhận thanh toán cho đơn ##{id}. Đơn hàng đã hoàn tất."
+    )
   end
 
   def shipping_info_complete?

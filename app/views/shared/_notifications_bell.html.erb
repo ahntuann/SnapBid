@@ -1,0 +1,59 @@
+<div
+  data-controller="notifications-bell"
+  data-notifications-bell-unread-value="<%= current_user.notifications.unread.count %>"
+  style="position:relative;"
+>
+  <!-- Toast -->
+  <div
+    data-notifications-bell-target="toast"
+    class="hidden"
+    style="position:fixed;top:16px;right:16px;z-index:9999;
+           background:#111;color:#fff;padding:10px 12px;border-radius:10px;
+           max-width:360px;"
+  ></div>
+
+  <!-- Bell button -->
+  <button
+    type="button"
+    data-action="click->notifications-bell#toggleMenu"
+    style="position:relative;border:1px solid #eee;border-radius:10px;padding:6px 10px;background:#fff;cursor:pointer;"
+    aria-label="Thông báo"
+  >
+    🔔
+    <span
+      data-notifications-bell-target="badge"
+      class="hidden"
+      style="position:absolute;top:-6px;right:-6px;
+             background:#dc3545;color:#fff;font-size:12px;
+             padding:2px 6px;border-radius:999px;"
+    ></span>
+  </button>
+
+  <!-- Dropdown -->
+  <div
+    data-notifications-bell-target="menu"
+    class="hidden"
+    style="position:absolute;right:0;margin-top:8px;width:360px;
+           background:#fff;border:1px solid #eee;border-radius:12px;
+           box-shadow:0 10px 30px rgba(0,0,0,0.08);overflow:hidden;z-index:999;"
+  >
+    <div style="padding:10px 12px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;">
+      <b>Thông báo</b>
+      <%= link_to "Xem tất cả", notifications_path, style: "font-size:12px;" %>
+    </div>
+
+    <ul data-notifications-bell-target="list" style="list-style:none;margin:0;padding:0;max-height:320px;overflow:auto;">
+      <% current_user.notifications.order(created_at: :desc).limit(6).each do |n| %>
+        <li style="padding:8px;border-bottom:1px solid #eee;<%= 'opacity:0.7' if n.read? %>">
+          <%= link_to n.message, (n.url.presence || notifications_path),
+                data: { turbo: false },
+                style: "display:block;" %>
+        </li>
+      <% end %>
+
+      <% if current_user.notifications.none? %>
+        <li style="padding:10px;color:#666;">Chưa có thông báo nào.</li>
+      <% end %>
+    </ul>
+  </div>
+</div>

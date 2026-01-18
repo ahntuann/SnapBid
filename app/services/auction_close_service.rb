@@ -31,6 +31,15 @@ class AuctionCloseService
         price: winner_bid.amount
       )
 
+      NotificationService.notify!(
+        recipient: winner_bid.user,
+        actor: listing.user, # seller
+        action: :auction_won,
+        notifiable: listing,
+        url: Rails.application.routes.url_helpers.order_path(order),
+        message: "Bạn đã thắng đấu giá sản phẩm “#{listing.title}”. Vui lòng vào đơn hàng để thanh toán."
+      )
+
     #   listing.update!(auction_ended_at: Time.current)
       ListingsChannel.broadcast_to(
           listing,

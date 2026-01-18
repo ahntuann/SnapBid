@@ -49,5 +49,14 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :notifications, only: [:index] do
+    member do
+      post :mark_read
+    end
+    collection do
+      post :mark_all_read
+    end
+  end
+
   get "/my-bids", to: "bids#mine", as: :my_bids
 end
