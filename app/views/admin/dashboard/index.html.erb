@@ -1,0 +1,38 @@
+<div class="d-flex align-items-center justify-content-between mt-3">
+  <div>
+    <h1 class="h3 mb-1">Dashboard</h1>
+    <div class="text-muted small">Quản lý hệ thống SnapBid</div>
+  </div>
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-12 col-md-4">
+    <div class="card border-0 shadow-sm" style="border-radius:16px;">
+      <div class="card-body">
+        <div class="text-muted small">Users</div>
+        <div class="fs-4 fw-bold"><%= User.count %></div>
+        <%= link_to "Quản lý Users", admin_users_path, class: "btn btn-sm btn-outline-primary rounded-pill mt-2" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-4">
+    <div class="card border-0 shadow-sm" style="border-radius:16px;">
+      <div class="card-body">
+        <div class="text-muted small">Listings</div>
+        <div class="fs-4 fw-bold"><%= Listing.count %></div>
+        <%= link_to "Quản lý Listings", admin_listings_path, class: "btn btn-sm btn-outline-primary rounded-pill mt-2" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-4">
+    <div class="card border-0 shadow-sm" style="border-radius:16px;">
+      <div class="card-body">
+        <div class="text-muted small">Orders</div>
+        <div class="fs-4 fw-bold"><%= Order.count %></div>
+        <%= link_to "Quản lý Orders", admin_orders_path, class: "btn btn-sm btn-outline-primary rounded-pill mt-2" %>
+      </div>
+    </div>
+  </div>
+</div>

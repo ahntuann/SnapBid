@@ -35,12 +35,29 @@ Rails.application.routes.draw do
     end
   end
 
+  # namespace :admin do
+  #   resources :orders, only: [:index, :show] do
+  #     member do
+  #       post :confirm_paid  # admin bấm "Đã nhận tiền"
+  #     end
+  #   end
+  # end
+
   namespace :admin do
-    resources :orders, only: [:index, :show] do
+    root to: "dashboard#index"
+    resources :listings, only: %i[index show edit update]
+    resources :users, only: %i[index show edit update]
+    resources :orders, only: %i[index show] do
       member do
         post :confirm_paid  # admin bấm "Đã nhận tiền"
       end
     end
+  end
+
+  devise_scope :user do
+    get  "/admin/login",  to: "admin/sessions#new",     as: :admin_login
+    post "/admin/login",  to: "admin/sessions#create"
+    delete "/admin/logout", to: "admin/sessions#destroy", as: :admin_logout
   end
 
   namespace :seller do
