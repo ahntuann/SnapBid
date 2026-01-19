@@ -12,6 +12,11 @@ vi:
       signed_up: "Đăng ký thành công."
       signed_up_but_inactive: "Đăng ký thành công. Tài khoản chưa được kích hoạt."
       signed_up_but_unconfirmed: "Đăng ký thành công. Vui lòng kiểm tra email để xác minh."
+    
+    sessions:
+      signed_in: "Đăng nhập thành công."
+      signed_out: "Đăng xuất thành công."
+      already_signed_out: "Đăng xuất thành công."
 
   buttons:
     new_listing: "Tạo tin mới"
