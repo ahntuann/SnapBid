@@ -1,12 +1,73 @@
-<h1><%= t("pages.seller.listings.index_title") %></h1>
+<div class="container" style="max-width:1100px;">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <h1 class="h3 mb-1">Sản phẩm của tôi</h1>
+      <div class="text-muted">Quản lý các sản phẩm bạn đang bán và đã bán.</div>
+    </div>
 
-<p><%= link_to t("buttons.new_listing"), new_seller_listing_path %></p>
+    <div>
+      <%= link_to "Thêm sản phẩm", new_seller_listing_path, class: "btn btn-sm btn-primary" %>
+    </div>
+  </div>
 
-<ul>
-  <% @listings.each do |listing| %>
-    <li>
-      <%= link_to listing.title, seller_listing_path(listing) %>
-      — <b><%= t("labels.listing.status") %>:</b> <%= listing.status_text %>
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <%= link_to "Đang bán", seller_listings_path(tab: "active"),
+        class: "nav-link #{(@tab != 'sold') ? 'active' : ''}" %>
     </li>
+    <li class="nav-item">
+      <%= link_to "Đã bán", seller_listings_path(tab: "sold"),
+        class: "nav-link #{(@tab == 'sold') ? 'active' : ''}" %>
+    </li>
+  </ul>
+
+  <% if @listings.blank? %>
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4 p-md-5 text-center">
+        <div class="mx-auto" style="max-width:520px;">
+          <%= image_tag "empty_seller.png", class: "img-fluid rounded-4 border", alt: "Empty state" %>
+
+          <h2 class="h5 mt-3 mb-1">Chưa có sản phẩm nào</h2>
+          <p class="text-secondary mb-3">
+            Bắt đầu bán hàng ngay hôm nay bằng cách thêm sản phẩm đầu tiên của bạn.
+          </p>
+
+          <%= link_to "Thêm sản phẩm", new_seller_listing_path, class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="row g-3">
+      <% @listings.each do |listing| %>
+        <div class="col-12 col-md-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="fw-semibold">
+                    <%= link_to listing.title, seller_listing_path(listing), class: "text-decoration-none" %>
+                  </div>
+                  <div class="text-muted small">
+                    <%= listing.category.presence || "Chưa có danh mục" %> •
+                    <%= listing.condition.presence || "Chưa có tình trạng" %>
+                  </div>
+                </div>
+
+                <span class="badge text-bg-light border">
+                  <%= listing.status_text %>
+                </span>
+              </div>
+
+              <hr>
+
+              <div class="d-flex gap-2">
+                <%= link_to "Chỉnh sửa", edit_seller_listing_path(listing, step: 1), class: "btn btn-sm btn-outline-primary" %>
+                <%= link_to "Xem", seller_listing_path(listing), class: "btn btn-sm btn-outline-secondary" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
   <% end %>
-</ul>
+</div>

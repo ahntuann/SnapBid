@@ -21,6 +21,6 @@ class HomeController < ApplicationController
     @categories = Listing.where.not(category: [nil, ""]).distinct.order(:category).pluck(:category)
     @conditions = Listing.where.not(condition: [nil, ""]).distinct.order(:condition).pluck(:condition)
 
-    @listings = scope.page(params[:page]).per(10)
+    @listings = scope.page(params[:page]).per(8)
   end
 end

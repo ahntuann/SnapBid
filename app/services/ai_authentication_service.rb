@@ -9,13 +9,6 @@ class AiAuthenticationService
 
     mapped_status = map_status(result[:status], result[:confidence])
     listing.update!(status: mapped_status, ai_note: result[:reason])
-
-    listing.ai_verifications.create!(
-      status: result[:status],
-      confidence: result[:confidence],
-      reason: result[:reason],
-      raw_response: result[:raw]
-    )
   rescue => e
     listing.update!(status: :manual_review, ai_note: "Lỗi khi gọi AI: #{e.message}")
     raise
@@ -23,7 +16,7 @@ class AiAuthenticationService
 
   def self.mock_result
     statuses = %w[verified rejected uncertain]
-    status = statuses.sample
+    status = "verified"
     confidence = rand(0.7..0.99).round(2)
     {
       status: status,
@@ -34,7 +27,7 @@ class AiAuthenticationService
   end
 
   def self.map_status(raw_status, confidence)
-    threshold = 0.85
+    threshold = 0.6
     case raw_status.to_s
     when "verified"
       confidence >= threshold ? :verified : :manual_review

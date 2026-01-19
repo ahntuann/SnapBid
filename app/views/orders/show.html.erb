@@ -1,81 +1,218 @@
 <div data-controller="order" data-order-id-value="<%= @order.id %>">
-  <h1>Chi tiết đơn hàng</h1>
+  <div class="mx-auto" style="max-width: 860px;">
+    <h1 class="h3 fw-bold mb-4">Xác nhận đơn hàng</h1>
 
-  <p><b>Mã đơn:</b> <%= @order.id %></p>
-  <p><b>Loại:</b> <%= @order.kind %></p>
-  <p>
-    <b>Trạng thái:</b>
-    <span data-order-target="statusText"><%= @order.status %></span>
-  </p>
-  <p><b>Giá:</b> <%= @order.price %></p>
+    <!-- Product Information -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="d-flex align-items-start gap-3">
+          <div class="flex-shrink-0">
+            <% if @order.listing.images.attached? %>
+              <%= image_tag @order.listing.images.first,
+                class: "rounded border",
+                style: "width:72px;height:72px;object-fit:cover;" %>
+            <% else %>
+              <div class="rounded border bg-light d-flex align-items-center justify-content-center"
+                   style="width:72px;height:72px;">
+                <i class="bi bi-image text-secondary"></i>
+              </div>
+            <% end %>
+          </div>
 
-  <hr/>
+          <div class="flex-grow-1">
+            <div class="fw-semibold"><%= @order.listing.title %></div>
+            <div class="text-muted small">
+              Người bán:
+              <%= @order.listing.user&.name.presence || @order.listing.user&.email %>
+            </div>
 
-  <h3>Thông tin nhận hàng</h3>
+            <div class="mt-2 d-flex flex-wrap gap-2">
+              <span class="badge text-bg-light border">Mã đơn #<%= @order.id %></span>
+              <span class="badge text-bg-light border">Loại: <%= @order.kind %></span>
 
-  <% if @order.pending? %>
-    <%= form_with model: @order, url: order_path(@order), method: :patch, local: true do |f| %>
-      <div style="display:grid;gap:10px;max-width:520px;">
-        <div>
-          <label>Họ tên người nhận</label><br/>
-          <%= f.text_field :recipient_name, value: @order.recipient_name, style: "width:100%;" %>
-        </div>
+              <%# status badge %>
+              <% status_class =
+                   if @order.paid?
+                     "text-bg-success"
+                   elsif @order.buyer_marked_paid?
+                     "text-bg-warning"
+                   else
+                     "text-bg-secondary"
+                   end %>
+              <span class="badge <%= status_class %>">
+                <span data-order-target="statusText"><%= @order.status %></span>
+              </span>
+            </div>
+          </div>
 
-        <div>
-          <label>Số điện thoại</label><br/>
-          <%= f.text_field :recipient_phone, value: @order.recipient_phone, style: "width:100%;" %>
-        </div>
-
-        <div>
-          <label>Địa chỉ giao hàng</label><br/>
-          <%= f.text_area :shipping_address, value: @order.shipping_address, rows: 3, style: "width:100%;" %>
-        </div>
-
-        <div>
-          <%= f.submit "Lưu thông tin", data: { turbo: false } %>
+          <div class="text-end">
+            <div class="text-muted small">Giá</div>
+            <div class="fw-bold">
+              <%= number_to_currency(@order.price, unit: "₫", precision: 0, delimiter: ".", format: "%n %u") %>
+            </div>
+          </div>
         </div>
       </div>
-    <% end %>
-  <% else %>
-    <p><b>Người nhận:</b> <%= @order.recipient_name.presence || "-" %></p>
-    <p><b>SĐT:</b> <%= @order.recipient_phone.presence || "-" %></p>
-    <p><b>Địa chỉ:</b> <%= @order.shipping_address.presence || "-" %></p>
-  <% end %>
+    </div>
 
-  <hr/>
+    <!-- Recipient Information -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="fw-semibold mb-3">Thông tin người nhận</div>
 
-  <h3>Thanh toán chuyển khoản (QR admin)</h3>
-  <p>Quét QR để chuyển khoản. Nội dung chuyển khoản gợi ý: <b>ORDER <%= @order.id %></b></p>
+        <% if @order.pending? %>
+          <%= form_with model: @order, url: order_path(@order), method: :patch, local: true do |f| %>
+            <div class="row g-3">
+              <div class="col-12">
+                <%= f.label :recipient_name, "Họ tên", class: "form-label" %>
+                <%= f.text_field :recipient_name, class: "form-control",
+                      value: @order.recipient_name,
+                      placeholder: "Nhập họ tên người nhận" %>
+              </div>
 
-  <div style="margin:12px 0;">
-    <%= image_tag "admin_qr.png", style: "max-width:240px;border:1px solid #eee;border-radius:10px;" %>
-  </div>
+              <div class="col-12 col-md-6">
+                <%= f.label :recipient_phone, "Số điện thoại", class: "form-label" %>
+                <%= f.text_field :recipient_phone, class: "form-control",
+                      value: @order.recipient_phone,
+                      placeholder: "VD: 09xxxxxxxx" %>
+              </div>
 
-  <div data-order-target="buyerSection" class="<%= 'hidden' if @order.paid? %>">
-    <% if @order.pending? %>
-      <% if @order.buyer_marked_paid? %>
-        <p style="padding:10px;border:1px solid #eee;border-radius:10px;">
-          Bạn đã bấm xác nhận chuyển tiền lúc: <%= l(@order.buyer_marked_paid_at, format: :short) %>.
-          Đang chờ admin xác nhận.
-        </p>
-      <% else %>
-        <% disabled = !@order.shipping_info_complete? %>
-        <%= button_to "Tôi đã chuyển tiền", mark_paid_order_path(@order), method: :post,
-              disabled: disabled,
-              data: { turbo_confirm: "Bạn chắc chắn đã chuyển khoản cho đơn ##{@order.id}?" } %>
+              <div class="col-12 col-md-6">
+                <label class="form-label">Trạng thái thông tin</label>
+                <div class="border rounded px-3 py-2 bg-light">
+                  <% if @order.shipping_info_complete? %>
+                    <span class="text-success"><i class="bi bi-check-circle"></i> Đã đủ thông tin</span>
+                  <% else %>
+                    <span class="text-danger"><i class="bi bi-exclamation-circle"></i> Chưa đủ thông tin</span>
+                  <% end %>
+                </div>
+              </div>
 
-        <% if disabled %>
-          <p style="margin-top:8px;color:#b02a37;">
-            * Vui lòng nhập đầy đủ thông tin nhận hàng và bấm “Lưu thông tin” trước.
-          </p>
+              <div class="col-12">
+                <%= f.label :shipping_address, "Địa chỉ giao hàng", class: "form-label" %>
+                <div class="position-relative">
+                  <%= f.text_area :shipping_address, class: "form-control",
+                        value: @order.shipping_address,
+                        rows: 3,
+                        placeholder: "Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành..." %>
+                  <i class="bi bi-pencil position-absolute text-secondary"
+                     style="right:12px;bottom:12px;"></i>
+                </div>
+              </div>
+
+              <div class="col-12 d-flex justify-content-end">
+                <%= f.submit "Lưu thông tin", class: "btn btn-primary", data: { turbo: false } %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="row g-2">
+            <div class="col-12 col-md-4"><span class="text-muted">Họ tên:</span> <b><%= @order.recipient_name.presence || "-" %></b></div>
+            <div class="col-12 col-md-4"><span class="text-muted">SĐT:</span> <b><%= @order.recipient_phone.presence || "-" %></b></div>
+            <div class="col-12"><span class="text-muted">Địa chỉ:</span> <b><%= @order.shipping_address.presence || "-" %></b></div>
+          </div>
         <% end %>
-      <% end %>
-    <% end %>
-  </div>
+      </div>
+    </div>
 
-  <div data-order-target="doneSection" class="<%= @order.paid? ? '' : 'hidden' %>">
-    <p>Đơn hàng đã xử lý xong.</p>
-  </div>
+    <!-- Payment Details -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="fw-semibold mb-3">Chi tiết thanh toán</div>
 
-  <p style="margin-top:16px;"><%= link_to "Xem sản phẩm", listing_path(@order.listing) %></p>
+        <%# Nếu bạn có phí ship thì thay số bên dưới bằng field thật %>
+        <% shipping_fee = 0 %>
+        <% total = @order.price.to_d + shipping_fee.to_d %>
+
+        <div class="d-flex justify-content-between py-1">
+          <div class="text-muted">Giá sản phẩm</div>
+          <div class="fw-semibold"><%= number_to_currency(@order.price, unit: "₫", precision: 0, delimiter: ".", format: "%n %u") %></div>
+        </div>
+        <div class="d-flex justify-content-between py-1">
+          <div class="text-muted">Phí vận chuyển (tạm tính)</div>
+          <div class="fw-semibold"><%= number_to_currency(shipping_fee, unit: "₫", precision: 0, delimiter: ".", format: "%n %u") %></div>
+        </div>
+        <hr class="my-2">
+        <div class="d-flex justify-content-between py-1">
+          <div class="fw-semibold">Tổng cộng</div>
+          <div class="fw-bold"><%= number_to_currency(total, unit: "₫", precision: 0, delimiter: ".", format: "%n %u") %></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Method -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="fw-semibold mb-2">Phương thức thanh toán</div>
+
+        <div class="d-flex align-items-start gap-3 p-3 rounded border bg-light">
+          <div class="rounded bg-white border d-flex align-items-center justify-content-center"
+               style="width:44px;height:44px;">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <div class="flex-grow-1">
+            <div class="fw-semibold">Trung gian qua hệ thống</div>
+            <div class="text-muted small">Thanh toán an toàn qua trung gian SnapBid (chuyển khoản/QR)</div>
+
+            <div class="mt-3">
+              <div class="text-muted small mb-2">
+                Quét QR để chuyển khoản. Nội dung gợi ý: <b>ORDER <%= @order.id %></b>
+              </div>
+
+              <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+                <div class="bg-white rounded border p-2" style="width: 220px;">
+                  <%= image_tag "admin_qr.png", class: "img-fluid", alt: "QR thanh toán" %>
+                </div>
+
+                <div class="flex-grow-1">
+                  <div data-order-target="buyerSection" class="<%= 'd-none' if @order.paid? %>">
+                    <% if @order.pending? %>
+                      <% if @order.buyer_marked_paid? %>
+                        <div class="alert alert-warning mb-0">
+                          Bạn đã bấm xác nhận chuyển tiền lúc:
+                          <b><%= l(@order.buyer_marked_paid_at, format: :short) %></b>.
+                          Đang chờ admin xác nhận.
+                        </div>
+                      <% else %>
+                        <% disabled = !@order.shipping_info_complete? %>
+
+                        <%= button_to "Tôi đã chuyển tiền",
+                              mark_paid_order_path(@order),
+                              method: :post,
+                              class: "btn btn-primary w-100 w-sm-auto",
+                              disabled: disabled,
+                              data: { turbo_confirm: "Bạn chắc chắn đã chuyển khoản cho đơn ##{@order.id}?" } %>
+
+                        <% if disabled %>
+                          <div class="text-danger small mt-2">
+                            * Vui lòng nhập đầy đủ thông tin nhận hàng và bấm “Lưu thông tin” trước.
+                          </div>
+                        <% end %>
+                      <% end %>
+                    <% end %>
+                  </div>
+
+                  <div data-order-target="doneSection" class="<%= @order.paid? ? '' : 'd-none' %>">
+                    <div class="alert alert-success mb-0">
+                      Đơn hàng đã được xác nhận thanh toán.
+                    </div>
+                  </div>
+
+                  <div class="mt-3">
+                    <%= link_to "Xem sản phẩm", listing_path(@order.listing), class: "link-primary text-decoration-none" %>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-start">
+      <%= link_to "Quay lại", orders_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
 </div>

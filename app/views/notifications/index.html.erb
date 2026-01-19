@@ -1,28 +1,65 @@
-<h1>Thông báo</h1>
+<div class="container" style="max-width: 920px;">
+  <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-3">
+    <div>
+      <h1 class="h3 mb-1">Thông báo</h1>
+      <div class="text-muted small">Theo dõi hoạt động đấu giá, mua ngay và đơn hàng.</div>
+    </div>
 
-<p>
-  <%= button_to "Đánh dấu tất cả đã đọc", mark_all_read_notifications_path, method: :post %>
-</p>
+    <div class="d-flex gap-2">
+      <%= button_to "Đánh dấu tất cả đã đọc",
+            mark_all_read_notifications_path,
+            method: :post,
+            class: "btn btn-outline-secondary rounded-pill",
+            form: { data: { turbo: false } } %>
+    </div>
+  </div>
 
-<ul>
-  <% @notifications.each do |n| %>
-    <li style="padding:8px;border:1px solid #eee;border-radius:10px;margin-bottom:8px;<%= 'opacity:0.6' if n.read? %>">
-      <div>
-        <b><%= n.message %></b>
-      </div>
+  <div class="card shadow-sm border-0" style="border-radius: 16px; overflow:hidden;">
+    <div class="card-body p-0">
+      <% if @notifications.blank? %>
+        <div class="p-4 text-muted">Chưa có thông báo.</div>
+      <% else %>
+        <div class="list-group list-group-flush">
+          <% @notifications.each do |n| %>
+            <% is_unread = n.read_at.blank? %>
 
-      <div style="font-size:12px;">
-        <%= l(n.created_at, format: :short) %>
-        <% if n.url.present? %>
-          - <%= link_to "Xem", n.url %>
-        <% end %>
-      </div>
+            <div class="list-group-item d-flex gap-3 align-items-start py-3"
+                 style="<%= is_unread ? "background:#f5f9ff;" : "" %>">
+              <div class="mt-1">
+                <span class="d-inline-flex align-items-center justify-content-center rounded-circle"
+                      style="width:36px;height:36px;background:<%= is_unread ? "#e7f1ff" : "#f2f2f2" %>;">
+                  <i class="bi <%= is_unread ? "bi-bell-fill" : "bi-bell" %>"></i>
+                </span>
+              </div>
 
-      <% unless n.read? %>
-        <div style="margin-top:6px;">
-          <%= button_to "Đánh dấu đã đọc", mark_read_notification_path(n), method: :post %>
+              <div class="flex-grow-1">
+                <div class="<%= is_unread ? "fw-semibold" : "" %>"><%= n.message %></div>
+                <div class="text-muted small mt-1"><%= l(n.created_at, format: :short) %></div>
+
+                <div class="mt-2 d-flex flex-wrap gap-2">
+                  <% if n.url.present? %>
+                    <%= link_to "Xem", n.url, class: "btn btn-sm btn-outline-primary rounded-pill" %>
+                  <% end %>
+
+                  <% if is_unread %>
+                    <%= button_to "Đánh dấu đã đọc",
+                          mark_read_notification_path(n),
+                          method: :post,
+                          class: "btn btn-sm btn-outline-secondary rounded-pill",
+                          form: { data: { turbo: false } } %>
+                    <span class="badge text-bg-primary rounded-pill align-self-center">Mới</span>
+                  <% else %>
+                    <span class="badge text-bg-light border rounded-pill align-self-center">Đã đọc</span>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
         </div>
       <% end %>
-    </li>
-  <% end %>
-</ul>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-center mt-4">
+  </div>
+</div>

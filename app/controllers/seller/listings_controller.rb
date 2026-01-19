@@ -3,11 +3,19 @@ class Seller::ListingsController < ApplicationController
   before_action :set_listing, only: %i[show edit update submit_ai_verification]
 
   def index
-    @listings = current_user.listings.order(created_at: :desc)
+    tab = params[:tab].presence || "active" # active | sold
+    base = current_user.listings.order(created_at: :desc)
+    @tab = tab
+
+    @listings =
+      if tab == "sold"
+        base.joins(:order)
+      else
+        base.left_outer_joins(:order).where(orders: { id: nil })
+      end
   end
 
   def show
-    @listing = Listing.find(params[:id])
   end
 
   def new
@@ -18,29 +26,36 @@ class Seller::ListingsController < ApplicationController
     @listing = current_user.listings.new(listing_params)
 
     if @listing.save
-      redirect_to seller_listing_path(@listing), notice: t("flash.listing.created")
+      redirect_to seller_listing_path(@listing), notice: "Đã tạo sản phẩm."
     else
-      flash.now[:alert] = t("errors.listing.invalid")
+      flash.now[:alert] = @listing.errors.full_messages.to_sentence
       render :new, status: :unprocessable_entity
     end
   end
 
-  def edit; end
+  def edit
+  end
 
   def update
     if @listing.update(listing_params)
-      redirect_to seller_listing_path(@listing), notice: t("flash.listing.updated")
+      redirect_to seller_listing_path(@listing), notice: "Đã cập nhật sản phẩm."
     else
-      flash.now[:alert] = t("errors.listing.invalid")
+      flash.now[:alert] = @listing.errors.full_messages.to_sentence
       render :edit, status: :unprocessable_entity
     end
   end
 
   def submit_ai_verification
     AiAuthenticationService.verify_listing!(@listing)
-    redirect_to seller_listing_path(@listing), notice: t("flash.ai.submitted")
+
+    # Nếu verified => cho đi tiếp cấu hình bán hàng luôn (edit)
+    if @listing.verified?
+      redirect_to edit_seller_listing_path(@listing), notice: "AI đã xác thực. Sản phẩm đã xuất hiện trên gian đấu giá."
+    else
+      redirect_to seller_listing_path(@listing), notice: "Đã gửi AI. Trạng thái: #{@listing.status_text}"
+    end
   rescue => e
-    redirect_to seller_listing_path(@listing), alert: t("flash.ai.error", message: e.message)
+    redirect_to seller_listing_path(@listing), alert: "Lỗi AI: #{e.message}"
   end
 
   private
@@ -50,6 +65,10 @@ class Seller::ListingsController < ApplicationController
   end
 
   def listing_params
-    params.require(:listing).permit(:title, :category, :condition, :seller_note, images: [])
+    params.require(:listing).permit(
+      :title, :category, :condition, :seller_note, :published_at,
+      :start_price, :auction_ends_at, :bid_increment, :reserve_price, :buy_now_price,
+      images: []
+    )
   end
 end

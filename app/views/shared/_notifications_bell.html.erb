@@ -1,59 +1,83 @@
-<div
-  data-controller="notifications-bell"
-  data-notifications-bell-unread-value="<%= current_user.notifications.unread.count %>"
-  style="position:relative;"
->
-  <!-- Toast -->
-  <div
-    data-notifications-bell-target="toast"
-    class="hidden"
-    style="position:fixed;top:16px;right:16px;z-index:9999;
-           background:#111;color:#fff;padding:10px 12px;border-radius:10px;
-           max-width:360px;"
-  ></div>
-
-  <!-- Bell button -->
+<div class="dropdown" data-controller="notifications-dropdown">
   <button
+    class="btn btn-light position-relative rounded-pill border"
     type="button"
-    data-action="click->notifications-bell#toggleMenu"
-    style="position:relative;border:1px solid #eee;border-radius:10px;padding:6px 10px;background:#fff;cursor:pointer;"
-    aria-label="Thông báo"
+    data-notifications-dropdown-target="button"
+    data-bs-toggle="dropdown"
+    data-bs-auto-close="outside"
+    aria-expanded="false"
+    style="width:40px;height:40px;"
   >
-    🔔
-    <span
-      data-notifications-bell-target="badge"
-      class="hidden"
-      style="position:absolute;top:-6px;right:-6px;
-             background:#dc3545;color:#fff;font-size:12px;
-             padding:2px 6px;border-radius:999px;"
-    ></span>
+    <i class="bi bi-bell"></i>
+
+    <% unread_count = current_user.notifications.unread.count rescue 0 %>
+    <% if unread_count > 0 %>
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        <%= unread_count > 99 ? "99+" : unread_count %>
+      </span>
+    <% end %>
   </button>
 
-  <!-- Dropdown -->
   <div
-    data-notifications-bell-target="menu"
-    class="hidden"
-    style="position:absolute;right:0;margin-top:8px;width:360px;
-           background:#fff;border:1px solid #eee;border-radius:12px;
-           box-shadow:0 10px 30px rgba(0,0,0,0.08);overflow:hidden;z-index:999;"
+    class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0"
+    data-notifications-dropdown-target="menu"
+    style="width:min(420px, 92vw); border-radius:16px; overflow:hidden;"
   >
-    <div style="padding:10px 12px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;">
-      <b>Thông báo</b>
-      <%= link_to "Xem tất cả", notifications_path, style: "font-size:12px;" %>
+    <div class="d-flex align-items-center justify-content-between px-3 py-3 bg-white border-bottom">
+      <div class="fw-semibold">Thông báo</div>
+      <div class="d-flex gap-2">
+        <%= link_to "Xem tất cả", notifications_path, class: "btn btn-sm btn-outline-primary rounded-pill" %>
+      </div>
     </div>
 
-    <ul data-notifications-bell-target="list" style="list-style:none;margin:0;padding:0;max-height:320px;overflow:auto;">
-      <% current_user.notifications.order(created_at: :desc).limit(6).each do |n| %>
-        <li style="padding:8px;border-bottom:1px solid #eee;<%= 'opacity:0.7' if n.read? %>">
-          <%= link_to n.message, (n.url.presence || notifications_path),
-                data: { turbo: false },
-                style: "display:block;" %>
-        </li>
-      <% end %>
+    <div class="bg-white" style="max-height: 420px; overflow:auto;">
+      <% notifications = (current_user.notifications.order(created_at: :desc).limit(8) rescue []) %>
 
-      <% if current_user.notifications.none? %>
-        <li style="padding:10px;color:#666;">Chưa có thông báo nào.</li>
+      <% if notifications.blank? %>
+        <div class="p-3 text-muted">Chưa có thông báo.</div>
+      <% else %>
+        <div class="list-group list-group-flush">
+          <% notifications.each do |n| %>
+            <% is_unread = n.read_at.blank? rescue true %>
+
+            <a
+              href="<%= n.url.presence || notifications_path %>"
+              class="list-group-item list-group-item-action d-flex gap-3 align-items-start"
+              style="<%= is_unread ? "background:#f5f9ff;" : "" %>"
+            >
+              <div class="mt-1">
+                <span class="d-inline-flex align-items-center justify-content-center rounded-circle"
+                      style="width:32px;height:32px;background:<%= is_unread ? "#e7f1ff" : "#f2f2f2" %>;">
+                  <i class="bi <%= is_unread ? "bi-dot" : "bi-check2" %>"></i>
+                </span>
+              </div>
+
+              <div class="flex-grow-1">
+                <div class="<%= is_unread ? "fw-semibold" : "" %>">
+                  <%= n.message %>
+                </div>
+                <div class="text-muted small mt-1">
+                  <%= l(n.created_at, format: :short) rescue "" %>
+                </div>
+              </div>
+
+              <% if is_unread %>
+                <span class="badge text-bg-primary rounded-pill">Mới</span>
+              <% end %>
+            </a>
+          <% end %>
+        </div>
       <% end %>
-    </ul>
+    </div>
+
+    <div class="px-3 py-2 bg-white border-top d-flex justify-content-between">
+      <%= button_to "Đánh dấu tất cả đã đọc",
+            mark_all_read_notifications_path,
+            method: :post,
+            class: "btn btn-sm btn-outline-secondary rounded-pill",
+            form: { data: { turbo: false } } %>
+
+      <%= link_to "Quản lý", notifications_path, class: "btn btn-sm btn-primary rounded-pill" %>
+    </div>
   </div>
 </div>

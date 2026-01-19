@@ -1,108 +1,94 @@
-<div style="max-width: 1100px; margin: 0 auto; padding: 24px;">
-  <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom: 18px;">
-    <div style="font-weight:700; font-size:20px;">
-      <%= t("app.name") %>
-    </div>
+<div class="container" style="max-width: 1100px;">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div class="fw-semibold fs-4">Các sản phẩm đấu giá</div>
 
-    <form method="get" action="<%= root_path %>" style="flex:1; display:flex; gap:10px; align-items:center;">
-      <input
-        type="text"
-        name="q"
-        value="<%= @q %>"
-        placeholder="<%= t("home.search_placeholder") %>"
-        style="flex:1; padding:10px 12px; border:1px solid #ddd; border-radius:10px;"
-      />
+    <form method="get" action="<%= root_path %>" class="d-flex gap-2 flex-wrap flex-grow-1 justify-content-end">
+      <input type="text"
+             name="q"
+             value="<%= @q %>"
+             placeholder="<%= t("home.search_placeholder") %>"
+             class="form-control"
+             style="max-width: 420px;" />
 
-      <select name="sort" style="padding:10px 12px; border:1px solid #ddd; border-radius:10px;">
+      <select name="sort" class="form-select" style="max-width: 180px;">
         <option value="newest" <%= "selected" if @sort=="newest" %>><%= t("home.filters.newest") %></option>
         <option value="price_asc" <%= "selected" if @sort=="price_asc" %>><%= t("home.filters.price_asc") %></option>
         <option value="price_desc" <%= "selected" if @sort=="price_desc" %>><%= t("home.filters.price_desc") %></option>
       </select>
 
-      <button type="submit" style="padding:10px 14px; border-radius:10px; border:1px solid #ddd; cursor:pointer;">
-        Search
-      </button>
+      <button type="submit" class="btn btn-primary">Tìm</button>
     </form>
   </div>
 
-  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 18px;">
-    <form method="get" action="<%= root_path %>" style="display:flex; gap:10px; flex-wrap:wrap;">
-      <input type="hidden" name="q" value="<%= @q %>">
-      <input type="hidden" name="sort" value="<%= @sort %>">
+  <div class="card shadow-sm mb-3">
+    <div class="card-body">
+      <form method="get" action="<%= root_path %>" class="row g-2 align-items-end">
+        <input type="hidden" name="q" value="<%= @q %>">
+        <input type="hidden" name="sort" value="<%= @sort %>">
 
-      <select name="category" style="padding:10px 12px; border:1px solid #ddd; border-radius:10px;">
-        <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.category") %></option>
-        <% @categories.each do |c| %>
-          <option value="<%= c %>" <%= "selected" if @category==c %>><%= c %></option>
-        <% end %>
-      </select>
-
-      <select name="condition" style="padding:10px 12px; border:1px solid #ddd; border-radius:10px;">
-        <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.condition") %></option>
-        <% @conditions.each do |c| %>
-          <option value="<%= c %>" <%= "selected" if @condition==c %>><%= c %></option>
-        <% end %>
-      </select>
-
-      <button type="submit" style="padding:10px 14px; border-radius:10px; border:1px solid #ddd; cursor:pointer;">
-        Lọc
-      </button>
-
-      <a href="<%= root_path %>" style="padding:10px 14px; border-radius:10px; border:1px solid #ddd; text-decoration:none;">
-        Làm mới
-      </a>
-    </form>
-  </div>
-
-    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:18px;">
-        <% @listings.each do |listing| %>
-            <%= link_to listing_path(listing),
-            style: "text-decoration:none; color:inherit;" do %>
-
-            <div style="
-                border:1px solid #eee;
-                border-radius:16px;
-                padding:12px;
-                background:#fff;
-                transition: box-shadow .2s, transform .2s;
-            "
-            onmouseover="this.style.boxShadow='0 8px 24px rgba(0,0,0,.08)'; this.style.transform='translateY(-2px)'"
-            onmouseout="this.style.boxShadow='none'; this.style.transform='none'">
-
-                <!-- Image -->
-                <div style="
-                border-radius:12px;
-                overflow:hidden;
-                aspect-ratio:1/1;
-                background:#f5f5f5;
-                margin-bottom:10px;
-                ">
-                <% if listing.images.attached? %>
-                    <%= image_tag listing.images.first,
-                    style: "width:100%; height:100%; object-fit:cover;" %>
-                <% end %>
-                </div>
-
-                <!-- Title -->
-                <div style="font-weight:700; margin-bottom:6px;">
-                <%= listing.title %>
-                </div>
-
-                <!-- Price -->
-                <div style="color:#2563eb; font-weight:600; font-size:14px;">
-                <%= t("ui.listing.start_price") %>:
-                <%= listing.start_price.present? ?
-                    number_to_currency(listing.start_price, unit: "₫", precision: 0) :
-                    "—" %>
-                </div>
-
-            </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label small text-muted mb-1"><%= t("home.filters.category") %></label>
+          <select name="category" class="form-select">
+            <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.category") %></option>
+            <% @categories.each do |c| %>
+              <option value="<%= c %>" <%= "selected" if @category==c %>><%= c %></option>
             <% end %>
-        <% end %>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label class="form-label small text-muted mb-1"><%= t("home.filters.condition") %></label>
+          <select name="condition" class="form-select">
+            <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.condition") %></option>
+            <% @conditions.each do |c| %>
+              <option value="<%= c %>" <%= "selected" if @condition==c %>><%= c %></option>
+            <% end %>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-4 d-flex gap-2">
+          <button type="submit" class="btn btn-outline-secondary flex-grow-1">Lọc</button>
+          <a href="<%= root_path %>" class="btn btn-light border flex-grow-1">Làm mới</a>
+        </div>
+      </form>
     </div>
+  </div>
 
+  <!-- GRID: mobile 1 card/row, tablet 2, desktop 4 -->
+  <div class="row g-3">
+    <% @listings.each do |listing| %>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <%= link_to listing_path(listing), class: "text-decoration-none text-dark" do %>
+          <div class="card shadow-sm h-100 border-0">
+            <div class="card-body">
+              <% if listing.images.attached? %>
+                <%= image_tag listing.images.first.variant(resize_to_fill: [900, 900]),
+                      class: "sb-cover",
+                      loading: "lazy" %>
+              <% else %>
+                <div class="sb-cover d-flex align-items-center justify-content-center text-muted">
+                  <i class="bi bi-image fs-3"></i>
+                </div>
+              <% end %>
 
-  <div style="margin-top:18px; display:flex; justify-content:center;">
+              <div class="mt-2 fw-semibold text-truncate"><%= listing.title %></div>
+
+              <div class="text-primary fw-semibold small mt-1">
+                <%= t("ui.listing.start_price") %>:
+                <%= listing.start_price.present? ? number_to_currency(listing.start_price, unit: "₫", precision: 0) : "—" %>
+              </div>
+
+              <div class="text-muted small mt-1">
+                <%= listing.category.presence || "—" %> • <%= listing.condition.presence || "—" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="d-flex justify-content-center mt-4">
     <%= paginate @listings %>
   </div>
 </div>

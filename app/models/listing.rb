@@ -15,7 +15,9 @@ class Listing < ApplicationRecord
     published: 5
   }
 
-  scope :published, -> { where.not(published_at: nil).order(published_at: :desc) }
+  scope :published, -> {
+    where(status: :verified).where.not(published_at: nil).order(published_at: :desc)
+  }
 
   after_initialize do
     self.status ||= :draft if new_record?

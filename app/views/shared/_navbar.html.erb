@@ -12,9 +12,9 @@
     <div class="collapse navbar-collapse" id="mainNav">
       <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
         <% if user_signed_in? %>
-          <li class="nav-item"><%= link_to "Home", root_path, class: "nav-link" %></li>
-          <li class="nav-item"><%= link_to "Sell", seller_listings_path, class: "nav-link" %></li>
-          <li class="nav-item"><%= link_to "My Bids", my_bids_path, class: "nav-link" %></li>
+          <li class="nav-item"><%= link_to "Trang chủ", root_path, class: "nav-link" %></li>
+          <li class="nav-item"><%= link_to "Đăng bán", seller_listings_path, class: "nav-link" %></li>
+          <li class="nav-item"><%= link_to "Đấu giá của tôi", my_bids_path, class: "nav-link" %></li>
           <li class="nav-item">
             <!-- chuông notifications: dùng partial cũ của bạn -->
             <%= render "shared/notifications_bell" %>
@@ -28,7 +28,7 @@
               <span class="d-none d-lg-inline"><%= current_user.name.presence || current_user.email %></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><%= link_to "Orders", orders_path, class: "dropdown-item" %></li>
+              <li><%= link_to "Đơn hàng", orders_path, class: "dropdown-item" %></li>
               <% if current_user.admin? %>
                 <li><%= link_to "Admin", admin_orders_path, class: "dropdown-item" %></li>
               <% end %>

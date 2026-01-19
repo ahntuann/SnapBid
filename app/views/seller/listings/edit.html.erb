@@ -1,8 +1,6 @@
-<h1><%= t("pages.seller.listings.edit_title") %></h1>
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h1 class="h3 mb-0">Chỉnh sửa tin đăng</h1>
+  <%= link_to "Quay lại", seller_listing_path(@listing), class: "btn btn-outline-secondary" %>
+</div>
 
-<%= render "form",
-  listing: @listing,
-  url: seller_listing_path(@listing),
-  submit_text: t("buttons.update") %>
-
-<p><%= link_to t("buttons.back"), seller_listing_path(@listing) %></p>
+<%= render "form", listing: @listing, url: seller_listing_path(@listing), method: :patch, submit_text: "Cập nhật" %>
