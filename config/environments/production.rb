@@ -71,8 +71,10 @@ Rails.application.configure do
   # config.cache_store = :mem_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
+  # Sử dụng bộ nhớ RAM để xử lý job (Nhanh, Free, không cần DB riêng)
   config.active_job.queue_adapter = :async
-  config.solid_queue.connects_to = { database: { writing: :queue } }
+  # config.solid_queue.connects_to = { database: { writing: :queue } }
+  
   config.active_job.verbose_enqueue_logs = true
   # config.active_job.queue_name_prefix = "snapbid_production"
 
