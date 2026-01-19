@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_16_191613) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_19_125656) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -80,7 +80,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_16_191613) do
     t.decimal "bid_increment"
     t.datetime "auction_ends_at"
     t.decimal "buy_now_price", precision: 12
+    t.bigint "reference_item_id"
     t.index ["published_at"], name: "index_listings_on_published_at"
+    t.index ["reference_item_id"], name: "index_listings_on_reference_item_id"
     t.index ["status"], name: "index_listings_on_status"
     t.index ["user_id"], name: "index_listings_on_user_id"
   end
@@ -132,6 +134,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_16_191613) do
     t.index ["user_id"], name: "index_otps_on_user_id"
   end
 
+  create_table "reference_items", force: :cascade do |t|
+    t.string "name"
+    t.string "brand"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "system_settings", force: :cascade do |t|
     t.decimal "ai_threshold"
     t.decimal "commission_percent"
@@ -162,6 +172,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_16_191613) do
   add_foreign_key "ai_verifications", "listings"
   add_foreign_key "bids", "listings"
   add_foreign_key "bids", "users"
+  add_foreign_key "listings", "reference_items"
   add_foreign_key "listings", "users"
   add_foreign_key "notifications", "users", column: "actor_id"
   add_foreign_key "notifications", "users", column: "recipient_id"

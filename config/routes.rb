@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resource :settings, only: %i[show edit update]
+    resources :reference_items
   end
 
   # resource :otp_session, only: %i[new create] do

@@ -1,0 +1,26 @@
+<h1>Tạo/Sửa Túi Mẫu</h1>
+
+<%= form_with model: [:admin, @item], local: true do |f| %>
+  <div class="mb-3">
+    <%= f.label :name, "Tên túi (Chính xác)", class: "form-label" %>
+    <%= f.text_field :name, class: "form-control", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :brand, "Hãng", class: "form-label" %>
+    <%= f.text_field :brand, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :description, "Mô tả chuẩn Auth (AI sẽ dựa vào đây)", class: "form-label" %>
+    <%= f.text_area :description, rows: 5, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :images, "Upload 5 ảnh chuẩn (Góc chính, Cạnh, Đáy, Logo, Tem)", class: "form-label fw-bold" %>
+    <%= f.file_field :images, multiple: true, class: "form-control" %>
+  </div>
+
+  <%= f.submit "Lưu Túi Mẫu", class: "btn btn-success" %>
+  <%= link_to "Huỷ", admin_reference_items_path, class: "btn btn-secondary" %>
+<% end %>

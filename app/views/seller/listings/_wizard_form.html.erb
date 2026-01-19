@@ -34,6 +34,15 @@
   <% if step == 1 %>
     <div class="card shadow-sm">
       <div class="card-body">
+        
+        <div class="mb-4 p-3 bg-light rounded border">
+          <%= f.label :reference_item_id, "Bước quan trọng: Chọn loại túi", class: "form-label fw-bold" %>
+          <%= f.collection_select :reference_item_id, 
+                ReferenceItem.all, :id, :name, 
+                { prompt: "-- Chọn mẫu túi từ hệ thống --" }, 
+                { class: "form-select" } %>
+          <div class="form-text">Nếu không tìm thấy, hãy để trống (AI sẽ kiểm tra theo mô tả chung).</div>
+        </div>
         <div class="mb-3">
           <%= f.label :title, "Tên sản phẩm", class: "form-label" %>
           <%= f.text_field :title, class: "form-control", placeholder: "VD: Túi xách vintage..." %>
