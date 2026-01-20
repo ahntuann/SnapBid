@@ -88,7 +88,8 @@ Rails.application.configure do
     user_name: ENV["SMTP_USER"],
     password: ENV["SMTP_PASS"],
     authentication: "plain",
-    enable_starttls_auto: true
+    enable_starttls_auto: true,
+    openssl_verify_mode: "none"
   }
   config.action_mailer.default_url_options = { host: ENV["APP_HOST"] }
 
