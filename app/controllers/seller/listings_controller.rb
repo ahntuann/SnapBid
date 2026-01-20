@@ -3,7 +3,7 @@ class Seller::ListingsController < ApplicationController
   before_action :set_listing, only: %i[show edit update submit_ai_verification]
 
   def index
-    tab = params[:tab].presence || "active" # active | sold
+    tab = params[:tab].presence || "active" 
     base = current_user.listings.order(created_at: :desc)
     @tab = tab
 
@@ -37,6 +37,15 @@ class Seller::ListingsController < ApplicationController
   end
 
   def update
+    # 1. Kiểm tra xem người dùng có upload ảnh mới không
+    # (Loại bỏ các giá trị rỗng nếu có)
+    new_images = listing_params[:images]&.reject(&:blank?)
+
+    if new_images.present?
+      # 2. Nếu có ảnh mới -> XÓA SẠCH ảnh cũ để đảm bảo chỉ còn đúng 8 ảnh mới
+      @listing.images.purge 
+    end
+
     if @listing.update(listing_params)
       redirect_to seller_listing_path(@listing), notice: "Đã cập nhật sản phẩm."
     else
@@ -44,11 +53,11 @@ class Seller::ListingsController < ApplicationController
       render :edit, status: :unprocessable_entity
     end
   end
+  # -----------------------------
 
   def submit_ai_verification
     AiAuthenticationService.verify_listing!(@listing)
 
-    # Nếu verified => cho đi tiếp cấu hình bán hàng luôn (edit)
     if @listing.verified?
       redirect_to edit_seller_listing_path(@listing), notice: "AI đã xác thực. Sản phẩm đã xuất hiện trên gian đấu giá."
     else
@@ -69,7 +78,7 @@ class Seller::ListingsController < ApplicationController
       :title, :category, :condition, :seller_note, :published_at,
       :start_price, :auction_ends_at, :bid_increment, :reserve_price, :buy_now_price,
       :reference_item_id,
-      images: []
+      images: [] # Cho phép nhận mảng ảnh
     )
   end
 end
