@@ -83,15 +83,13 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: "smtp.gmail.com",
-    port: 587,                # Quay lại cổng 587 (Chuẩn nhất cho Gmail STARTTLS)
-    domain: "gmail.com",      # QUAN TRỌNG: Phải có dòng này để Gmail nhận diện
+    address: "smtp-relay.brevo.com",
+    port: 587,
     user_name: ENV["SMTP_USER"],
     password: ENV["SMTP_PASS"],
     authentication: "plain",
-    enable_starttls_auto: true, # Bật cái này cho cổng 587
-    open_timeout: 10,
-    read_timeout: 10
+    enable_starttls_auto: true,
+    openssl_verify_mode: "none"
   }
   config.action_mailer.default_url_options = { host: ENV["APP_HOST"] }
 
