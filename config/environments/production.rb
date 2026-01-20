@@ -84,12 +84,14 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     address: "smtp.gmail.com",
-    port: 587,
+    port: 465,                 # Đổi sang cổng SSL (ổn định hơn 587)
     user_name: ENV["SMTP_USER"],
     password: ENV["SMTP_PASS"],
     authentication: "plain",
     enable_starttls_auto: true,
-    openssl_verify_mode: "none"
+    tls: true,                 # Bắt buộc khi dùng port 465
+    open_timeout: 20,          # Quan trọng: Tăng thời gian chờ kết nối lên 20s
+    read_timeout: 20           # Quan trọng: Tăng thời gian chờ gửi tin lên 20s
   }
   config.action_mailer.default_url_options = { host: ENV["APP_HOST"] }
 
