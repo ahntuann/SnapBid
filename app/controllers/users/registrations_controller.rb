@@ -5,7 +5,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     super do |user|
       if user.persisted?
         otp, code = OtpService.generate!(user, purpose: "verify_email")
-        UserMailer.otp_email(user, code).deliver_now
+        UserMailer.otp_email(user, code).deliver_later
       end
     end
   end
