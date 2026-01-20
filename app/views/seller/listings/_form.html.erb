@@ -1,8 +1,10 @@
-<%= form_with model: listing, url: url, method: method, multipart: true do |f| %>
+<%= form_with model: listing, url: url, method: method, multipart: true, data: { turbo: false } do |f| %>
+  
+  <%# --- PHẦN HIỂN THỊ LỖI --- %>
   <% if listing.errors.any? %>
-    <div class="alert alert-danger">
-      <div class="fw-semibold mb-1">Có lỗi:</div>
-      <ul class="mb-0">
+    <div class="alert alert-danger shadow-sm">
+      <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill"></i> Có lỗi xảy ra:</div>
+      <ul class="mb-0 small">
         <% listing.errors.full_messages.each do |msg| %>
           <li><%= msg %></li>
         <% end %>
@@ -10,109 +12,116 @@
     </div>
   <% end %>
 
-  <div class="row g-3">
-    <!-- LEFT -->
-    <div class="col-12 col-lg-7">
-      <div class="card shadow-sm mb-3">
-        <div class="card-body">
-        <div class="mb-3 p-3 bg-light rounded border border-primary">
-            <%= f.label :reference_item_id, "Bạn muốn bán loại túi nào?", class: "form-label fw-bold text-primary" %>
-            <div class="form-text mb-2">Chọn đúng loại túi để AI có ảnh mẫu so sánh chính xác nhất.</div>
-            <%= f.collection_select :reference_item_id, 
-                  ReferenceItem.all, :id, :name, 
-                  { prompt: "-- Chọn mẫu túi có sẵn --" }, 
-                  { class: "form-select form-select-lg" } %>
+  <div class="row g-4">
+    <div class="col-12 col-lg-8">
+      
+      <div class="card shadow-sm mb-4 border-primary">
+        <div class="card-header bg-primary text-white fw-bold">
+          <i class="bi bi-bag-check-fill"></i> BƯỚC 1: CHỌN MẪU TÚI
+        </div>
+        <div class="card-body bg-light">
+          <%= f.label :reference_item_id, "Bạn muốn bán loại túi nào?", class: "form-label fw-bold h5 text-dark" %>
+          <%= f.collection_select :reference_item_id, 
+                ReferenceItem.all, :id, :name, 
+                { prompt: "-- Vui lòng chọn đúng mẫu túi --" }, 
+                { class: "form-select form-select-lg border-2 border-primary mb-2", id: "reference_select" } %>
+          <div class="form-text text-dark"><i class="bi bi-info-circle"></i> Hệ thống sẽ hiển thị 8 ảnh mẫu chuẩn Auth để bạn chụp theo.</div>
+        </div>
+      </div>
+
+      <div id="image-upload-area" class="d-none mb-4">
+        <div class="card shadow-sm border-warning">
+          <div class="card-header bg-warning text-dark fw-bold">
+            <i class="bi bi-camera-fill"></i> BƯỚC 2: CHỤP ẢNH THEO MẪU (BẮT BUỘC)
           </div>
+          <div class="card-body">
+            <div class="alert alert-warning small mb-3">
+              Bạn cần tải lên đủ <b>8 ảnh</b> tương ứng với 8 góc độ mẫu bên dưới. AI sẽ so sánh trực tiếp ảnh của bạn với ảnh mẫu để kiểm định.
+            </div>
+            
+            <div class="row g-3" id="slots-container">
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-3">
+        <div class="card-header fw-bold bg-white">
+          <i class="bi bi-card-text"></i> BƯỚC 3: THÔNG TIN CHI TIẾT
+        </div>
+        <div class="card-body">
           <div class="mb-3">
-            <%= f.label :title, "Tên sản phẩm", class: "form-label" %>
-            <%= f.text_field :title, class: "form-control", placeholder: "VD: Túi xách vintage..." %>
+            <%= f.label :title, "Tiêu đề tin đăng", class: "form-label" %>
+            <%= f.text_field :title, class: "form-control", placeholder: "VD: Túi Dior Lady màu hồng size M..." %>
           </div>
 
-          <div class="row g-3">
+          <div class="row g-3 mb-3">
             <div class="col-12 col-md-6">
               <%= f.label :category, "Danh mục", class: "form-label" %>
-              <%= f.text_field :category, class: "form-control", placeholder: "VD: Thời trang, Điện tử..." %>
+              <%= f.text_field :category, class: "form-control", placeholder: "VD: Thời trang, Túi xách..." %>
             </div>
             <div class="col-12 col-md-6">
               <%= f.label :condition, "Tình trạng", class: "form-label" %>
               <%= f.select :condition,
-                    options_for_select([["Mới", "new"], ["Đã sử dụng", "used"]], listing.condition),
+                    options_for_select([["Mới (New)", "new"], ["Đã sử dụng (Used)", "used"]], listing.condition),
                     { include_blank: "Chọn tình trạng" },
                     class: "form-select" %>
             </div>
           </div>
 
-          <div class="mt-3">
-            <%= f.label :seller_note, "Mô tả chi tiết", class: "form-label" %>
-            <%= f.text_area :seller_note, rows: 6, class: "form-control", placeholder: "Mô tả sản phẩm và phụ kiện đi kèm..." %>
+          <div class="">
+            <%= f.label :seller_note, "Mô tả của người bán", class: "form-label" %>
+            <%= f.text_area :seller_note, rows: 5, class: "form-control", placeholder: "Mô tả kỹ về tình trạng, vết xước, phụ kiện đi kèm..." %>
           </div>
-        </div>
-      </div>
-
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <div class="fw-semibold mb-1">Hình ảnh sản phẩm</div>
-          <div class="text-muted small mb-3">Tối thiểu 1, tối đa 5 ảnh (có thể chọn nhiều ảnh).</div>
-          <%= f.file_field :images, multiple: true, class: "form-control" %>
-
-          <% if listing.images.attached? %>
-            <hr>
-            <div class="row g-2">
-              <% listing.images.each do |img| %>
-                <div class="col-4 col-md-3">
-                  <%= image_tag img, class: "img-fluid rounded border" %>
-                </div>
-              <% end %>
-            </div>
-          <% end %>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT -->
-    <div class="col-12 col-lg-5">
+    <div class="col-12 col-lg-4">
       <div class="card shadow-sm mb-3">
+        <div class="card-header fw-bold bg-white">
+          <i class="bi bi-cash-coin"></i> THIẾT LẬP GIÁ
+        </div>
         <div class="card-body">
-          <div class="fw-semibold mb-2">Thiết lập bán hàng</div>
-
           <div class="row g-3">
-            <div class="col-12 col-md-6">
-              <%= f.label :start_price, "Giá khởi điểm (VND)", class: "form-label" %>
-              <%= f.number_field :start_price, class: "form-control", step: "0.01", placeholder: "VD: 1000000" %>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <%= f.label :published_at, "Thời điểm đăng lên trang chủ (tuỳ chọn)", class: "form-label" %>
-              <%= f.datetime_local_field :published_at, class: "form-control" %>
-              <div class="form-text">Để trống nếu chưa muốn hiển thị ở trang chủ.</div>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <%= f.label :auction_ends_at, "Kết thúc đấu giá", class: "form-label" %>
-              <%= f.datetime_local_field :auction_ends_at, class: "form-control" %>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <%= f.label :bid_increment, "Bước giá tối thiểu (VND)", class: "form-label" %>
-              <%= f.number_field :bid_increment, class: "form-control", step: "0.01", placeholder: "VD: 50000" %>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <%= f.label :reserve_price, "Giá dự phòng (tuỳ chọn)", class: "form-label" %>
-              <%= f.number_field :reserve_price, class: "form-control", step: "0.01", placeholder: "Không bắt buộc" %>
+            <div class="col-12">
+              <%= f.label :start_price, "Giá khởi điểm (VND)", class: "form-label fw-bold text-success" %>
+              <%= f.number_field :start_price, class: "form-control border-success", step: "1000", placeholder: "VD: 1,000,000" %>
             </div>
 
             <div class="col-12">
-              <%= f.label :buy_now_price, "Giá mua ngay (tuỳ chọn)", class: "form-label" %>
-              <%= f.number_field :buy_now_price, class: "form-control", step: "0.01", placeholder: "VD: 5000000" %>
-              <div class="form-text">Nếu nhập giá mua ngay, người mua có thể mua ngay trước khi đấu giá kết thúc.</div>
+              <%= f.label :bid_increment, "Bước giá tối thiểu (VND)", class: "form-label" %>
+              <%= f.number_field :bid_increment, class: "form-control", step: "1000", placeholder: "VD: 50,000" %>
+            </div>
+
+            <div class="col-12">
+              <%= f.label :auction_ends_at, "Kết thúc lúc", class: "form-label" %>
+              <%= f.datetime_local_field :auction_ends_at, class: "form-control" %>
+            </div>
+
+            <hr class="my-2">
+
+            <div class="col-12">
+              <%= f.label :buy_now_price, "Giá mua ngay (Tuỳ chọn)", class: "form-label" %>
+              <%= f.number_field :buy_now_price, class: "form-control", step: "1000", placeholder: "VD: 5,000,000" %>
+              <div class="form-text small">Người mua có thể chốt đơn ngay lập tức với giá này.</div>
+            </div>
+            
+            <div class="col-12">
+              <%= f.label :reserve_price, "Giá dự phòng (Tuỳ chọn)", class: "form-label" %>
+              <%= f.number_field :reserve_price, class: "form-control", step: "1000" %>
+            </div>
+            
+            <div class="col-12">
+              <%= f.label :published_at, "Hẹn giờ đăng (Tuỳ chọn)", class: "form-label" %>
+              <%= f.datetime_local_field :published_at, class: "form-control" %>
             </div>
           </div>
 
-          <div class="d-flex gap-2 mt-3">
-            <%= f.submit submit_text, class: "btn btn-primary" %>
+          <div class="d-grid gap-2 mt-4">
+            <%= f.submit submit_text, class: "btn btn-primary btn-lg" %>
             <% if listing.persisted? %>
-              <%= link_to "Xem trước", seller_listing_path(listing), class: "btn btn-outline-primary" %>
+              <%= link_to "Xem trước tin đăng", seller_listing_path(listing), class: "btn btn-outline-secondary" %>
             <% end %>
           </div>
         </div>
@@ -121,26 +130,21 @@
       <% if listing.persisted? %>
         <div class="card shadow-sm">
           <div class="card-body">
-            <div class="fw-semibold mb-2">Kiểm định AI</div>
-            <div class="d-flex align-items-center justify-content-between">
-              <div>
-                <div class="text-muted small">Trạng thái</div>
-                <div class="fw-semibold"><%= listing.status_text %></div>
-              </div>
-
-              <div>
-                <%= button_to "Gửi kiểm định AI",
-                      submit_ai_verification_seller_listing_path(listing),
-                      method: :post,
-                      class: "btn btn-outline-secondary",
-                      disabled: listing.submitted_for_ai? %>
-              </div>
+            <div class="fw-bold mb-2 text-primary">TRẠNG THÁI KIỂM ĐỊNH AI</div>
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="badge bg-secondary p-2"><%= listing.status_text %></span>
+              
+              <%= button_to "Gửi kiểm định ngay",
+                    submit_ai_verification_seller_listing_path(listing),
+                    method: :post,
+                    class: "btn btn-sm btn-outline-primary",
+                    disabled: listing.submitted_for_ai? %>
             </div>
 
             <% if listing.ai_note.present? %>
-              <hr>
-              <div class="text-muted small mb-1">Ghi chú AI</div>
-              <div class="border rounded p-2 bg-light"><%= listing.ai_note %></div>
+              <div class="bg-light p-2 rounded border small fst-italic">
+                <i class="bi bi-robot"></i> <b>AI Note:</b> <%= listing.ai_note %>
+              </div>
             <% end %>
           </div>
         </div>
@@ -148,3 +152,86 @@
     </div>
   </div>
 <% end %>
+
+<%# --- SCRIPT XỬ LÝ LOGIC HIỂN THỊ 8 ẢNH MẪU --- %>
+<script>
+document.addEventListener("turbo:load", function() {
+  const select = document.getElementById("reference_select");
+  const container = document.getElementById("slots-container");
+  const uploadArea = document.getElementById("image-upload-area");
+
+  // Danh sách tên 8 góc chụp chuẩn (Phải khớp thứ tự Admin upload)
+  const angles = [
+    "1. Mặt trước (Front)", "2. Mặt sau (Back)", 
+    "3. Góc trái (Left)", "4. Góc phải (Right)",
+    "5. Logo (Close-up)", "6. Đáy túi (Bottom)",
+    "7. Bên trong (Inside)", "8. Code/Tem (Tag)"
+  ];
+
+  if (select) {
+    select.addEventListener("change", function() {
+      const itemId = this.value;
+      
+      // Nếu user bỏ chọn -> Ẩn khu vực ảnh
+      if (!itemId) {
+        uploadArea.classList.add("d-none");
+        return;
+      }
+
+      // Hiện khu vực ảnh & Loading
+      uploadArea.classList.remove("d-none");
+      container.innerHTML = '<div class="col-12 text-center p-4"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Đang tải bộ ảnh mẫu...</p></div>';
+
+      // Gọi API lấy ảnh
+      fetch(`/reference_items/${itemId}/preview_images`)
+        .then(res => {
+          if (!res.ok) throw new Error("Không tải được ảnh mẫu");
+          return res.json();
+        })
+        .then(data => {
+          container.innerHTML = ""; // Xóa loading
+
+          // Tạo vòng lặp 8 lần để render 8 ô
+          for (let i = 0; i < 8; i++) {
+            // Lấy link ảnh mẫu (nếu admin up thiếu thì dùng ảnh placeholder)
+            const sampleUrl = (data.images[i] && data.images[i].url) 
+              ? data.images[i].url 
+              : "https://via.placeholder.com/400x400?text=No+Reference";
+
+            const angleName = angles[i] || `Góc chụp ${i+1}`;
+
+            const html = `
+              <div class="col-6 col-md-4 col-xl-3">
+                <div class="card h-100 text-center border shadow-sm">
+                  <div class="card-header py-1 bg-secondary text-white small fw-bold text-truncate">
+                    ${angleName}
+                  </div>
+                  <div class="card-body p-2 d-flex flex-column">
+                    <div class="ratio ratio-1x1 mb-2 border rounded overflow-hidden position-relative bg-light">
+                      <img src="${sampleUrl}" class="object-fit-contain w-100 h-100">
+                      <span class="position-absolute top-0 start-0 badge bg-danger m-1 opacity-75">MẪU</span>
+                    </div>
+
+                    <div class="mt-auto">
+                       <label class="form-label small text-muted mb-1">Ảnh của bạn:</label>
+                       <input type="file" 
+                             name="listing[images][]" 
+                             class="form-control form-control-sm" 
+                             accept="image/*" 
+                             required>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          container.innerHTML = '<div class="alert alert-danger col-12">Lỗi tải ảnh mẫu. Vui lòng thử lại sau.</div>';
+        });
+    });
+  }
+});
+</script>
