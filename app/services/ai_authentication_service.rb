@@ -4,109 +4,118 @@ require 'json'
 
 class AiAuthenticationService
   def self.verify_listing!(listing)
-    # 1. Kiểm tra điều kiện đầu vào
+    # 1. Kiểm tra ảnh người dùng
     unless listing.images.attached?
-      listing.update!(
-        status: :rejected,
-        ai_note: "AI Từ chối: Không tìm thấy ảnh sản phẩm để phân tích."
-      )
+      listing.update!(status: :rejected, ai_note: "AI Từ chối: Không có ảnh sản phẩm.")
       return
     end
 
-    # 2. Cập nhật trạng thái "Đang xử lý"
+    # 2. Kiểm tra ảnh mẫu (Reference)
+    reference = listing.reference_item
+    unless reference && reference.images.attached?
+      # Nếu không có mẫu, fallback về chế độ kiểm tra chung (chỉ nhìn ảnh user)
+      listing.update!(status: :manual_review, ai_note: "Chưa có dữ liệu mẫu (Reference Images) để so sánh. Cần duyệt tay.")
+      return
+    end
+
     listing.update!(status: :submitted_for_ai)
 
-    # 3. Lấy API Key
+    # 3. Chuẩn bị dữ liệu gửi AI
     api_key = ENV['OPENAI_API_KEY']
-    if api_key.blank?
-      Rails.logger.error "MISSING OPENAI_API_KEY"
-      listing.update!(status: :manual_review, ai_note: "Lỗi hệ thống: Chưa cấu hình API Key.")
-      return
+    return if api_key.blank?
+
+    # Lấy URL ảnh từ Cloudinary (Chỉ lấy tối đa 5 ảnh mỗi loại để tiết kiệm tiền)
+    ref_urls = reference.images.first(5).map(&:url)
+    user_urls = listing.images.first(5).map(&:url)
+
+    # 4. Xây dựng nội dung Message (Phần quan trọng nhất)
+    messages_content = []
+
+    # A. Prompt hướng dẫn
+    messages_content << {
+      type: "text",
+      text: "Bạn là chuyên gia thẩm định (Authenticator). Hãy so sánh 2 nhóm ảnh dưới đây để xác thực hàng thật/giả.
+      \n- NHÓM 1: Ảnh mẫu chuẩn Authentic (Reference).
+      \n- NHÓM 2: Ảnh sản phẩm người dùng đăng bán (Cần kiểm tra).
+      \n
+      Thông tin sản phẩm: #{listing.title}.
+      Mô tả người bán: #{listing.seller_note}.
+      \n
+      Yêu cầu:
+      1. So sánh chi tiết (logo, đường may, font chữ, chất liệu) giữa Nhóm 1 và Nhóm 2.
+      2. Nếu Nhóm 2 có sai khác đáng kể so với Nhóm 1 => FAKE.
+      3. Nếu Nhóm 2 giống Nhóm 1 nhưng ảnh mờ/thiếu góc chụp => UNCERTAIN.
+      4. Nếu Nhóm 2 khớp hoàn toàn => AUTHENTIC.
+      \n
+      Trả về JSON duy nhất:
+      {
+        \"result\": \"AUTHENTIC\" | \"FAKE\" | \"UNCERTAIN\",
+        \"confidence\": (0-100),
+        \"reason\": \"Giải thích ngắn gọn tiếng Việt (tại sao giống/khác mẫu?)\"
+      }"
+    }
+
+    # B. Gửi ảnh mẫu (Reference) - Có chú thích
+    messages_content << { type: "text", text: "--- NHÓM 1: ẢNH MẪU CHUẨN (REFERENCE) ---" }
+    ref_urls.each do |url|
+      messages_content << { type: "image_url", image_url: { url: url, detail: "low" } }
     end
 
-    # 4. Lấy URL ảnh (Lấy ảnh đầu tiên)
-    # Vì dùng Cloudinary nên url sẽ là link public
-    image_url = listing.images.first.url
+    # C. Gửi ảnh người dùng (User) - Có chú thích
+    messages_content << { type: "text", text: "--- NHÓM 2: ẢNH NGƯỜI DÙNG CẦN CHECK ---" }
+    user_urls.each do |url|
+      messages_content << { type: "image_url", image_url: { url: url, detail: "low" } }
+    end
 
-    # 5. Chuẩn bị Prompt (Câu lệnh)
-    prompt_text = "Bạn là chuyên gia thẩm định hàng hiệu (Authenticator). 
-    Hãy phân tích hình ảnh sản phẩm này dựa trên tên sản phẩm: '#{listing.title}' và mô tả: '#{listing.seller_note}'.
-    
-    Hãy trả lời CHÍNH XÁC theo format JSON sau (không thêm text thừa):
-    {
-      \"result\": \"AUTHENTIC\" hoặc \"FAKE\" hoặc \"UNCERTAIN\",
-      \"confidence\": số điểm từ 0-100,
-      \"reason\": \"Giải thích ngắn gọn tiếng Việt tại sao (dưới 50 từ)\"
-    }"
-
-    # 6. Cấu hình Request gửi OpenAI (ĐÂY LÀ ĐOẠN QUAN TRỌNG ĐỂ KHÔNG BỊ LỖI 400)
+    # 5. Cấu hình Request
     uri = URI("https://api.openai.com/v1/chat/completions")
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-    http.read_timeout = 60 # Tăng thời gian chờ lên 60s
+    http.read_timeout = 120 # Chờ lâu hơn chút vì gửi nhiều ảnh
 
     request = Net::HTTP::Post.new(uri)
     request["Content-Type"] = "application/json"
     request["Authorization"] = "Bearer #{api_key}"
 
     request.body = {
-      model: "gpt-4o", # Model xịn nhất, rẻ và nhanh
+      model: "gpt-4o",
       messages: [
         {
           role: "user",
-          content: [
-            { 
-              type: "text", 
-              text: prompt_text 
-            },
-            { 
-              type: "image_url", 
-              image_url: {
-                url: image_url,
-                detail: "low" # Chọn low cho nhanh và tiết kiệm tiền
-              }
-            }
-          ]
+          content: messages_content
         }
       ],
-      max_tokens: 300,
-      temperature: 0.2, # Giảm sáng tạo để tăng độ chính xác
-      response_format: { type: "json_object" } # Bắt buộc trả về JSON chuẩn
+      max_tokens: 500,
+      temperature: 0.1,
+      response_format: { type: "json_object" }
     }.to_json
 
-    # 7. Gửi và Xử lý kết quả
+    # 6. Gửi và Xử lý
     begin
       response = http.request(request)
       
       if response.code == "200"
         body = JSON.parse(response.body)
         content = body.dig("choices", 0, "message", "content")
-        parsed_result = JSON.parse(content) # Parse JSON từ câu trả lời của AI
+        parsed = JSON.parse(content)
 
-        # Mapping kết quả từ AI sang Status của Web
-        new_status = case parsed_result["result"]
-                     when "AUTHENTIC" then :verified
+        # Mapping status
+        new_status = case parsed["result"]
+                     when "AUTHENTIC"
+                       parsed["confidence"].to_i >= 80 ? :verified : :manual_review
                      when "FAKE" then :rejected
                      else :manual_review
                      end
-        
-        # Lưu vào Database
+
         listing.update!(
           status: new_status,
-          ai_note: "Độ tin cậy: #{parsed_result['confidence']}%. #{parsed_result['reason']}"
+          ai_note: "#{parsed['result']} (#{parsed['confidence']}%): #{parsed['reason']}"
         )
       else
-        # Xử lý khi API báo lỗi (400, 401, 429...)
-        error_message = JSON.parse(response.body).dig("error", "message") rescue response.body
-        Rails.logger.error "OpenAI Error: #{error_message}"
-        listing.update!(
-          status: :manual_review, 
-          ai_note: "Lỗi kết nối AI: #{error_message}. Cần người duyệt."
-        )
+        error_msg = JSON.parse(response.body).dig("error", "message") rescue response.body
+        listing.update!(status: :manual_review, ai_note: "Lỗi API: #{error_msg}")
       end
-
     rescue => e
-      Rails.logger.error "AI Service Exception: #{e.message}"
       listing.update!(status: :manual_review, ai_note: "Lỗi xử lý: #{e.message}")
     end
   end
