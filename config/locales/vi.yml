@@ -17,6 +17,13 @@ vi:
       signed_in: "Đăng nhập thành công."
       signed_out: "Đăng xuất thành công."
       already_signed_out: "Đăng xuất thành công."
+      user:
+        signed_out: "Đăng xuất thành công."
+
+    failure:
+      already_authenticated: "Bạn đã đăng nhập rồi."
+      user:
+        already_authenticated: "Bạn đã đăng nhập rồi."
 
   buttons:
     new_listing: "Tạo tin mới"
@@ -60,6 +67,23 @@ vi:
       forbidden: "Bạn không có quyền xem đơn hàng này."
     messages:
       greater_than: "Giá đặt quá thấp. Giá tối thiểu là 2200.0."
+      not_saved:
+        one: "Không thể lưu %{resource}: 1 lỗi."
+        other: "Không thể lưu %{resource}: %{count} lỗi."
+      taken: "đã được sử dụng"
+
+  activerecord:
+    attributes:
+      user:
+        email: "Email"
+        password: "Mật khẩu"
+        password_confirmation: "Xác nhận mật khẩu"
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              taken: "đã được sử dụng"
 
   labels:
     listing:
