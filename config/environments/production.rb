@@ -117,4 +117,10 @@ Rails.application.configure do
   # ]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  config.action_controller.forgery_protection_origin_check = false
+
+  # 2. Cấu hình tên miền để Rails biết đường tạo link ảnh (Fix lỗi 500)
+  # Bạn thay đúng link web của bạn vào đây (nhớ là https)
+  config.action_mailer.default_url_options = { host: "snapbid-2il0.onrender.com", protocol: "https" }
+  Rails.application.routes.default_url_options = { host: "snapbid-2il0.onrender.com", protocol: "https" }
 end

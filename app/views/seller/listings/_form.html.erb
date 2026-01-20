@@ -1,5 +1,4 @@
-<%= form_with model: listing, url: url, method: method, multipart: true, 
-              data: { turbo: false } do |f| %>
+<%= form_with model: [:seller, listing], multipart: true, data: { turbo: false } do |f| %>
   
   <%# --- PHẦN HIỂN THỊ LỖI --- %>
   <% if listing.errors.any? %>
