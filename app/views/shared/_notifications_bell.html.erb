@@ -1,10 +1,9 @@
-<div class="dropdown" data-controller="notifications-dropdown">
+<div class="dropdown position-relative" data-controller="dropdown">
   <button
     class="btn btn-light position-relative rounded-pill border"
     type="button"
     data-notifications-dropdown-target="button"
-    data-bs-toggle="dropdown"
-    data-bs-auto-close="outside"
+    data-action="click->dropdown#toggle"
     aria-expanded="false"
     style="width:40px;height:40px;"
   >
@@ -20,7 +19,7 @@
 
   <div
     class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0"
-    data-notifications-dropdown-target="menu"
+    data-dropdown-target="menu"
     style="width:min(420px, 92vw); border-radius:16px; overflow:hidden;"
   >
     <div class="d-flex align-items-center justify-content-between px-3 py-3 bg-white border-bottom">
