@@ -17,6 +17,13 @@ vi:
       signed_in: "Đăng nhập thành công."
       signed_out: "Đăng xuất thành công."
       already_signed_out: "Đăng xuất thành công."
+      user:
+        signed_out: "Đăng xuất thành công."
+
+    failure:
+      already_authenticated: "Bạn đã đăng nhập rồi."
+      user:
+        already_authenticated: "Bạn đã đăng nhập rồi."
 
   buttons:
     new_listing: "Tạo tin mới"
