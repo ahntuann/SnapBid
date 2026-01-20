@@ -2,6 +2,8 @@ class Seller::ListingsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_listing, only: %i[show edit update submit_ai_verification]
 
+  skip_before_action :verify_authenticity_token, only: [:update]
+
   def index
     tab = params[:tab].presence || "active" 
     base = current_user.listings.order(created_at: :desc)
