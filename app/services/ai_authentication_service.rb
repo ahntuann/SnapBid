@@ -4,119 +4,113 @@ require 'json'
 
 class AiAuthenticationService
   def self.verify_listing!(listing)
-    # 1. Kiểm tra ảnh người dùng
+    # 1. CHECK ẢNH USER
     unless listing.images.attached?
-      listing.update!(status: :rejected, ai_note: "AI Từ chối: Không có ảnh sản phẩm.")
+      listing.update!(status: :rejected, ai_note: "AI Từ chối: Không tìm thấy ảnh sản phẩm để kiểm tra.")
       return
     end
 
-    # 2. Kiểm tra ảnh mẫu (Reference)
+    # 2. CHECK ẢNH MẪU (REFERENCE)
     reference = listing.reference_item
     unless reference && reference.images.attached?
-      # Nếu không có mẫu, fallback về chế độ kiểm tra chung (chỉ nhìn ảnh user)
-      listing.update!(status: :manual_review, ai_note: "Chưa có dữ liệu mẫu (Reference Images) để so sánh. Cần duyệt tay.")
+      listing.update!(status: :manual_review, ai_note: "Hệ thống thiếu dữ liệu mẫu để so sánh. Vui lòng chờ nhân viên duyệt.")
       return
     end
 
     listing.update!(status: :submitted_for_ai)
-
-    # 3. Chuẩn bị dữ liệu gửi AI
     api_key = ENV['OPENAI_API_KEY']
     return if api_key.blank?
 
-    # Lấy URL ảnh từ Cloudinary (Chỉ lấy tối đa 5 ảnh mỗi loại để tiết kiệm tiền)
+    # 3. LẤY URL ẢNH (Admin đã update ảnh lên Cloudinary rồi nhé)
     ref_urls = reference.images.first(5).map(&:url)
     user_urls = listing.images.first(5).map(&:url)
 
-    # 4. Xây dựng nội dung Message (Phần quan trọng nhất)
+    # 4. CHUẨN BỊ NỘI DUNG GỬI AI (PROMPT NÂNG CẤP)
     messages_content = []
 
-    # A. Prompt hướng dẫn
-    messages_content << {
-      type: "text",
-      text: "Bạn là chuyên gia thẩm định (Authenticator). Hãy so sánh 2 nhóm ảnh dưới đây để xác thực hàng thật/giả.
-      \n- NHÓM 1: Ảnh mẫu chuẩn Authentic (Reference).
-      \n- NHÓM 2: Ảnh sản phẩm người dùng đăng bán (Cần kiểm tra).
-      \n
-      Thông tin sản phẩm: #{listing.title}.
-      Mô tả người bán: #{listing.seller_note}.
-      \n
-      Yêu cầu:
-      1. So sánh chi tiết (logo, đường may, font chữ, chất liệu) giữa Nhóm 1 và Nhóm 2.
-      2. Nếu Nhóm 2 có sai khác đáng kể so với Nhóm 1 => FAKE.
-      3. Nếu Nhóm 2 giống Nhóm 1 nhưng ảnh mờ/thiếu góc chụp => UNCERTAIN.
-      4. Nếu Nhóm 2 khớp hoàn toàn => AUTHENTIC.
-      \n
-      Trả về JSON duy nhất:
+    # --- PHẦN CHỈ ĐẠO AI (SYSTEM PROMPT) ---
+    prompt_text = <<~TEXT
+      Bạn là một Chuyên gia Thẩm định Hàng hiệu (Professional Authenticator) uy tín.
+      Nhiệm vụ của bạn là kiểm tra sản phẩm "#{listing.title}" dựa trên hình ảnh được cung cấp.
+
+      Dữ liệu đầu vào:
+      1. ẢNH MẪU CHUẨN (Reference): Đây là ảnh gốc của hãng, dùng làm tiêu chuẩn Authentic.
+      2. ẢNH SẢN PHẨM CẦN CHECK (User Upload): Ảnh thực tế do người bán chụp.
+      3. MÔ TẢ CỦA NGƯỜI BÁN: "#{listing.seller_note}" (Ví dụ: Mới 99%, có vết xước nhỏ, mất phụ kiện...)
+
+      Hãy thực hiện 2 bước đánh giá và trả về kết quả JSON (Tuyệt đối không dùng từ 'Nhóm 1', 'Nhóm 2'):
+
+      BƯỚC 1: SO SÁNH AUTH/FAKE
+      - So sánh chi tiết (logo, đường may, font chữ, form dáng) của 'ẢNH CẦN CHECK' so với 'ẢNH MẪU CHUẨN'.
+      - Nếu giống hệt hoặc chỉ khác biệt do ánh sáng/góc chụp -> AUTHENTIC.
+      - Nếu sai lệch logo, form dáng, chi tiết quan trọng -> FAKE.
+      - Nếu ảnh quá mờ, không rõ chi tiết -> UNCERTAIN.
+
+      BƯỚC 2: KIỂM TRA MÔ TẢ (Condition Check)
+      - So sánh tình trạng thực tế trong 'ẢNH CẦN CHECK' với 'MÔ TẢ CỦA NGƯỜI BÁN'.
+      - Ví dụ: Người bán bảo "Mới tinh" nhưng ảnh thấy xước/rách -> Phải báo cáo là "Không đúng mô tả".
+      - Ví dụ: Người bán bảo "Mất khóa" và ảnh đúng là không có khóa -> "Đúng mô tả".
+
+      TRẢ VỀ ĐỊNH DẠNG JSON DUY NHẤT (Tiếng Việt tự nhiên, dành cho khách hàng đọc):
       {
-        \"result\": \"AUTHENTIC\" | \"FAKE\" | \"UNCERTAIN\",
-        \"confidence\": (0-100),
-        \"reason\": \"Giải thích ngắn gọn tiếng Việt (tại sao giống/khác mẫu?)\"
-      }"
-    }
+        "result": "AUTHENTIC" | "FAKE" | "UNCERTAIN",
+        "confidence": (số nguyên 0-100),
+        "reason": "Viết một đoạn nhận xét ngắn (dưới 50 từ) như một chuyên gia nói với khách hàng. Ví dụ: 'Sản phẩm chuẩn Authentic. Các chi tiết logo và đường may khớp hoàn toàn với mẫu chính hãng. Tình trạng sản phẩm đúng như mô tả của người bán.' hoặc 'Cảnh báo: Form túi không chuẩn so với mẫu hãng, có dấu hiệu hàng giả.'"
+      }
+    TEXT
 
-    # B. Gửi ảnh mẫu (Reference) - Có chú thích
-    messages_content << { type: "text", text: "--- NHÓM 1: ẢNH MẪU CHUẨN (REFERENCE) ---" }
-    ref_urls.each do |url|
-      messages_content << { type: "image_url", image_url: { url: url, detail: "low" } }
-    end
+    messages_content << { type: "text", text: prompt_text }
 
-    # C. Gửi ảnh người dùng (User) - Có chú thích
-    messages_content << { type: "text", text: "--- NHÓM 2: ẢNH NGƯỜI DÙNG CẦN CHECK ---" }
-    user_urls.each do |url|
-      messages_content << { type: "image_url", image_url: { url: url, detail: "low" } }
-    end
+    # Gửi ảnh mẫu
+    messages_content << { type: "text", text: "--- ĐÂY LÀ ẢNH MẪU CHUẨN (REFERENCE) ---" }
+    ref_urls.each { |url| messages_content << { type: "image_url", image_url: { url: url, detail: "low" } } }
 
-    # 5. Cấu hình Request
+    # Gửi ảnh User
+    messages_content << { type: "text", text: "--- ĐÂY LÀ ẢNH SẢN PHẨM CẦN CHECK (USER UPLOAD) ---" }
+    user_urls.each { |url| messages_content << { type: "image_url", image_url: { url: url, detail: "low" } } }
+
+    # 5. GỬI REQUEST
     uri = URI("https://api.openai.com/v1/chat/completions")
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-    http.read_timeout = 120 # Chờ lâu hơn chút vì gửi nhiều ảnh
+    http.read_timeout = 120
 
     request = Net::HTTP::Post.new(uri)
     request["Content-Type"] = "application/json"
     request["Authorization"] = "Bearer #{api_key}"
 
     request.body = {
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "user",
-          content: messages_content
-        }
-      ],
+      model: "gpt-4o", # Model tốt nhất cho việc nhìn ảnh và suy luận
+      messages: [{ role: "user", content: messages_content }],
       max_tokens: 500,
-      temperature: 0.1,
+      temperature: 0.2, # Giữ mức sáng tạo thấp để nhận xét nghiêm túc
       response_format: { type: "json_object" }
     }.to_json
 
-    # 6. Gửi và Xử lý
     begin
       response = http.request(request)
-      
       if response.code == "200"
         body = JSON.parse(response.body)
-        content = body.dig("choices", 0, "message", "content")
-        parsed = JSON.parse(content)
-
-        # Mapping status
+        parsed = JSON.parse(body.dig("choices", 0, "message", "content"))
+        
+        # Mapping trạng thái cho hệ thống
         new_status = case parsed["result"]
-                     when "AUTHENTIC"
+                     when "AUTHENTIC" 
+                       # Nếu AI chắc chắn trên 80% thì mới cho Verify
                        parsed["confidence"].to_i >= 80 ? :verified : :manual_review
                      when "FAKE" then :rejected
                      else :manual_review
                      end
-
-        listing.update!(
-          status: new_status,
-          ai_note: "#{parsed['result']} (#{parsed['confidence']}%): #{parsed['reason']}"
-        )
+        
+        # Lưu lời nhận xét vào Database để hiển thị cho khách
+        final_note = "Độ tin cậy: #{parsed['confidence']}%. #{parsed['reason']}"
+        listing.update!(status: new_status, ai_note: final_note)
       else
         error_msg = JSON.parse(response.body).dig("error", "message") rescue response.body
-        listing.update!(status: :manual_review, ai_note: "Lỗi API: #{error_msg}")
+        listing.update!(status: :manual_review, ai_note: "Lỗi kết nối AI: #{error_msg}")
       end
     rescue => e
-      listing.update!(status: :manual_review, ai_note: "Lỗi xử lý: #{e.message}")
+      listing.update!(status: :manual_review, ai_note: "Lỗi xử lý hệ thống: #{e.message}")
     end
   end
 end
