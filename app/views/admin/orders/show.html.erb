@@ -48,6 +48,13 @@
               <%= @order.admin_confirmed_paid? ? l(@order.admin_confirmed_paid_at, format: :short) : "Chưa" %>
             </div>
           </div>
+
+          <div class="col-12">
+            <div class="text-muted small">Buyer received at</div>
+            <div class="fw-semibold">
+              <%= @order.received? ? l(@order.received_at, format: :short) : "Chưa xác nhận" %>
+            </div>
+          </div>
         </div>
 
         <hr>

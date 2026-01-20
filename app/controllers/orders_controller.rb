@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_order, only: [:show, :update, :mark_paid]
+  before_action :set_order, only: [:show, :update, :mark_paid, :confirm_received]
 
   def index
     @orders = current_user.orders.order(created_at: :desc)
@@ -36,6 +36,21 @@ class OrdersController < ApplicationController
 
     @order.mark_paid_by_buyer!
     redirect_to @order, notice: "Đã ghi nhận bạn đã chuyển tiền. Vui lòng chờ admin xác nhận."
+  end
+
+  def confirm_received
+    unless @order.paid?
+      redirect_to @order, alert: "Đơn hàng chưa được admin xác nhận thanh toán."
+      return
+    end
+
+    if @order.received?
+      redirect_to @order, notice: "Bạn đã xác nhận nhận được hàng trước đó."
+      return
+    end
+
+    @order.confirm_received!
+    redirect_to @order, notice: "Đã xác nhận nhận được hàng."
   end
 
   private

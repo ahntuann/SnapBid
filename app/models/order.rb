@@ -22,6 +22,14 @@ class Order < ApplicationRecord
   after_create_commit :broadcast_sold
   after_update_commit :broadcast_payment_updates
 
+  def received?
+    received_at.present?
+  end
+
+  def confirm_received!
+    update!(received_at: Time.current)
+  end
+
   def total_price
     (total.presence || price || 0).to_d
   end

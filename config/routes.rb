@@ -33,6 +33,7 @@ Rails.application.routes.draw do
   resources :orders, only: [:index, :show, :update] do
     member do
       post :mark_paid  # buyer bấm "Tôi đã chuyển tiền"
+      post :confirm_received # buyer bấm "Tôi đã nhận hàng"
     end
   end
 

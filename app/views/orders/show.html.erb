@@ -193,9 +193,26 @@
                   </div>
 
                   <div data-order-target="doneSection" class="<%= @order.paid? ? '' : 'd-none' %>">
-                    <div class="alert alert-success mb-0">
+                    <div class="alert alert-success mb-3">
                       Đơn hàng đã được xác nhận thanh toán.
                     </div>
+
+                    <% if @order.received? %>
+                      <div class="alert alert-info mb-0">
+                        Bạn đã xác nhận nhận được hàng lúc:
+                        <b><%= l(@order.received_at, format: :short) %></b>
+                      </div>
+                    <% else %>
+                      <%= button_to "Đã nhận được hàng",
+                            confirm_received_order_path(@order),
+                            method: :post,
+                            class: "btn btn-success w-100 w-sm-auto",
+                            data: { turbo_confirm: "Bạn chắc chắn đã nhận được hàng cho đơn ##{@order.id}?" } %>
+
+                      <div class="text-muted small mt-2">
+                        * Chỉ bấm khi bạn đã nhận được hàng đầy đủ.
+                      </div>
+                    <% end %>
                   </div>
 
                   <div class="mt-3">
