@@ -55,6 +55,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :reference_items, only: [] do
+    member do
+      get :preview_images
+    end
+  end
+
   devise_scope :user do
     get  "/admin/login",  to: "admin/sessions#new",     as: :admin_login
     post "/admin/login",  to: "admin/sessions#create"

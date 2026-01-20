@@ -3,13 +3,14 @@
   <%= link_to "Thêm túi mẫu mới", new_admin_reference_item_path, class: "btn btn-primary" %>
 </div>
 
-<table class="table table-bordered">
-  <thead>
+<table class="table table-bordered align-middle">
+  <thead class="table-light">
     <tr>
-      <th>Ảnh</th>
+      <th style="width: 100px;">Ảnh bìa</th>
       <th>Tên túi</th>
       <th>Hãng</th>
-      <th>Hành động</th>
+      <th>Số lượng ảnh</th>
+      <th style="width: 150px;">Hành động</th>
     </tr>
   </thead>
   <tbody>
@@ -17,16 +18,30 @@
       <tr>
         <td>
           <% if item.images.attached? %>
-            <%= image_tag item.images.first, style: "height: 50px; width: auto;" %>
+            <%# Thêm rescue để nếu ảnh lỗi link thì không sập web %>
+            <% begin %>
+              <%= image_tag item.images.first, class: "rounded border", style: "height: 60px; width: 60px; object-fit: cover;" %>
+            <% rescue %>
+              <span class="badge bg-danger">Lỗi ảnh</span>
+            <% end %>
           <% else %>
-            Không có ảnh
+            <span class="text-muted small">No Image</span>
           <% end %>
         </td>
-        <td><%= item.name %></td>
+        <td class="fw-semibold"><%= item.name %></td>
         <td><%= item.brand %></td>
         <td>
-          <%= link_to "Sửa", edit_admin_reference_item_path(item), class: "btn btn-sm btn-warning" %>
-          <%= link_to "Xoá", admin_reference_item_path(item), data: { turbo_method: :delete, turbo_confirm: "Chắc chưa?" }, class: "btn btn-sm btn-danger" %>
+          <% if item.images.count == 8 %>
+            <span class="badge bg-success">Đủ 8 ảnh</span>
+          <% else %>
+            <span class="badge bg-warning text-dark"><%= item.images.count %>/8 ảnh</span>
+          <% end %>
+        </td>
+        <td>
+          <%= link_to "Sửa", edit_admin_reference_item_path(item), class: "btn btn-sm btn-outline-primary" %>
+          
+          <%# Đổi method delete thành button_to để an toàn hơn với Turbo %>
+          <%= button_to "Xoá", admin_reference_item_path(item), method: :delete, form: { data: { turbo_confirm: "Bạn chắc chắn muốn xoá mẫu này?" } }, class: "btn btn-sm btn-outline-danger mt-1" %>
         </td>
       </tr>
     <% end %>

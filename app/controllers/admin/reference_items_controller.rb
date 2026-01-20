@@ -18,9 +18,16 @@ class Admin::ReferenceItemsController < Admin::BaseController
     end
   end
 
-  def edit; end
+  def edit
+    # Rails tự động tìm view 'edit.html.erb'
+  end
 
   def update
+    # Logic: Nếu admin up ảnh mới -> Xóa sạch ảnh cũ để thay thế (đảm bảo đúng thứ tự 8 ảnh)
+    if params[:reference_item][:images].present?
+      @item.images.purge # Xóa ảnh cũ
+    end
+
     if @item.update(item_params)
       redirect_to admin_reference_items_path, notice: "Đã cập nhật túi mẫu!"
     else
