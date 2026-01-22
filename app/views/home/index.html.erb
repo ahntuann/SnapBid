@@ -59,27 +59,37 @@
     <% @listings.each do |listing| %>
       <div class="col-12 col-sm-6 col-lg-3">
         <%= link_to listing_path(listing), class: "text-decoration-none text-dark" do %>
-          <div class="card shadow-sm h-100 border-0">
-            <div class="card-body">
-              <% if listing.images.attached? %>
+          <div class="card shadow-sm h-100 border-0 position-relative"> <div class="position-absolute top-0 end-0 p-2" style="z-index: 10;">
+              <% if listing.ai_verified? %>
+                <span class="badge bg-success bg-opacity-75 backdrop-blur shadow-sm">
+                  <i class="bi bi-patch-check-fill"></i> Đã xác thực
+                </span>
+              <% else %>
+                <span class="badge bg-secondary bg-opacity-75 backdrop-blur shadow-sm">
+                  Chưa xác thực
+                </span>
+              <% end %>
+            </div>
+            <div class="card-body p-0"> <% if listing.images.attached? %>
                 <%= image_tag listing.images.first.variant(resize_to_fill: [900, 900]),
-                      class: "sb-cover",
+                      class: "sb-cover card-img-top", # Thêm card-img-top
                       loading: "lazy" %>
               <% else %>
-                <div class="sb-cover d-flex align-items-center justify-content-center text-muted">
+                <div class="sb-cover d-flex align-items-center justify-content-center text-muted bg-light card-img-top">
                   <i class="bi bi-image fs-3"></i>
                 </div>
               <% end %>
 
-              <div class="mt-2 fw-semibold text-truncate"><%= listing.title %></div>
+              <div class="p-3"> <div class="mt-0 fw-semibold text-truncate"><%= listing.title %></div>
 
-              <div class="text-primary fw-semibold small mt-1">
-                <%= t("ui.listing.start_price") %>:
-                <%= listing.start_price.present? ? number_to_currency(listing.start_price, unit: "₫", precision: 0) : "—" %>
-              </div>
+                <div class="text-primary fw-semibold small mt-1">
+                  <%= t("ui.listing.start_price") %>:
+                  <%= listing.start_price.present? ? number_to_currency(listing.start_price, unit: "₫", precision: 0) : "—" %>
+                </div>
 
-              <div class="text-muted small mt-1">
-                <%= listing.category.presence || "—" %> • <%= listing.condition.presence || "—" %>
+                <div class="text-muted small mt-1">
+                  <%= listing.category.presence || "—" %> • <%= listing.condition.presence || "—" %>
+                </div>
               </div>
             </div>
           </div>
