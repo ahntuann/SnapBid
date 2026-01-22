@@ -1,26 +1,29 @@
 <div class="container" style="max-width: 1100px;">
-  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-    <div class="fw-semibold fs-4">Các sản phẩm đấu giá</div>
+  
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+    <h1 class="fw-semibold fs-4 mb-0">Các sản phẩm đấu giá</h1>
 
-    <form method="get" action="<%= root_path %>" class="d-flex gap-2 flex-wrap flex-grow-1 justify-content-end">
+    <form method="get" action="<%= root_path %>" class="d-flex gap-2 flex-wrap flex-grow-1 justify-content-md-end">
       <input type="text"
              name="q"
              value="<%= @q %>"
              placeholder="<%= t("home.search_placeholder") %>"
              class="form-control"
-             style="max-width: 420px;" />
+             style="max-width: 420px; min-width: 200px;" />
 
-      <select name="sort" class="form-select" style="max-width: 180px;">
+      <select name="sort" class="form-select w-auto">
         <option value="newest" <%= "selected" if @sort=="newest" %>><%= t("home.filters.newest") %></option>
         <option value="price_asc" <%= "selected" if @sort=="price_asc" %>><%= t("home.filters.price_asc") %></option>
         <option value="price_desc" <%= "selected" if @sort=="price_desc" %>><%= t("home.filters.price_desc") %></option>
       </select>
 
-      <button type="submit" class="btn btn-primary">Tìm</button>
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-search"></i>
+      </button>
     </form>
   </div>
 
-  <div class="card shadow-sm mb-3 home-filter-card">
+  <div class="card shadow-sm mb-4 home-filter-card bg-light border-0">
     <div class="card-body">
       <form method="get" action="<%= root_path %>" class="row g-2 align-items-end">
         <input type="hidden" name="q" value="<%= @q %>">
@@ -28,7 +31,7 @@
 
         <div class="col-12 col-md-4">
           <label class="form-label small text-muted mb-1"><%= t("home.filters.category") %></label>
-          <select name="category_id" class="form-select">
+          <select name="category_id" class="form-select form-select-sm">
             <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.category") %></option>
             <% @categories.each do |cat| %>
               <option value="<%= cat.id %>" <%= "selected" if @category_id.to_s == cat.id.to_s %>>
@@ -40,7 +43,7 @@
 
         <div class="col-12 col-md-4">
           <label class="form-label small text-muted mb-1"><%= t("home.filters.condition") %></label>
-          <select name="condition" class="form-select">
+          <select name="condition" class="form-select form-select-sm">
             <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.condition") %></option>
             <% @conditions.each do |c| %>
               <option value="<%= c %>" <%= "selected" if @condition==c %>><%= c %></option>
@@ -49,51 +52,63 @@
         </div>
 
         <div class="col-12 col-md-4 d-flex gap-2">
-          <button type="submit" class="btn btn-outline-secondary flex-grow-1">Lọc</button>
-          <a href="<%= root_path %>" class="btn btn-light border flex-grow-1">Làm mới</a>
+          <button type="submit" class="btn btn-dark btn-sm flex-grow-1">Lọc kết quả</button>
+          <a href="<%= root_path %>" class="btn btn-outline-secondary btn-sm flex-grow-1">Làm mới</a>
         </div>
       </form>
     </div>
   </div>
 
-  <div class="home-filter-spacer d-md-none"></div>
-
-  <!-- GRID: mobile 1 card/row, tablet 2, desktop 4 -->
   <div class="row g-3">
     <% @listings.each do |listing| %>
       <div class="col-12 col-sm-6 col-lg-3">
-        <%= link_to listing_path(listing), class: "text-decoration-none text-dark" do %>
-          <div class="card shadow-sm h-100 border-0 position-relative"> <div class="position-absolute top-0 end-0 p-2" style="z-index: 10;">
+        <%= link_to listing_path(listing), class: "text-decoration-none text-dark h-100 d-block" do %>
+          <div class="card shadow-sm h-100 border-0 position-relative overflow-hidden">
+            
+            <div class="position-absolute top-0 end-0 p-2" style="z-index: 10;">
               <% if listing.ai_verified? %>
-                <span class="badge bg-success bg-opacity-75 backdrop-blur shadow-sm">
-                  <i class="bi bi-patch-check-fill"></i> Xác minh bởi AI
+                <span class="badge bg-success bg-opacity-75 backdrop-blur shadow-sm border border-success border-opacity-25">
+                  <i class="bi bi-patch-check-fill"></i> AI Verified
                 </span>
               <% else %>
-                <span class="badge bg-secondary bg-opacity-75 backdrop-blur shadow-sm">
+                <span class="badge bg-light text-secondary backdrop-blur shadow-sm border">
                   Chưa xác thực
                 </span>
               <% end %>
             </div>
-            <div class="card-body p-0"> <% if listing.images.attached? %>
-                <%= image_tag listing.images.first.variant(resize_to_fill: [900, 900]),
-                      class: "sb-cover card-img-top", # Thêm card-img-top
-                      loading: "lazy" %>
-              <% else %>
-                <div class="sb-cover d-flex align-items-center justify-content-center text-muted bg-light card-img-top">
-                  <i class="bi bi-image fs-3"></i>
-                </div>
-              <% end %>
 
-              <div class="p-3"> <div class="mt-0 fw-semibold text-truncate"><%= listing.title %></div>
-
-                <div class="text-primary fw-semibold small mt-1">
-                  <%= t("ui.listing.start_price") %>:
-                  <%= listing.start_price.present? ? number_to_currency(listing.start_price, unit: "₫", precision: 0) : "—" %>
-                </div>
-
-              <div class="text-muted small mt-1">
-                <%= listing.category&.name.presence || "—" %> • <%= listing.condition.presence || "—" %>
+            <div class="card-body p-0 d-flex flex-column">
+              <div class="ratio ratio-1x1 bg-light text-center">
+                <% if listing.images.attached? %>
+                  <%= image_tag listing.images.first.variant(resize_to_fill: [600, 600]),
+                        class: "w-100 h-100 object-fit-cover",
+                        loading: "lazy" %>
+                <% else %>
+                  <div class="d-flex align-items-center justify-content-center text-muted w-100 h-100">
+                    <i class="bi bi-image fs-1 opacity-25"></i>
+                  </div>
+                <% end %>
               </div>
+
+              <div class="p-3 d-flex flex-column flex-grow-1">
+                <div class="fw-semibold text-truncate mb-1" title="<%= listing.title %>">
+                  <%= listing.title %>
+                </div>
+
+                <div class="text-primary fw-bold mb-1">
+                  <%= listing.start_price.present? ? number_to_currency(listing.start_price, unit: "₫", precision: 0) : "Liên hệ" %>
+                </div>
+
+                <div class="mt-auto pt-2 border-top small text-muted d-flex justify-content-between align-items-center">
+                  <span class="text-truncate" style="max-width: 60%;">
+                    <%= listing.category.respond_to?(:name) ? listing.category&.name : (listing.category.presence || "Khác") %>
+                  </span>
+                  <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 rounded-pill">
+                    <%= listing.condition.presence || "Used" %>
+                  </span>
+                </div>
+              </div>
+
             </div>
           </div>
         <% end %>
@@ -101,7 +116,7 @@
     <% end %>
   </div>
 
-  <div class="d-flex justify-content-center mt-4">
+  <div class="d-flex justify-content-center mt-5 mb-4">
     <%= paginate @listings %>
   </div>
 </div>
