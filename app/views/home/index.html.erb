@@ -20,7 +20,7 @@
     </form>
   </div>
 
-  <div class="card shadow-sm mb-3">
+  <div class="card shadow-sm mb-3 home-filter-card">
     <div class="card-body">
       <form method="get" action="<%= root_path %>" class="row g-2 align-items-end">
         <input type="hidden" name="q" value="<%= @q %>">
@@ -28,10 +28,12 @@
 
         <div class="col-12 col-md-4">
           <label class="form-label small text-muted mb-1"><%= t("home.filters.category") %></label>
-          <select name="category" class="form-select">
+          <select name="category_id" class="form-select">
             <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.category") %></option>
-            <% @categories.each do |c| %>
-              <option value="<%= c %>" <%= "selected" if @category==c %>><%= c %></option>
+            <% @categories.each do |cat| %>
+              <option value="<%= cat.id %>" <%= "selected" if @category_id.to_s == cat.id.to_s %>>
+                <%= cat.name %>
+              </option>
             <% end %>
           </select>
         </div>
@@ -53,6 +55,8 @@
       </form>
     </div>
   </div>
+
+  <div class="home-filter-spacer d-md-none"></div>
 
   <!-- GRID: mobile 1 card/row, tablet 2, desktop 4 -->
   <div class="row g-3">
@@ -87,9 +91,8 @@
                   <%= listing.start_price.present? ? number_to_currency(listing.start_price, unit: "₫", precision: 0) : "—" %>
                 </div>
 
-                <div class="text-muted small mt-1">
-                  <%= listing.category.presence || "—" %> • <%= listing.condition.presence || "—" %>
-                </div>
+              <div class="text-muted small mt-1">
+                <%= listing.category&.name.presence || "—" %> • <%= listing.condition.presence || "—" %>
               </div>
             </div>
           </div>

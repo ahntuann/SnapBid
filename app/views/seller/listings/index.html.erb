@@ -48,7 +48,7 @@
                     <%= link_to listing.title, seller_listing_path(listing), class: "text-decoration-none" %>
                   </div>
                   <div class="text-muted small">
-                    <%= listing.category.presence || "Chưa có danh mục" %> •
+                    <%= listing.category&.name.presence || "Chưa có danh mục" %> •
                     <%= listing.condition.presence || "Chưa có tình trạng" %>
                   </div>
                 </div>

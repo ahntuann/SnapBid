@@ -4,6 +4,30 @@
  */
 .hidden { display: none !important; }
 
+.notifications-menu {
+  width: min(420px, 92vw);
+  border-radius: 16px;
+  overflow: hidden;
+
+  /* ép luôn mở sang trái */
+  right: 0 !important;
+  left: auto !important;
+  transform: translateX(0) !important;
+
+  /* luôn nổi trên navbar + content */
+  z-index: 1080;
+}
+
+/* mobile + màn hình hẹp */
+@media (max-width: 576px) {
+  .notifications-menu {
+    width: calc(100vw - 16px);
+    right: 8px !important;
+  }
+}
+
+
+
 /* nice defaults */
 body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 a { text-decoration: none; }
@@ -85,4 +109,19 @@ a:hover { text-decoration: underline; }
 
 .pagination .page-item.active .page-link {
   color: #fff;
+}
+
+.home-filter-card,
+.home-filter-card .card-body {
+  overflow: visible !important;
+}
+
+.home-filter-card {
+  position: relative;
+  z-index: 10;
+}
+
+.home-filter-spacer { height: 260px; }
+@media (min-width: 768px) {
+  .home-filter-spacer { height: 0; }
 }
