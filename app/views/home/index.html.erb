@@ -59,23 +59,17 @@
     <% @listings.each do |listing| %>
       <div class="col-12 col-sm-6 col-lg-3">
         <%= link_to listing_path(listing), class: "text-decoration-none text-dark" do %>
-          <div class="card shadow-sm h-100 border-0 position-relative">
-            
-            <div class="position-absolute top-0 end-0 p-2" style="z-index: 10;">
+          <div class="card shadow-sm h-100 border-0 position-relative"> <div class="position-absolute top-0 end-0 p-2" style="z-index: 10;">
               <% if listing.ai_verified? %>
-                <span class="badge bg-success bg-opacity-75 backdrop-blur shadow-sm border border-success border-opacity-25">
-                  <i class="bi bi-robot me-1"></i> Xác minh bởi AI
+                <span class="badge bg-success bg-opacity-75 backdrop-blur shadow-sm">
+                  <i class="bi bi-patch-check-fill"></i> Xác minh bởi AI
                 </span>
               <% else %>
                 <span class="badge bg-secondary bg-opacity-75 backdrop-blur shadow-sm">
-                  <i class="bi bi-question-circle me-1"></i> Chưa xác minh
+                  Chưa xác thực
                 </span>
               <% end %>
             </div>
-            
-            <div class="card-body p-0">
-              </div>
-          </div>
             <div class="card-body p-0"> <% if listing.images.attached? %>
                 <%= image_tag listing.images.first.variant(resize_to_fill: [900, 900]),
                       class: "sb-cover card-img-top", # Thêm card-img-top
