@@ -25,6 +25,6 @@ class Admin::SessionsController < ApplicationController
 
   def destroy
     sign_out(current_user) if user_signed_in?
-    redirect_to admin_login_path, notice: "Đã đăng xuất."
+    redirect_to root_path, notice: "Đã đăng xuất."
   end
 end
