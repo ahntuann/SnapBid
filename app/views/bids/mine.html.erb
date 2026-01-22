@@ -1,0 +1,107 @@
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+  <div>
+    <h1 class="display-6 fw-semibold mb-1">Đấu giá của tôi</h1>
+    <div class="text-muted">Theo dõi các sản phẩm bạn đã tham gia đặt giá.</div>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th style="width:72px;"></th>
+            <th>Sản phẩm</th>
+            <th class="text-nowrap">Trạng thái</th>
+            <th class="text-nowrap">Giá cao nhất của bạn</th>
+            <th class="text-nowrap">Giá cao nhất hiện tại</th>
+            <th class="text-nowrap">Kết thúc lúc</th>
+            <th class="text-end">Thao tác</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @listings.each do |listing| %>
+            <% my_max  = listing.bids.where(user_id: current_user.id).maximum(:amount) || 0 %>
+            <% top_bid = listing.bids.maximum(:amount) || 0 %>
+
+            <% status_key, badge =
+              if listing.order.present?
+                if listing.order.buyer_id == current_user.id
+                  ["THẮNG - có đơn hàng", "text-bg-success"]
+                else
+                  ["THUA", "text-bg-secondary"]
+                end
+              elsif listing.auction_ended?
+                ["KẾT THÚC", "text-bg-dark"]
+              else
+                ["ĐANG DIỄN RA", "text-bg-primary"]
+              end
+            %>
+
+            <tr>
+              <td class="ps-3">
+                <% if listing.images.attached? %>
+                  <%= image_tag listing.images.first.variant(resize_to_fill: [112, 112]),
+                        class: "sb-thumb",
+                        loading: "lazy" %>
+                <% else %>
+                  <div class="sb-thumb d-flex align-items-center justify-content-center text-muted">
+                    <i class="bi bi-image"></i>
+                  </div>
+                <% end %>
+              </td>
+
+              <td>
+                <div class="fw-semibold">
+                  <%= link_to listing.title, listing_path(listing), class: "text-decoration-none" %>
+                </div>
+                <div class="text-muted small">
+                  <span><%= listing.category.presence || "—" %></span>
+                  <span class="mx-1">•</span>
+                  <span><%= listing.condition.presence || "—" %></span>
+                </div>
+              </td>
+
+              <td class="text-nowrap">
+                <span class="badge <%= badge %>"><%= status_key %></span>
+                <% if listing.order.present? && listing.order.buyer_id == current_user.id %>
+                  <span class="badge text-bg-light border ms-1">Order #<%= listing.order.id %></span>
+                <% end %>
+              </td>
+
+              <td class="text-nowrap fw-semibold">
+                <%= number_to_currency(my_max, unit: "₫", precision: 0) %>
+              </td>
+
+              <td class="text-nowrap">
+                <%= number_to_currency(top_bid, unit: "₫", precision: 0) %>
+              </td>
+
+              <td class="text-nowrap">
+                <%= listing.auction_ends_at.present? ? l(listing.auction_ends_at, format: :short) : "—" %>
+              </td>
+
+              <td class="text-end pe-3">
+                <%= link_to "Xem", listing_path(listing), class: "btn btn-outline-primary btn-sm" %>
+
+                <% if listing.order.present? && listing.order.buyer_id == current_user.id %>
+                  <%= link_to "Xem đơn", order_path(listing.order), class: "btn btn-primary btn-sm ms-1" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @listings.blank? %>
+            <tr>
+              <td colspan="7" class="text-center py-5 text-muted">
+                Bạn chưa tham gia đấu giá sản phẩm nào.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

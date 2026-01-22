@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  listing: one
+  status: 1
+  confidence: 9.99
+  reason: MyText
+  raw_response: 
+
+two:
+  listing: two
+  status: 1
+  confidence: 9.99
+  reason: MyText
+  raw_response: 

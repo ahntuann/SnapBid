@@ -1,0 +1,10 @@
+<h1>Enter OTP</h1>
+
+<%= form_with url: confirm_otp_session_path do %>
+  <div>
+    <label>OTP Code</label><br>
+    <%= text_field_tag :code %>
+  </div>
+
+  <%= submit_tag "Verify" %>
+<% end %>

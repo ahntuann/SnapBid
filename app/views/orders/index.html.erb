@@ -1,0 +1,93 @@
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+  <div>
+    <h1 class="display-6 fw-semibold mb-1">Đơn hàng của tôi</h1>
+    <div class="text-muted">Danh sách các đơn đã tạo từ “Mua ngay” hoặc thắng đấu giá.</div>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th style="width:72px;"></th>
+            <th>Đơn hàng</th>
+            <th class="text-nowrap">Loại</th>
+            <th class="text-nowrap">Trạng thái</th>
+            <th class="text-nowrap">Giá</th>
+            <th class="text-nowrap">Ngày tạo</th>
+            <th class="text-end">Thao tác</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @orders.each do |o| %>
+            <% listing = o.listing %>
+
+            <% status_badge =
+              case o.status.to_s
+              when "paid" then "text-bg-success"
+              when "pending" then "text-bg-warning"
+              else "text-bg-secondary"
+              end
+            %>
+
+            <tr>
+              <td class="ps-3">
+                <% if listing&.images&.attached? %>
+                  <%= image_tag listing.images.first.variant(resize_to_fill: [112, 112]),
+                        class: "sb-thumb",
+                        loading: "lazy" %>
+                <% else %>
+                  <div class="sb-thumb d-flex align-items-center justify-content-center text-muted">
+                    <i class="bi bi-image"></i>
+                  </div>
+                <% end %>
+              </td>
+
+              <td>
+                <div class="fw-semibold">
+                  <%= link_to "Order ##{o.id}", order_path(o), class: "text-decoration-none" %>
+                </div>
+                <div class="text-muted small">
+                  <%= listing ? listing.title : "—" %>
+                </div>
+              </td>
+
+              <td class="text-nowrap">
+                <span class="badge text-bg-light border">
+                  <%= o.kind %>
+                </span>
+              </td>
+
+              <td class="text-nowrap">
+                <span class="badge <%= status_badge %>"><%= o.status %></span>
+              </td>
+
+              <td class="text-nowrap fw-semibold">
+                <%= number_to_currency(o.price, unit: "₫", precision: 0) %>
+              </td>
+
+              <td class="text-nowrap">
+                <%= l(o.created_at, format: :short) %>
+              </td>
+
+              <td class="text-end pe-3">
+                <%= link_to "Chi tiết", order_path(o), class: "btn btn-primary btn-sm" %>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @orders.blank? %>
+            <tr>
+              <td colspan="7" class="text-center py-5 text-muted">
+                Bạn chưa có đơn hàng nào.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

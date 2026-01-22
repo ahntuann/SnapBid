@@ -1,0 +1,77 @@
+<div class="container py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+      <div class="text-muted small">Edit listing #<%= @listing.id %></div>
+      <h1 class="h3 mb-0"><%= @listing.title %></h1>
+    </div>
+    <%= link_to "Back", admin_listing_path(@listing), class: "btn btn-outline-secondary" %>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <%= form_with model: [:admin, @listing], local: true do |f| %>
+        <div class="row g-3">
+          <div class="col-12 col-lg-8">
+            <%= f.label :title, "Tiêu đề", class: "form-label" %>
+            <%= f.text_field :title, class: "form-control" %>
+          </div>
+
+          <div class="col-6 col-lg-2">
+            <%= f.label :category, "Danh mục", class: "form-label" %>
+            <%= f.text_field :category, class: "form-control" %>
+          </div>
+
+          <div class="col-6 col-lg-2">
+            <%= f.label :condition, "Tình trạng", class: "form-label" %>
+            <%= f.text_field :condition, class: "form-control" %>
+          </div>
+
+          <div class="col-12">
+            <%= f.label :seller_note, "Mô tả", class: "form-label" %>
+            <%= f.text_area :seller_note, class: "form-control", rows: 4 %>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <%= f.label :start_price, "Giá khởi điểm", class: "form-label" %>
+            <%= f.number_field :start_price, step: "0.01", class: "form-control" %>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <%= f.label :buy_now_price, "Giá mua ngay", class: "form-label" %>
+            <%= f.number_field :buy_now_price, step: "0.01", class: "form-control" %>
+          </div>
+
+          <div class="col-12 col-lg-3 d-flex align-items-end">
+            <div class="form-check">
+              <%= f.check_box :buy_now_enabled, class: "form-check-input" %>
+              <%= f.label :buy_now_enabled, "Bật mua ngay", class: "form-check-label" %>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-3">
+            <%= f.label :auction_ends_at, "Kết thúc lúc", class: "form-label" %>
+            <%= f.datetime_field :auction_ends_at, class: "form-control" %>
+          </div>
+
+          <div class="col-12 col-lg-4">
+            <%= f.label :published_at, "Published at", class: "form-label" %>
+            <%= f.datetime_field :published_at, class: "form-control" %>
+            <div class="form-text">Để trống = chưa publish.</div>
+          </div>
+
+          <% if @listing.respond_to?(:ai_status) %>
+            <div class="col-12 col-lg-4">
+              <%= f.label :ai_status, "AI status", class: "form-label" %>
+              <%= f.select :ai_status, [["verified","verified"],["rejected","rejected"],["uncertain","uncertain"]], {}, class: "form-select" %>
+            </div>
+          <% end %>
+
+          <div class="col-12 d-flex gap-2">
+            <%= f.submit "Lưu", class: "btn btn-primary" %>
+            <%= link_to "Hủy", admin_listing_path(@listing), class: "btn btn-outline-secondary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

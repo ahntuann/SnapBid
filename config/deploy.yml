@@ -1,0 +1,52 @@
+service: snapbid
+image: ahntuan/snapbid
+
+servers:
+  web:
+    hosts:
+      - 103.200.23.123
+
+proxy:
+  app_port: 3000
+  healthcheck:
+    path: /up
+    interval: 5
+
+# Bắt buộc cho chip Intel/AMD trên VPS
+builder:
+  arch: amd64
+
+registry:
+  server: index.docker.io
+  username: ahntuan
+  # Đọc token từ file .env
+  password: <%= ENV["KAMAL_REGISTRY_PASSWORD"] %>
+
+env:
+  clear:
+    # Cấu hình Database & Redis
+    DB_HOST: 103.200.23.123
+    REDIS_URL: redis://103.200.23.123:6379/1
+
+    # Các biến cấu hình chung
+    ADMIN_QR_PAYLOAD: "BANK:XXX|ACC:123456789|NAME:SNAPBID ADMIN"
+    AI_MOCK: "false"
+    APP_HOST: "snapbid.io.vn"
+    RAILS_SERVE_STATIC_FILES: "true"
+    WEB_CONCURRENCY: "2"
+
+    # Cấu hình Mail & QR
+    MAIL_FROM: "thieuphong2402@gmail.com"
+    SMTP_USER: "a079f2001@smtp-brevo.com"
+    VIETQR_ACCOUNT: "00000103607"
+    VIETQR_BANK: "TPB"
+    VIETQR_NAME: "BUI THI THANH VAN"
+
+    # --- CÁC BIẾN MẬT LẤY TỪ FILE .ENV ---
+    POSTGRES_PASSWORD: <%= ENV["POSTGRES_PASSWORD"] %>
+    RAILS_MASTER_KEY: <%= ENV["RAILS_MASTER_KEY"] %>
+    CLOUDINARY_URL: <%= ENV["CLOUDINARY_URL"] %>
+    GOOGLE_CLIENT_ID: <%= ENV["GOOGLE_CLIENT_ID"] %>
+    GOOGLE_CLIENT_SECRET: <%= ENV["GOOGLE_CLIENT_SECRET"] %>
+    OPENAI_API_KEY: <%= ENV["OPENAI_API_KEY"] %>
+    SMTP_PASS: <%= ENV["SMTP_PASS"] %>

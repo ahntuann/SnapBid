@@ -1,0 +1,6 @@
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h1 class="h3 mb-0">Đăng bán sản phẩm</h1>
+  <%= link_to "Quay lại", seller_listings_path, class: "btn btn-outline-secondary" %>
+</div>
+
+<%= render "form", listing: @listing, url: seller_listings_path, method: :post, submit_text: "Tạo sản phẩm" %>

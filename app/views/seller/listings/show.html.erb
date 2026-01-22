@@ -1,0 +1,137 @@
+<% content_for :title, "#{@listing.title} - SnapBid" %>
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <nav class="small text-muted mb-1">
+      <%= link_to "Sản phẩm của tôi", seller_listings_path, class: "text-decoration-none" %>
+      <span class="mx-1">/</span>
+      <span>Chi tiết</span>
+    </nav>
+    <h1 class="h3 mb-0"><%= @listing.title %></h1>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= link_to "Chỉnh sửa", edit_seller_listing_path(@listing, step: 1), class: "btn btn-outline-primary" %>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- LEFT: Images -->
+  <div class="col-12 col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="fw-semibold">Hình ảnh</div>
+          <div class="text-muted small"><%= @listing.images.count %> ảnh</div>
+        </div>
+
+        <% if @listing.images.attached? %>
+          <div class="row g-2">
+            <% @listing.images.each do |img| %>
+              <div class="col-6 col-md-4">
+                <%= image_tag url_for(img),
+                      class: "img-fluid rounded border",
+                      style: "aspect-ratio: 1/1; object-fit: cover;" %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="border rounded-4 p-4 text-center bg-light text-muted">
+            Chưa có ảnh. Hãy vào “Chỉnh sửa” để tải ảnh lên.
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Info -->
+  <div class="col-12 col-lg-5">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <div class="fw-semibold mb-2">Trạng thái</div>
+
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <span class="badge text-bg-light border">
+            <%= @listing.status_text %>
+          </span>
+
+          <% if @listing.published_at.present? %>
+            <span class="badge text-bg-success">Đã lên trang chủ</span>
+          <% else %>
+            <span class="badge text-bg-secondary">Chưa lên trang chủ</span>
+          <% end %>
+        </div>
+
+        <div class="small text-muted">Published at</div>
+        <div class="fw-semibold">
+          <%= @listing.published_at.present? ? l(@listing.published_at, format: :short) : "—" %>
+        </div>
+
+        <hr>
+
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="small text-muted">Danh mục</div>
+            <div class="fw-semibold"><%= @listing.category.presence || "—" %></div>
+          </div>
+
+          <div class="col-6">
+            <div class="small text-muted">Tình trạng</div>
+            <div class="fw-semibold"><%= @listing.condition.presence || "—" %></div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="small text-muted mb-1">Mô tả</div>
+        <div class="border rounded-3 p-3 bg-light">
+          <%= simple_format(@listing.seller_note.presence || "—") %>
+        </div>
+
+        <hr>
+
+        <div class="fw-semibold mb-2">Thiết lập bán</div>
+
+        <div class="row g-2">
+          <div class="col-6">
+            <div class="small text-muted">Giá khởi điểm</div>
+            <div class="fw-semibold"><%= @listing.start_price.present? ? number_to_currency(@listing.start_price, unit: "₫", precision: 0) : "—" %></div>
+          </div>
+
+          <div class="col-6">
+            <div class="small text-muted">Bước giá</div>
+            <div class="fw-semibold"><%= @listing.bid_increment.present? ? number_to_currency(@listing.bid_increment, unit: "₫", precision: 0) : "—" %></div>
+          </div>
+
+          <div class="col-12">
+            <div class="small text-muted">Kết thúc đấu giá</div>
+            <div class="fw-semibold"><%= @listing.auction_ends_at.present? ? l(@listing.auction_ends_at, format: :short) : "—" %></div>
+          </div>
+
+          <div class="col-12">
+            <div class="small text-muted">Giá mua ngay</div>
+            <div class="fw-semibold"><%= @listing.buy_now_price.present? ? number_to_currency(@listing.buy_now_price, unit: "₫", precision: 0) : "—" %></div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="small text-muted mb-1">Ghi chú AI</div>
+        <div class="border rounded-3 p-3 bg-light">
+          <%= simple_format(@listing.ai_note.presence || "—") %>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 justify-content-end mt-3">
+          <%= link_to "Quay lại", seller_listings_path, class: "btn btn-outline-secondary" %>
+
+          <%# AI verify: bạn có thể giới hạn chỉ khi draft/manual_review %>
+          <%= button_to "Gửi AI xác thực",
+                submit_ai_verification_seller_listing_path(@listing),
+                method: :post,
+                class: "btn btn-outline-dark" %>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

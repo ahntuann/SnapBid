@@ -1,0 +1,10 @@
+<% if resource.errors.any? %>
+  <div class="alert alert-danger d-flex align-items-start" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <ul class="mb-0 list-unstyled">
+      <% resource.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

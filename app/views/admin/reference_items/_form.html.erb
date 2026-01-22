@@ -1,0 +1,80 @@
+<%= form_with model: [:admin, item], local: true do |f| %>
+  <% if item.errors.any? %>
+    <div class="alert alert-danger">
+      <ul>
+        <% item.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <%= f.label :name, "Tên túi (Chính xác)", class: "form-label" %>
+        <%= f.text_field :name, class: "form-control", required: true, placeholder: "VD: Lady Dior Medium..." %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :brand, "Hãng", class: "form-label" %>
+        <%= f.text_field :brand, class: "form-control", placeholder: "VD: Dior" %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :description, "Mô tả chuẩn Auth (AI sẽ dựa vào đây để so sánh)", class: "form-label" %>
+        <%= f.text_area :description, rows: 5, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card bg-light border-warning">
+        <div class="card-header fw-bold text-warning-emphasis">
+          <i class="bi bi-images"></i> QUY ĐỊNH UPLOAD ẢNH (BẮT BUỘC)
+        </div>
+        <div class="card-body">
+          <p class="small text-muted mb-2">
+            Hệ thống yêu cầu Seller chụp 8 góc độ. Admin vui lòng <b>chọn 8 ảnh cùng lúc</b> theo đúng thứ tự sau để làm mẫu:
+          </p>
+          <ol class="small fw-semibold mb-3">
+            <li>Mặt trước</li>
+            <li>Mặt sau</li>
+            <li>Góc trái</li>
+            <li>Góc phải</li>
+            <li>Logo chi tiết</li>
+            <li>Đáy túi</li>
+            <li>Bên trong</li>
+            <li>Phụ kiện / Code</li>
+          </ol>
+          
+          <div class="mb-3">
+            <%= f.label :images, "Chọn 8 ảnh chuẩn:", class: "form-label fw-bold" %>
+            <%= f.file_field :images, multiple: true, class: "form-control" %>
+          </div>
+
+          <% if item.images.attached? %>
+            <div class="mt-3">
+              <label class="small text-muted">Ảnh hiện tại (<%= item.images.count %> ảnh):</label>
+              <div class="d-flex flex-wrap gap-2 mt-1">
+                <% item.images.each_with_index do |img, index| %>
+                  <div class="position-relative border rounded overflow-hidden" style="width: 60px; height: 60px;">
+                    <%= image_tag img, class: "w-100 h-100 object-fit-cover" %>
+                    <span class="position-absolute top-0 start-0 bg-dark text-white text-center w-100" style="font-size: 8px; opacity: 0.8;">
+                      #<%= index + 1 %>
+                    </span>
+                  </div>
+                <% end %>
+              </div>
+              <div class="text-danger small mt-1 fst-italic">* Nếu upload mới, toàn bộ ảnh cũ sẽ bị thay thế.</div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 border-top pt-3">
+    <%= f.submit "Lưu Túi Mẫu", class: "btn btn-success" %>
+    <%= link_to "Huỷ", admin_reference_items_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>

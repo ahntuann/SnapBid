@@ -1,0 +1,88 @@
+/*
+ *= require_tree .
+ *= require_self
+ */
+.hidden { display: none !important; }
+
+/* nice defaults */
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+a { text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.gallery-thumb {
+  width: 92px;
+  height: 66px;
+  opacity: 0.85;
+  transition: all 120ms ease;
+}
+
+.gallery-thumb:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.gallery-thumb.active {
+  outline: 2px solid #0d6efd;
+  opacity: 1;
+}
+
+/* Pagination (Kaminari / WillPaginate basic) */
+.pagination {
+  margin: 0;
+  gap: 6px;
+}
+.pagination .page a,
+.pagination .page span,
+.pagination .first a,
+.pagination .prev a,
+.pagination .next a,
+.pagination .last a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #111827;
+  text-decoration: none;
+}
+.pagination .current {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+.pagination a:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+/* Thumbnail image helper */
+.sb-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  background: #f3f4f6;
+}
+
+/* Card image ratio for home */
+.sb-cover {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 16px;
+  background: #f3f4f6;
+}
+
+.pagination .page-link {
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.pagination .page-item.active .page-link {
+  color: #fff;
+}
