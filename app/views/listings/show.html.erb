@@ -28,7 +28,23 @@
 
       <!-- Gallery (ảnh lớn + thumbnails) -->
       <div data-controller="gallery">
-        <div class="rounded-4 border bg-white overflow-hidden">
+        <div class="rounded-4 border bg-white overflow-hidden position-relative">
+          
+          <div class="position-absolute top-0 end-0 p-3" style="z-index: 10;">
+            <% if @listing.ai_verified? %>
+              <span class="badge bg-success bg-opacity-75 backdrop-blur shadow py-2 px-3 border border-success border-opacity-25">
+                <i class="bi bi-stars me-1"></i> Xác minh bởi AI
+              </span>
+            <% else %>
+              <span class="badge bg-secondary bg-opacity-75 backdrop-blur shadow py-2 px-3">
+                <i class="bi bi-shield-exclamation me-1"></i> Chưa xác minh
+              </span>
+            <% end %>
+          </div>
+
+          <div class="ratio ratio-4x3 bg-light">
+            </div>
+        </div>
           <div class="ratio ratio-4x3 bg-light">
             <% if @listing.images.attached? %>
               <img

@@ -43,7 +43,7 @@ class Listing < ApplicationRecord
   # --- Auction helpers ---
 
   def ai_verified?
-    reference_item.present?
+    verified?
   end
 
   def published?
