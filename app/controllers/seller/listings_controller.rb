@@ -77,10 +77,10 @@ class Seller::ListingsController < ApplicationController
 
   def listing_params
     params.require(:listing).permit(
-      :title, :category, :condition, :seller_note, :published_at,
+      :title, :category_id, :condition, :seller_note, :published_at,
       :start_price, :auction_ends_at, :bid_increment, :reserve_price, :buy_now_price,
       :reference_item_id,
-      images: [] # Cho phép nhận mảng ảnh
+      images: []
     )
   end
 end

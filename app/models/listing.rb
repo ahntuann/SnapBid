@@ -1,6 +1,7 @@
 class Listing < ApplicationRecord
   belongs_to :user # seller
   belongs_to :reference_item, optional: true
+  belongs_to :category, optional: true
 
   has_many_attached :images
 

@@ -58,7 +58,7 @@
                   <%= link_to listing.title, listing_path(listing), class: "text-decoration-none" %>
                 </div>
                 <div class="text-muted small">
-                  <span><%= listing.category.presence || "—" %></span>
+                  <span><%= listing.category&.name.presence || "—" %></span>
                   <span class="mx-1">•</span>
                   <span><%= listing.condition.presence || "—" %></span>
                 </div>

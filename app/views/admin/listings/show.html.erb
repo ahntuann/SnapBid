@@ -38,7 +38,7 @@
           <div class="row g-2">
             <div class="col-6">
               <div class="text-muted small">Category</div>
-              <div class="fw-semibold"><%= @listing.category.presence || "-" %></div>
+              <div class="fw-semibold"><%= @listing.category&.name.presence || "-" %></div>
             </div>
             <div class="col-6">
               <div class="text-muted small">Condition</div>

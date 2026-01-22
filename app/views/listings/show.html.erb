@@ -12,7 +12,7 @@
   <nav class="small text-muted mb-3">
     <%= link_to "Home", root_path, class: "text-decoration-none" %>
     <span class="mx-1">/</span>
-    <%= link_to(@listing.category.presence || "Danh mục", "#", class: "text-decoration-none") %>
+    <%= link_to(@listing.category&.name.presence || "Danh mục", "#", class: "text-decoration-none") %>
   </nav>
 
   <div class="row g-4">
@@ -21,7 +21,7 @@
       <h1 class="h3 fw-semibold mb-2"><%= @listing.title %></h1>
 
       <div class="text-muted mb-3">
-        <span class="me-2"><b>Danh mục:</b> <%= @listing.category.presence || "-" %></span>
+        <span class="me-2"><b>Danh mục:</b> <%= @listing.category&.name.presence || "-" %></span>
         <span class="text-muted">|</span>
         <span class="ms-2"><b>Tình trạng:</b> <%= @listing.condition.presence || "-" %></span>
       </div>
