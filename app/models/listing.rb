@@ -17,7 +17,7 @@ class Listing < ApplicationRecord
   }
 
   scope :published, -> {
-    where(status: :verified).where.not(published_at: nil).order(published_at: :desc)
+    where.not(published_at: nil).order(published_at: :desc)
   }
 
   after_initialize do
