@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_19_125656) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_21_111351) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -64,10 +64,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_19_125656) do
     t.index ["user_id"], name: "index_bids_on_user_id"
   end
 
+  create_table "categories", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_categories_on_name", unique: true
+  end
+
   create_table "listings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "title"
-    t.string "category"
     t.string "condition"
     t.text "seller_note"
     t.integer "status"
@@ -81,6 +87,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_19_125656) do
     t.datetime "auction_ends_at"
     t.decimal "buy_now_price", precision: 12
     t.bigint "reference_item_id"
+    t.string "category"
+    t.bigint "category_id"
+    t.index ["category_id"], name: "index_listings_on_category_id"
     t.index ["published_at"], name: "index_listings_on_published_at"
     t.index ["reference_item_id"], name: "index_listings_on_reference_item_id"
     t.index ["status"], name: "index_listings_on_status"
@@ -119,6 +128,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_19_125656) do
     t.string "recipient_name"
     t.string "recipient_phone"
     t.text "shipping_address"
+    t.datetime "received_at"
     t.index ["buyer_id"], name: "index_orders_on_buyer_id"
     t.index ["listing_id"], name: "index_orders_on_listing_id", unique: true
   end
@@ -172,6 +182,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_19_125656) do
   add_foreign_key "ai_verifications", "listings"
   add_foreign_key "bids", "listings"
   add_foreign_key "bids", "users"
+  add_foreign_key "listings", "categories"
   add_foreign_key "listings", "reference_items"
   add_foreign_key "listings", "users"
   add_foreign_key "notifications", "users", column: "actor_id"

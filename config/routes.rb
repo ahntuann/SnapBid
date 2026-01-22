@@ -48,6 +48,7 @@ Rails.application.routes.draw do
     root to: "dashboard#index"
     resources :listings, only: %i[index show edit update]
     resources :users, only: %i[index show edit update]
+    resources :categories
     resources :orders, only: %i[index show] do
       member do
         post :confirm_paid  # admin bấm "Đã nhận tiền"

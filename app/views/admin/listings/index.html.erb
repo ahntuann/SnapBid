@@ -42,7 +42,7 @@
                   <%= link_to l.title, admin_listing_path(l), class: "text-decoration-none" %>
                 </div>
                 <div class="text-muted small">
-                  #<%= l.id %> • <%= l.category.presence || "-" %> • <%= l.condition.presence || "-" %>
+                  <%= l.id %> • <%= l.category&.name.presence || "—" %> • <%= l.condition.presence || "-" %>
                 </div>
               </td>
 

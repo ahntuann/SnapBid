@@ -56,9 +56,9 @@
           </span>
 
           <% if @listing.published_at.present? %>
-            <span class="badge text-bg-success">Đã lên trang chủ</span>
+            <span class="badge text-bg-success">Đã cài thời gian đăng bán</span>
           <% else %>
-            <span class="badge text-bg-secondary">Chưa lên trang chủ</span>
+            <span class="badge text-bg-secondary">Chưa cài thời gian đăng bán</span>
           <% end %>
         </div>
 
@@ -72,7 +72,7 @@
         <div class="row g-3">
           <div class="col-6">
             <div class="small text-muted">Danh mục</div>
-            <div class="fw-semibold"><%= @listing.category.presence || "—" %></div>
+            <div class="fw-semibold"><%= @listing.category&.name.presence || "—" %></div>
           </div>
 
           <div class="col-6">
