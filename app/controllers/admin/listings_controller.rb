@@ -3,7 +3,7 @@ class Admin::ListingsController < Admin::BaseController
     @q = params[:q].to_s.strip
     scope = Listing.includes(:user).order(created_at: :desc)
     scope = scope.where("title ILIKE ?", "%#{@q}%") if @q.present?
-    @listings = scope.page(params[:page]).per(12)
+    @listings = scope.page(params[:page]).per(10)
   end
 
   def show
@@ -22,6 +22,20 @@ class Admin::ListingsController < Admin::BaseController
       flash.now[:alert] = "Cập nhật thất bại."
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def block
+    @listing = Listing.find(params[:id])
+    @listing.block!
+    redirect_back fallback_location: admin_listings_path,
+      notice: "Sản phẩm đã bị chặn."
+  end
+
+  def unblock
+    @listing = Listing.find(params[:id])
+    @listing.unblock!
+    redirect_back fallback_location: admin_listings_path,
+      notice: "Sản phẩm đã được gỡ chặn."
   end
 
   private

@@ -9,6 +9,14 @@ class ListingsController < ApplicationController
 
   def show
     @bid = Bid.new
+
+    @recommended_listings = Listing
+      .includes(:category, images_attachments: :blob)
+      .where.not(id: @listing.id)
+      .where.not(published_at: nil)
+      .where(status: Listing.statuses[:verified]) # AI verified
+      .order(published_at: :desc)
+      .limit(4)
   end
 
   def buy_now

@@ -14,7 +14,8 @@ class Listing < ApplicationRecord
     verified: 2,
     rejected: 3,
     manual_review: 4,
-    published: 5
+    published: 5,
+    blocked: 6
   }
 
   scope :published, -> {
@@ -36,6 +37,19 @@ class Listing < ApplicationRecord
   validates :buy_now_price, numericality: { greater_than: 0 }, allow_nil: true
 
   validate :buy_now_must_be_greater_or_equal_to_start_price
+
+  def block!
+    update!(
+      published_at: nil,
+      status: :blocked
+    )
+  end
+
+  def unblock!
+    update!(
+      status: :draft
+    )
+  end
 
   def status_text
     I18n.t("enums.listing.status.#{status}")

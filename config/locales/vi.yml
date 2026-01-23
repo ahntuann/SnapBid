@@ -2,6 +2,18 @@ vi:
   app:
     name: "SnapBid"
 
+  number:
+    format:
+      delimiter: ","
+      separator: "."
+      precision: 0
+    currency:
+      format:
+        unit: "VND"
+        precision: 0
+        delimiter: ","
+        format: "%n %u"
+
   time:
     formats:
       default: "%d/%m/%Y %H:%M"
@@ -75,6 +87,7 @@ vi:
       forbidden: "Bạn không có quyền xem đơn hàng này."
     messages:
       greater_than: "Giá đặt quá thấp. Giá tối thiểu là 2200.0."
+      blank: "không được để trống"
       not_saved:
         one: "Không thể lưu %{resource}: 1 lỗi."
         other: "Không thể lưu %{resource}: %{count} lỗi."
@@ -86,12 +99,20 @@ vi:
         email: "Email"
         password: "Mật khẩu"
         password_confirmation: "Xác nhận mật khẩu"
+      listing:
+        title: "Tiêu đề"
+        seller_note: "Mô tả từ người bán"
     errors:
       models:
         user:
           attributes:
             email:
               taken: "đã được sử dụng"
+            title:
+              blank: "không được để trống"
+            seller_note:
+              blank: "không được để trống"
+
 
   labels:
     listing:
@@ -142,6 +163,7 @@ vi:
         rejected: "Bị từ chối"
         manual_review: "Cần duyệt thủ công"
         published: "Đã đăng"
+        blocked: "Bị chặn"
     order:
       kind:
         auction_win: "Trúng đấu giá"

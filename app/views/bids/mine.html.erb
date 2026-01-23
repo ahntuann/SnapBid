@@ -83,12 +83,20 @@
                 <%= listing.auction_ends_at.present? ? l(listing.auction_ends_at, format: :short) : "—" %>
               </td>
 
-              <td class="text-end pe-3">
-                <%= link_to "Xem", listing_path(listing), class: "btn btn-outline-primary btn-sm" %>
+              <td class="text-end pe-3 text-nowrap">
+                <div class="d-inline-flex align-items-center gap-2">
+                  <%= link_to "Xem",
+                        listing_path(listing),
+                        class: "btn btn-sm btn-outline-primary",
+                        style: "min-width:72px" %>
 
-                <% if listing.order.present? && listing.order.buyer_id == current_user.id %>
-                  <%= link_to "Xem đơn", order_path(listing.order), class: "btn btn-primary btn-sm ms-1" %>
-                <% end %>
+                  <% if listing.order.present? && listing.order.buyer_id == current_user.id %>
+                    <%= link_to "Xem đơn",
+                          order_path(listing.order),
+                          class: "btn btn-sm btn-primary",
+                          style: "min-width:72px" %>
+                  <% end %>
+                </div>
               </td>
             </tr>
           <% end %>
@@ -102,6 +110,9 @@
           <% end %>
         </tbody>
       </table>
+      <div class="card-body d-flex justify-content-center">
+        <%= paginate @listings %>
+      </div>
     </div>
   </div>
 </div>

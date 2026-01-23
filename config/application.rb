@@ -26,5 +26,8 @@ module Snapbid
 
     config.i18n.default_locale = :vi
     config.i18n.available_locales = [:vi]
+
+    config.time_zone = "Asia/Ho_Chi_Minh"
+    config.active_record.default_timezone = :utc
   end
 end

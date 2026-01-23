@@ -28,8 +28,18 @@ class BidsController < ApplicationController
   end
 
   def mine
-    bids = current_user.bids.includes(:listing).order(created_at: :desc)
-    @listings = bids.map(&:listing).uniq
+    listing_ids = current_user.bids.select(:listing_id).distinct
+
+    @listings = Listing
+      .where(id: listing_ids)
+      .includes(:category, :order, :bids, images_attachments: :blob)
+      .order(Arel.sql("(
+        SELECT MAX(bids.created_at)
+        FROM bids
+        WHERE bids.listing_id = listings.id
+          AND bids.user_id = #{current_user.id}
+      ) DESC"))
+      .page(params[:page]).per(10)
   end
 
   private

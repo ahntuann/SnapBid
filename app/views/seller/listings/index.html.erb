@@ -12,11 +12,13 @@
 
   <ul class="nav nav-tabs mb-4">
     <li class="nav-item">
-      <%= link_to "Đang bán", seller_listings_path(tab: "active"),
+      <%= link_to "Đang bán",
+        seller_listings_path(tab: "active", page: nil),
         class: "nav-link #{(@tab != 'sold') ? 'active' : ''}" %>
     </li>
     <li class="nav-item">
-      <%= link_to "Đã bán", seller_listings_path(tab: "sold"),
+      <%= link_to "Đã bán",
+        seller_listings_path(tab: "sold", page: nil),
         class: "nav-link #{(@tab == 'sold') ? 'active' : ''}" %>
     </li>
   </ul>
@@ -70,4 +72,7 @@
       <% end %>
     </div>
   <% end %>
+</div>
+<div class="d-flex justify-content-center mt-4">
+  <%= paginate @listings %>
 </div>

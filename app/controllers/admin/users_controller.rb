@@ -5,7 +5,7 @@ class Admin::UsersController < Admin::BaseController
     if @q.present?
       scope = scope.where("email ILIKE ? OR name ILIKE ?", "%#{@q}%", "%#{@q}%")
     end
-    @users = scope.page(params[:page]).per(15)
+    @users = scope.page(params[:page]).per(10)
   end
 
   def show

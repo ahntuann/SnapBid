@@ -1,0 +1,52 @@
+<div class="col-12 col-sm-6 col-lg-3">
+  <%= link_to listing_path(listing), class: "text-decoration-none text-dark h-100 d-block" do %>
+    <div class="card shadow-sm h-100 border-0 position-relative overflow-hidden">
+
+      <div class="position-absolute top-0 end-0 p-2" style="z-index: 10;">
+        <% if listing.ai_verified? %>
+          <span class="badge bg-success bg-opacity-75 backdrop-blur shadow-sm border border-success border-opacity-25">
+            <i class="bi bi-patch-check-fill"></i> AI Verified
+          </span>
+        <% else %>
+          <span class="badge bg-light text-secondary backdrop-blur shadow-sm border">
+            Chưa xác thực
+          </span>
+        <% end %>
+      </div>
+
+      <div class="card-body p-0 d-flex flex-column">
+        <div class="ratio ratio-1x1 bg-light text-center">
+          <% if listing.images.attached? %>
+            <%= image_tag listing.images.first.variant(resize_to_fill: [600, 600]),
+                  class: "w-100 h-100 object-fit-cover",
+                  loading: "lazy" %>
+          <% else %>
+            <div class="d-flex align-items-center justify-content-center text-muted w-100 h-100">
+              <i class="bi bi-image fs-1 opacity-25"></i>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="p-3 d-flex flex-column flex-grow-1">
+          <div class="fw-semibold text-truncate mb-1" title="<%= listing.title %>">
+            <%= listing.title %>
+          </div>
+
+          <div class="text-primary fw-bold mb-1">
+            <%= listing.start_price.present? ? number_to_currency(listing.start_price, unit: "₫", precision: 0) : "Liên hệ" %>
+          </div>
+
+          <div class="mt-auto pt-2 border-top small text-muted d-flex justify-content-between align-items-center">
+            <span class="text-truncate" style="max-width: 60%;">
+              <%= listing.category.respond_to?(:name) ? listing.category&.name : (listing.category.presence || "Khác") %>
+            </span>
+            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 rounded-pill">
+              <%= listing.condition.presence || "Used" %>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  <% end %>
+</div>

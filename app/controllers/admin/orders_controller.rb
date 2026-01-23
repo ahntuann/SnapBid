@@ -8,6 +8,8 @@ module Admin
       @orders = Order.order(created_at: :desc)
       @orders = @orders.where(kind: Order.kinds[params[:kind]]) if params[:kind].present?
       @orders = @orders.where(status: Order.statuses[params[:status]]) if params[:status].present?
+
+      @orders = @orders.page(params[:page]).per(10)
     end
 
     def show

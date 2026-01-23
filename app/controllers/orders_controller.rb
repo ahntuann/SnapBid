@@ -3,7 +3,7 @@ class OrdersController < ApplicationController
   before_action :set_order, only: [:show, :update, :mark_paid]
 
   def index
-    @orders = current_user.orders.order(created_at: :desc)
+    @orders = current_user.orders.order(created_at: :desc).page(params[:page]).per(10)
   end
 
   def show

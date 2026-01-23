@@ -15,6 +15,8 @@ class Seller::ListingsController < ApplicationController
       else
         base.left_outer_joins(:order).where(orders: { id: nil })
       end
+
+    @listings = @listings.page(params[:page]).per(4)
   end
 
   def show
@@ -30,7 +32,7 @@ class Seller::ListingsController < ApplicationController
     if @listing.save
       redirect_to seller_listing_path(@listing), notice: "Đã tạo sản phẩm."
     else
-      flash.now[:alert] = @listing.errors.full_messages.to_sentence
+      # flash.now[:alert] = @listing.errors.full_messages.to_sentence
       render :new, status: :unprocessable_entity
     end
   end

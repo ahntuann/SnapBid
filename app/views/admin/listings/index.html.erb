@@ -62,17 +62,46 @@
               </td>
 
               <td class="text-nowrap">
-                <% if l.published_at.present? %>
+                <% if l.blocked? %>
+                  <span class="badge bg-danger">blocked</span>
+                <% elsif l.published_at.present? %>
                   <span class="badge bg-success">published</span>
-                  <div class="text-muted small"><%= l.published_at.strftime("%d/%m %H:%M") %></div>
+                  <div class="text-muted small">
+                    <%= l.published_at.strftime("%d/%m %H:%M") %>
+                  </div>
                 <% else %>
                   <span class="badge bg-warning text-dark">draft</span>
                 <% end %>
               </td>
 
               <td class="text-end text-nowrap">
-                <%= link_to "Show", admin_listing_path(l), class: "btn btn-sm btn-outline-secondary" %>
-                <%= link_to "Edit", edit_admin_listing_path(l), class: "btn btn-sm btn-primary" %>
+                <div class="d-inline-flex align-items-center gap-2">
+                  <%= link_to admin_listing_path(l),
+                        class: "btn btn-sm btn-outline-secondary d-flex justify-content-center align-items-center",
+                        style: "min-width:86px" do %>
+                    Show
+                  <% end %>
+
+                  <% if l.blocked? %>
+                    <%= button_to unblock_admin_listing_path(l),
+                          method: :patch,
+                          form: { class: "d-inline" },
+                          class: "btn btn-sm btn-success d-flex justify-content-center align-items-center",
+                          style: "min-width:86px",
+                          data: { turbo_confirm: "Bỏ chặn sản phẩm này?" } do %>
+                      <i class="bi bi-unlock me-1"></i> Unblock
+                    <% end %>
+                  <% else %>
+                    <%= button_to block_admin_listing_path(l),
+                          method: :patch,
+                          form: { class: "d-inline" },
+                          class: "btn btn-sm btn-danger d-flex justify-content-center align-items-center",
+                          style: "min-width:86px",
+                          data: { turbo_confirm: "⚠️ Chặn sản phẩm này?" } do %>
+                      <i class="bi bi-slash-circle me-1"></i> Block
+                    <% end %>
+                  <% end %>
+                </div>
               </td>
             </tr>
           <% end %>

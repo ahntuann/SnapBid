@@ -13,9 +13,12 @@ class HomeController < ApplicationController
 
     scope =
       case @sort
-      when "price_asc" then scope.order(start_price: :asc)
-      when "price_desc" then scope.order(start_price: :desc)
-      else scope.order(published_at: :desc)
+      when "price_asc"
+        scope.reorder(Arel.sql("COALESCE(start_price, 0) ASC"))
+      when "price_desc"
+        scope.reorder(Arel.sql("COALESCE(start_price, 0) DESC"))
+      else
+        scope.reorder(published_at: :desc)
       end
 
     @categories = Category.ordered

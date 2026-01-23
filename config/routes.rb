@@ -48,8 +48,13 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root to: "dashboard#index"
-    resources :listings, only: %i[index show edit update]
-    resources :users, only: %i[index show edit update]
+    resources :listings, only: %i[index show] do
+      member do
+        patch :block
+        patch :unblock
+      end
+    end
+    resources :users, only: %i[index show]
     resources :categories
     resources :orders, only: %i[index show] do
       member do
