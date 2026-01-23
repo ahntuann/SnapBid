@@ -11,6 +11,8 @@ class User < ApplicationRecord
   has_many :bids, dependent: :destroy
   has_many :notifications, foreign_key: :recipient_id, dependent: :destroy
 
+  has_one_attached :avatar
+
   after_initialize do
     self.role ||= :user if new_record?
   end

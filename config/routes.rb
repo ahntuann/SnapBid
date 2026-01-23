@@ -90,5 +90,9 @@ Rails.application.routes.draw do
     end
   end
 
+  resource :profile, only: %i[show edit update] do
+    delete :destroy_avatar, on: :collection
+  end
+
   get "/my-bids", to: "bids#mine", as: :my_bids
 end

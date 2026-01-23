@@ -26,8 +26,15 @@
               href="#"
               role="button"
               data-action="click->dropdown#toggle">
-              <span class="rounded-circle bg-secondary-subtle d-inline-flex align-items-center justify-content-center" style="width:32px;height:32px;">
-                <i class="bi bi-person"></i>
+              <span class="rounded-circle bg-secondary-subtle d-inline-flex align-items-center justify-content-center overflow-hidden border"
+                    style="width:32px;height:32px;">
+                <% if current_user.avatar.attached? %>
+                  <%= image_tag current_user.avatar.variant(resize_to_fill: [32, 32]),
+                        class: "w-100 h-100",
+                        style: "object-fit:cover;" %>
+                <% else %>
+                  <i class="bi bi-person"></i>
+                <% end %>
               </span>
               <span class="d-none d-lg-inline"><%= current_user.name.presence || current_user.email %></span>
             </a>
@@ -36,6 +43,8 @@
                 data-dropdown-target="menu"
                 style="margin-top: 8px;">
               <li><%= link_to "Đơn hàng", orders_path, class: "dropdown-item" %></li>
+
+              <li><%= link_to "Tài khoản", profile_path, class: "dropdown-item" %></li>
 
               <% if current_user.admin? %>
                 <li><%= link_to "Admin", admin_orders_path, class: "dropdown-item" %></li>

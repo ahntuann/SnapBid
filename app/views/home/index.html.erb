@@ -24,17 +24,23 @@
 
         <div class="col-12 col-md-3">
           <label class="form-label small text-muted mb-1"><%= t("home.filters.category") %></label>
-          <select name="category_id" class="form-select form-select-sm">
+          <select name="category_id"
+                  class="form-select form-select-sm"
+                  onchange="this.form.requestSubmit()">
             <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.category") %></option>
             <% @categories.each do |cat| %>
-              <option value="<%= cat.id %>" <%= "selected" if @category_id.to_s == cat.id.to_s %>><%= cat.name %></option>
+              <option value="<%= cat.id %>" <%= "selected" if @category_id.to_s == cat.id.to_s %>>
+                <%= cat.name %>
+              </option>
             <% end %>
           </select>
         </div>
 
         <div class="col-12 col-md-3">
           <label class="form-label small text-muted mb-1"><%= t("home.filters.condition") %></label>
-          <select name="condition" class="form-select form-select-sm">
+          <select name="condition"
+                  class="form-select form-select-sm"
+                  onchange="this.form.requestSubmit()">
             <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.condition") %></option>
             <% @conditions.each do |c| %>
               <option value="<%= c %>" <%= "selected" if @condition == c %>><%= c %></option>
@@ -44,7 +50,9 @@
 
         <div class="col-12 col-md-3">
           <label class="form-label small text-muted mb-1"><%= t("home.filters.sort") %></label>
-          <select name="sort" class="form-select form-select-sm">
+          <select name="sort"
+                  class="form-select form-select-sm"
+                  onchange="this.form.requestSubmit()">
             <option value="newest" <%= "selected" if @sort == "newest" %>><%= t("home.filters.newest") %></option>
             <option value="price_asc" <%= "selected" if @sort == "price_asc" %>>Giá khởi điểm ↑</option>
             <option value="price_desc" <%= "selected" if @sort == "price_desc" %>>Giá khởi điểm ↓</option>
@@ -52,7 +60,6 @@
         </div>
 
         <div class="col-12 col-md-3 d-flex gap-2">
-          <button type="submit" class="btn btn-dark btn-sm flex-grow-1">Lọc</button>
           <a href="<%= root_path %>" class="btn btn-outline-secondary btn-sm flex-grow-1">Reset</a>
         </div>
       </form>

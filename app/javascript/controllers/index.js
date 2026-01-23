@@ -6,3 +6,5 @@ import GalleryController from "./gallery_controller"
 application.register("gallery", GalleryController)
 import DropdownController from "./dropdown_controller"
 application.register("dropdown", DropdownController)
+import AvatarPreviewController from "./avatar_preview_controller"
+application.register("avatar-preview", AvatarPreviewController)
