@@ -10,8 +10,11 @@ class Seller::ListingsController < ApplicationController
     @tab = tab
 
     @listings =
-      if tab == "sold"
-        base.joins(:order)
+      case tab
+      when "sold"
+        base.joins(:order).merge(Order.where.not(status: :cancelled))
+      when "cancelled"
+        base.joins(:order).merge(Order.where(status: :cancelled))
       else
         base.left_outer_joins(:order).where(orders: { id: nil })
       end

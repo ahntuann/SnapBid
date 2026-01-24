@@ -53,6 +53,17 @@ class Order < ApplicationRecord
     )
   end
 
+  def cancel_by_admin!
+    transaction do
+      update!(status: :cancelled)
+
+      listing.update!(
+        published_at: nil,
+        status: :draft
+      )
+    end
+  end
+
   def shipping_info_complete?
     recipient_name.present? && recipient_phone.present? && shipping_address.present?
   end

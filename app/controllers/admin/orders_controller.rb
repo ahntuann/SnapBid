@@ -2,7 +2,7 @@ module Admin
   class OrdersController < Admin::BaseController
     before_action :authenticate_user!
     before_action :require_admin!
-    before_action :set_order, only: [:show, :confirm_paid]
+    before_action :set_order, only: [:show, :confirm_paid, :cancel]
 
     def index
       @orders = Order.order(created_at: :desc)
@@ -22,6 +22,21 @@ module Admin
 
       @order.confirm_paid_by_admin!
       redirect_to admin_order_path(@order), notice: "Đã xác nhận nhận tiền. Đơn hàng chuyển sang ĐÃ THANH TOÁN."
+    end
+
+    def cancel
+      if @order.paid?
+        redirect_to admin_order_path(@order), alert: "Đơn đã paid, không thể huỷ."
+        return
+      end
+
+      if @order.cancelled?
+        redirect_to admin_order_path(@order), notice: "Đơn đã ở trạng thái cancelled."
+        return
+      end
+
+      @order.cancel_by_admin!
+      redirect_to admin_order_path(@order), notice: "Đã huỷ đơn hàng. Listing đã về draft."
     end
 
     private

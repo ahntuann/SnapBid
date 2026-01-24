@@ -2,6 +2,17 @@
   <div class="mx-auto" style="max-width: 860px;">
     <h1 class="h3 fw-bold mb-4">Xác nhận đơn hàng</h1>
 
+    <%# ===== CANCELLED ALERT (TOP) ===== %>
+    <% if @order.cancelled? %>
+      <div class="alert alert-danger mb-4">
+        <% if @order.respond_to?(:cancelled_reason) && @order.cancelled_reason.to_s == "late_payment_3_days" %>
+          Đơn Hàng đã bị Huỷ do bạn trễ hạn thanh toán quá 3 ngày.
+        <% else %>
+          Đơn Hàng đã bị Hệ thống của chúng tôi Huỷ do bạn trễ hạn thanh toán quá 3 ngày.
+        <% end %>
+      </div>
+    <% end %>
+
     <!-- Product Information -->
     <div class="card shadow-sm mb-4">
       <div class="card-body">
@@ -32,13 +43,16 @@
 
               <%# status badge %>
               <% status_class =
-                   if @order.paid?
+                   if @order.cancelled?
+                     "text-bg-danger"
+                   elsif @order.paid?
                      "text-bg-success"
                    elsif @order.buyer_marked_paid?
                      "text-bg-warning"
                    else
                      "text-bg-secondary"
                    end %>
+
               <span class="badge <%= status_class %>">
                 <span data-order-target="statusText"><%= @order.status %></span>
               </span>
@@ -60,7 +74,7 @@
       <div class="card-body">
         <div class="fw-semibold mb-3">Thông tin người nhận</div>
 
-        <% if @order.pending? %>
+        <% if @order.pending? && !@order.cancelled? %>
           <%= form_with model: @order, url: order_path(@order), method: :patch, local: true do |f| %>
             <div class="row g-3">
               <div class="col-12">
@@ -111,6 +125,12 @@
             <div class="col-12 col-md-4"><span class="text-muted">SĐT:</span> <b><%= @order.recipient_phone.presence || "-" %></b></div>
             <div class="col-12"><span class="text-muted">Địa chỉ:</span> <b><%= @order.shipping_address.presence || "-" %></b></div>
           </div>
+
+          <% if @order.cancelled? %>
+            <div class="text-muted small mt-3">
+              Đơn hàng đã bị huỷ nên không thể cập nhật thông tin nhận hàng.
+            </div>
+          <% end %>
         <% end %>
       </div>
     </div>
@@ -120,7 +140,6 @@
       <div class="card-body">
         <div class="fw-semibold mb-3">Chi tiết thanh toán</div>
 
-        <%# Nếu bạn có phí ship thì thay số bên dưới bằng field thật %>
         <% shipping_fee = 0 %>
         <% total = @order.price.to_d + shipping_fee.to_d %>
 
@@ -140,80 +159,82 @@
       </div>
     </div>
 
-    <!-- Payment Method -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-body">
-        <div class="fw-semibold mb-2">Phương thức thanh toán</div>
+    <%# ===== Payment Method: hide when cancelled ===== %>
+    <% unless @order.cancelled? %>
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="fw-semibold mb-2">Phương thức thanh toán</div>
 
-        <div class="d-flex align-items-start gap-3 p-3 rounded border bg-light">
-          <div class="rounded bg-white border d-flex align-items-center justify-content-center"
-               style="width:44px;height:44px;">
-            <i class="bi bi-shield-check"></i>
-          </div>
-          <div class="flex-grow-1">
-            <div class="fw-semibold">Trung gian qua hệ thống</div>
-            <div class="text-muted small">Thanh toán an toàn qua trung gian SnapBid (chuyển khoản/QR)</div>
+          <div class="d-flex align-items-start gap-3 p-3 rounded border bg-light">
+            <div class="rounded bg-white border d-flex align-items-center justify-content-center"
+                 style="width:44px;height:44px;">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <div class="flex-grow-1">
+              <div class="fw-semibold">Trung gian qua hệ thống</div>
+              <div class="text-muted small">Thanh toán an toàn qua trung gian SnapBid (chuyển khoản/QR)</div>
 
-            <div class="mt-3">
-              <div class="text-muted small mb-2">
-                Quét QR để chuyển khoản. Nội dung gợi ý: <b>ORDER <%= @order.id %></b>
-              </div>
-
-              <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
-                <div class="bg-white rounded border p-2" style="width: 220px;">
-                  <%= image_tag vietqr_image_url(
-                        amount: @order.total_price,
-                        add_info: "ORDER #{@order.id}"
-                      ),
-                      class: "img-fluid",
-                      alt: "QR thanh toán VietQR" %>
+              <div class="mt-3">
+                <div class="text-muted small mb-2">
+                  Quét QR để chuyển khoản. Nội dung gợi ý: <b>ORDER <%= @order.id %></b>
                 </div>
-                <div class="flex-grow-1">
-                  <div data-order-target="buyerSection" class="<%= 'd-none' if @order.paid? %>">
-                    <% if @order.pending? %>
-                      <% if @order.buyer_marked_paid? %>
-                        <div class="alert alert-warning mb-0">
-                          Bạn đã bấm xác nhận chuyển tiền lúc:
-                          <b><%= l(@order.buyer_marked_paid_at, format: :short) %></b>.
-                          Đang chờ admin xác nhận.
-                        </div>
-                      <% else %>
-                        <% disabled = !@order.shipping_info_complete? %>
 
-                        <%= button_to "Tôi đã chuyển tiền",
-                              mark_paid_order_path(@order),
-                              method: :post,
-                              class: "btn btn-primary w-100 w-sm-auto",
-                              disabled: disabled,
-                              data: { turbo_confirm: "Bạn chắc chắn đã chuyển khoản cho đơn ##{@order.id}?" } %>
-
-                        <% if disabled %>
-                          <div class="text-danger small mt-2">
-                            * Vui lòng nhập đầy đủ thông tin nhận hàng và bấm “Lưu thông tin” trước.
+                <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+                  <div class="bg-white rounded border p-2" style="width: 220px;">
+                    <%= image_tag vietqr_image_url(
+                          amount: @order.total_price,
+                          add_info: "ORDER #{@order.id}"
+                        ),
+                        class: "img-fluid",
+                        alt: "QR thanh toán VietQR" %>
+                  </div>
+                  <div class="flex-grow-1">
+                    <div data-order-target="buyerSection" class="<%= 'd-none' if @order.paid? %>">
+                      <% if @order.pending? %>
+                        <% if @order.buyer_marked_paid? %>
+                          <div class="alert alert-warning mb-0">
+                            Bạn đã bấm xác nhận chuyển tiền lúc:
+                            <b><%= l(@order.buyer_marked_paid_at, format: :short) %></b>.
+                            Đang chờ admin xác nhận.
                           </div>
+                        <% else %>
+                          <% disabled = !@order.shipping_info_complete? %>
+
+                          <%= button_to "Tôi đã chuyển tiền",
+                                mark_paid_order_path(@order),
+                                method: :post,
+                                class: "btn btn-primary w-100 w-sm-auto",
+                                disabled: disabled,
+                                data: { turbo_confirm: "Bạn chắc chắn đã chuyển khoản cho đơn ##{@order.id}?" } %>
+
+                          <% if disabled %>
+                            <div class="text-danger small mt-2">
+                              * Vui lòng nhập đầy đủ thông tin nhận hàng và bấm “Lưu thông tin” trước.
+                            </div>
+                          <% end %>
                         <% end %>
                       <% end %>
-                    <% end %>
-                  </div>
+                    </div>
 
-                  <div data-order-target="doneSection" class="<%= @order.paid? ? '' : 'd-none' %>">
-                    <div class="alert alert-success mb-0">
-                      Đơn hàng đã được xác nhận thanh toán.
+                    <div data-order-target="doneSection" class="<%= @order.paid? ? '' : 'd-none' %>">
+                      <div class="alert alert-success mb-0">
+                        Đơn hàng đã được xác nhận thanh toán.
+                      </div>
+                    </div>
+
+                    <div class="mt-3">
+                      <%= link_to "Xem sản phẩm", listing_path(@order.listing), class: "link-primary text-decoration-none" %>
                     </div>
                   </div>
-
-                  <div class="mt-3">
-                    <%= link_to "Xem sản phẩm", listing_path(@order.listing), class: "link-primary text-decoration-none" %>
-                  </div>
                 </div>
-              </div>
 
+              </div>
             </div>
           </div>
-        </div>
 
+        </div>
       </div>
-    </div>
+    <% end %>
 
     <div class="d-flex justify-content-start">
       <%= link_to "Quay lại", orders_path, class: "btn btn-outline-secondary" %>

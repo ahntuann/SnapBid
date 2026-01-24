@@ -16,9 +16,17 @@
       <div class="card-body">
         <div class="d-flex flex-wrap gap-2 mb-2">
           <span class="badge text-bg-light border">kind: <%= @order.kind %></span>
-          <span class="badge <%= @order.paid? ? "bg-success" : (@order.cancelled? ? "bg-secondary" : "bg-warning text-dark") %>">
-            <%= @order.status %>
-          </span>
+
+          <% status_badge =
+               if @order.paid?
+                 "bg-success"
+               elsif @order.cancelled?
+                 "bg-danger"
+               else
+                 "bg-warning text-dark"
+               end %>
+          <span class="badge <%= status_badge %>"><%= @order.status %></span>
+
           <span class="badge text-bg-primary">
             buyer_marked_paid: <%= @order.buyer_marked_paid? ? "yes" : "no" %>
           </span>
@@ -52,24 +60,52 @@
 
         <hr>
 
-        <% if @order.pending? && @order.buyer_marked_paid? && !@order.admin_confirmed_paid? %>
-          <%= button_to "Xác nhận: Đã nhận tiền",
-                confirm_paid_admin_order_path(@order),
-                method: :post,
-                class: "btn btn-success btn-lg rounded-pill",
-                data: { turbo_confirm: "Xác nhận đã nhận tiền đơn ##{@order.id}?" } %>
+        <%# ===== ACTIONS ===== %>
+        <% if @order.pending? %>
 
-          <div class="text-muted small mt-2">
-            Lưu ý: thao tác này sẽ chuyển trạng thái order và hoàn tất luồng thanh toán.
-          </div>
+          <%# 1) Confirm paid: chỉ khi buyer đã mark paid và admin chưa confirm %>
+          <% if @order.buyer_marked_paid? && !@order.admin_confirmed_paid? %>
+            <%= button_to "Xác nhận: Đã nhận tiền",
+                  confirm_paid_admin_order_path(@order),
+                  method: :post,
+                  class: "btn btn-success btn-lg rounded-pill",
+                  data: { turbo_confirm: "Xác nhận đã nhận tiền đơn ##{@order.id}?" } %>
+
+            <div class="text-muted small mt-2">
+              Lưu ý: thao tác này sẽ chuyển trạng thái order và hoàn tất luồng thanh toán.
+            </div>
+
+            <hr class="my-3">
+          <% else %>
+            <div class="alert alert-info mb-3" style="border-radius:12px;">
+              <% if !@order.buyer_marked_paid? %>
+                Chờ người mua xác nhận đã thanh toán.
+              <% else %>
+                Trạng thái hiện tại không cho phép xác nhận.
+              <% end %>
+            </div>
+          <% end %>
+
+          <%# 2) Cancel order: CHỈ hiện khi buyer CHƯA mark paid %>
+          <% if !@order.buyer_marked_paid? %>
+            <%= button_to "Huỷ đơn hàng",
+                  cancel_admin_order_path(@order),
+                  method: :patch,
+                  class: "btn btn-outline-danger rounded-pill",
+                  data: { turbo_confirm: "⚠️ Huỷ đơn ##{@order.id}? Listing sẽ về draft." } %>
+
+            <div class="text-muted small mt-2">
+              Lưu ý: chỉ huỷ khi người mua chưa báo chuyển tiền. Khi huỷ, trạng thái sản phẩm sẽ trở về <b>Nháp</b>.
+            </div>
+          <% end %>
+
         <% else %>
-          <div class="alert alert-info mb-0" style="border-radius:12px;">
-            <% if !@order.buyer_marked_paid? %>
-              Chờ người mua xác nhận đã thanh toán.
-            <% elsif @order.admin_confirmed_paid? %>
-              Đơn hàng đã được admin xác nhận.
+          <%# Paid hoặc Cancelled %>
+          <div class="alert <%= @order.paid? ? "alert-success" : "alert-secondary" %> mb-0" style="border-radius:12px;">
+            <% if @order.paid? %>
+              Đơn hàng đã paid.
             <% else %>
-              Trạng thái hiện tại không cho phép xác nhận.
+              Đơn hàng đã bị huỷ.
             <% end %>
           </div>
         <% end %>
@@ -81,9 +117,18 @@
     <div class="card border-0 shadow-sm" style="border-radius:16px;">
       <div class="card-body">
         <div class="fw-semibold mb-2">Thông tin giao hàng</div>
-        <div class="mb-2"><span class="text-muted">Người nhận:</span> <span class="fw-semibold"><%= @order.recipient_name.presence || "-" %></span></div>
-        <div class="mb-2"><span class="text-muted">SĐT:</span> <span class="fw-semibold"><%= @order.recipient_phone.presence || "-" %></span></div>
-        <div class="mb-0"><span class="text-muted">Địa chỉ:</span><br><span class="fw-semibold"><%= @order.shipping_address.presence || "-" %></span></div>
+        <div class="mb-2">
+          <span class="text-muted">Người nhận:</span>
+          <span class="fw-semibold"><%= @order.recipient_name.presence || "-" %></span>
+        </div>
+        <div class="mb-2">
+          <span class="text-muted">SĐT:</span>
+          <span class="fw-semibold"><%= @order.recipient_phone.presence || "-" %></span>
+        </div>
+        <div class="mb-0">
+          <span class="text-muted">Địa chỉ:</span><br>
+          <span class="fw-semibold"><%= @order.shipping_address.presence || "-" %></span>
+        </div>
 
         <hr>
 
@@ -97,7 +142,9 @@
 
           <div>
             <div class="fw-semibold"><%= @order.listing&.title %></div>
-            <div class="text-muted small"><%= @order.listing&.category %> • <%= @order.listing&.condition %></div>
+            <div class="text-muted small">
+              <%= @order.listing&.category %> • <%= @order.listing&.condition %>
+            </div>
           </div>
         </div>
       </div>

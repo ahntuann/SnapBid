@@ -59,6 +59,7 @@ Rails.application.routes.draw do
     resources :orders, only: %i[index show] do
       member do
         post :confirm_paid  # admin bấm "Đã nhận tiền"
+        patch :cancel
       end
     end
   end

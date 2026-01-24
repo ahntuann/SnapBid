@@ -13,13 +13,20 @@
   <ul class="nav nav-tabs mb-4">
     <li class="nav-item">
       <%= link_to "Đang bán",
-        seller_listings_path(tab: "active", page: nil),
-        class: "nav-link #{(@tab != 'sold') ? 'active' : ''}" %>
+            seller_listings_path(tab: "active", page: nil),
+            class: "nav-link #{(@tab == 'active' || @tab.blank?) ? 'active' : ''}" %>
     </li>
+
     <li class="nav-item">
       <%= link_to "Đã bán",
-        seller_listings_path(tab: "sold", page: nil),
-        class: "nav-link #{(@tab == 'sold') ? 'active' : ''}" %>
+            seller_listings_path(tab: "sold", page: nil),
+            class: "nav-link #{(@tab == 'sold') ? 'active' : ''}" %>
+    </li>
+
+    <li class="nav-item">
+      <%= link_to "Thanh toán thất bại",
+            seller_listings_path(tab: "cancelled", page: nil),
+            class: "nav-link #{(@tab == 'cancelled') ? 'active' : ''}" %>
     </li>
   </ul>
 
@@ -41,30 +48,68 @@
   <% else %>
     <div class="row g-3">
       <% @listings.each do |listing| %>
+        <% order = listing.order %>
+
+        <%# ===== Badge mapping cho đẹp ===== %>
+        <% badge_text = nil %>
+        <% badge_class = nil %>
+
+        <% if order.present? && order.cancelled? %>
+          <% badge_text  = "Thanh toán thất bại" %>
+          <% badge_class = "text-bg-danger" %>
+        <% elsif order.present? %>
+          <% badge_text  = "Đã bán" %>
+          <% badge_class = "text-bg-success" %>
+        <% else %>
+          <% badge_text = listing.status_text %>
+
+          <% badge_class =
+            case listing.status.to_s
+            when "published" then "text-bg-primary"
+            when "verified" then "text-bg-success"
+            when "submitted_for_ai" then "text-bg-info"
+            when "manual_review" then "text-bg-warning"
+            when "rejected", "blocked" then "text-bg-danger"
+            else
+              "text-bg-light border text-dark"
+            end
+          %>
+        <% end %>
+
         <div class="col-12 col-md-6">
           <div class="card h-100 shadow-sm">
             <div class="card-body">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <div class="fw-semibold">
+              <div class="d-flex justify-content-between align-items-start gap-3">
+                <div class="flex-grow-1">
+                  <div class="fw-semibold text-truncate" style="max-width: 360px;">
                     <%= link_to listing.title, seller_listing_path(listing), class: "text-decoration-none" %>
                   </div>
-                  <div class="text-muted small">
+
+                  <div class="text-muted small mt-1">
                     <%= listing.category&.name.presence || "Chưa có danh mục" %> •
                     <%= listing.condition.presence || "Chưa có tình trạng" %>
                   </div>
                 </div>
 
-                <span class="badge text-bg-light border">
-                  <%= listing.status_text %>
+                <span class="badge rounded-pill <%= badge_class %> text-center"
+                      style="min-width: 150px; padding: .45rem .7rem;">
+                  <%= badge_text %>
                 </span>
               </div>
 
-              <hr>
+              <% if order.present? && order.cancelled? %>
+                <div class="text-danger small mt-2">
+                  Đơn hàng #<%= order.id %> đã bị huỷ.
+                </div>
+              <% end %>
 
-              <div class="d-flex gap-2">
-                <%= link_to "Chỉnh sửa", edit_seller_listing_path(listing, step: 1), class: "btn btn-sm btn-outline-primary" %>
-                <%= link_to "Xem", seller_listing_path(listing), class: "btn btn-sm btn-outline-secondary" %>
+              <hr class="my-3">
+
+              <div class="d-flex justify-content-end gap-2">
+              <%= link_to "Chỉnh sửa", edit_seller_listing_path(listing, step: 1), class: "btn btn-sm btn-outline-primary" %>
+                <%= link_to "Xem",
+                      seller_listing_path(listing),
+                      class: "btn btn-sm btn-outline-secondary" %>
               </div>
             </div>
           </div>
@@ -73,6 +118,9 @@
     </div>
   <% end %>
 </div>
-<div class="d-flex justify-content-center mt-4">
-  <%= paginate @listings %>
+
+<div class="container" style="max-width:1100px;">
+  <div class="d-flex justify-content-center mt-4">
+    <%= paginate @listings, params: request.query_parameters %>
+  </div>
 </div>
