@@ -25,8 +25,8 @@ registry:
 env:
   clear:
     # Cấu hình Database & Redis
-    DB_HOST: 103.200.23.123
-    REDIS_URL: redis://103.200.23.123:6379/1
+    DB_HOST: snapbid-db
+    REDIS_URL: redis://snapbid-redis:6379/1
 
     # Các biến cấu hình chung
     ADMIN_QR_PAYLOAD: "BANK:XXX|ACC:123456789|NAME:SNAPBID ADMIN"
@@ -50,3 +50,25 @@ env:
     GOOGLE_CLIENT_SECRET: <%= ENV["GOOGLE_CLIENT_SECRET"] %>
     OPENAI_API_KEY: <%= ENV["OPENAI_API_KEY"] %>
     SMTP_PASS: <%= ENV["SMTP_PASS"] %>
+
+accessories:
+  db:
+    image: postgres:16
+    host: 103.200.23.123
+    # QUAN TRỌNG NHẤT: Thêm 127.0.0.1 vào trước để KHÓA CỬA, chỉ cho nội bộ VPS vào
+    port: "127.0.0.1:5432:5432"
+    env:
+      clear:
+        POSTGRES_USER: postgres
+        POSTGRES_DB: snapbid_production
+        POSTGRES_PASSWORD: <%= ENV["POSTGRES_PASSWORD"] %>
+    directories:
+      - data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    host: 103.200.23.123
+    # Cũng khóa Redis lại luôn cho chắc
+    port: "127.0.0.1:6379:6379"
+    directories:
+      - data:/data
