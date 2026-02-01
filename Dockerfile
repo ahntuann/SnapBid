@@ -5,6 +5,7 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 WORKDIR /rails
 
+# Chỉ cài các thư viện cần cho Ruby/Postgres
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
@@ -16,30 +17,25 @@ ENV RAILS_ENV="production" \
 
 FROM base AS build
 
-# --- 1. Cài Nodejs va Yarn ---
+# Cài tool để build gem (git, build-essential...) - KHÔNG CÀI NODE/YARN NỮA
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config && \
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install --no-install-recommends -y nodejs && \
-    npm install -g yarn && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# --- 2. Cài Gems (Ruby) ---
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
-
 COPY . .
 
+# Fix lỗi xuống dòng của Window nếu có
 RUN find . -type f -executable -exec sed -i 's/\r$//' {} \; 2>/dev/null || true
 RUN sed -i 's/\r$//' bin/* 2>/dev/null || true
 
 RUN bundle exec bootsnap precompile app/ lib/
 
+# Precompile assets (Chạy thuần Ruby, không gọi node nữa)
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 FROM base
