@@ -1,9 +1,47 @@
-<footer class="border-top bg-white mt-auto">
-  <div class="container py-3 d-flex flex-column flex-md-row align-items-center justify-content-between gap-2">
-    <div class="text-secondary small">© <%= Time.current.year %> SnapBid</div>
-    <div class="d-flex gap-3 small">
-      <a class="text-secondary text-decoration-none" href="#">Terms</a>
-      <a class="text-secondary text-decoration-none" href="#">Privacy</a>
+<footer class="sb-footer mt-auto">
+  <div class="container" style="max-width: 1100px;">
+    <div class="row g-4 py-4">
+      <div class="col-12 col-md-5">
+        <div class="fw-semibold mb-2">SnapBid</div>
+        <div class="text-muted small">
+          Theo dõi thời gian kết thúc theo thời gian thực, lưu sản phẩm quan tâm và săn deal phút chót.
+        </div>
+      </div>
+
+      <div class="col-6 col-md-2">
+        <div class="fw-semibold mb-2">Khám phá</div>
+        <div class="d-grid gap-1 small">
+          <a href="<%= root_path(sort: "ending_soon") %>">Sắp kết thúc</a>
+          <a href="<%= root_path(sort: "newest") %>">Mới đăng</a>
+          <a href="<%= root_path %>">Tất cả</a>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-2">
+        <div class="fw-semibold mb-2">Hỗ trợ</div>
+        <div class="d-grid gap-1 small">
+          <a href="#">FAQ</a>
+          <a href="#">Chính sách</a>
+          <a href="#">Liên hệ</a>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-3">
+        <div class="fw-semibold mb-2">Kết nối</div>
+        <div class="d-flex gap-3">
+          <a class="text-muted" href="#" aria-label="Facebook"><i class="bi bi-facebook fs-5"></i></a>
+          <a class="text-muted" href="#" aria-label="Instagram"><i class="bi bi-instagram fs-5"></i></a>
+          <a class="text-muted" href="#" aria-label="TikTok"><i class="bi bi-tiktok fs-5"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center py-3 border-top small text-muted">
+      <div>© <%= Time.current.year %> SnapBid</div>
+      <div class="d-flex gap-3">
+        <a class="text-muted" href="#">Điều khoản</a>
+        <a class="text-muted" href="#">Bảo mật</a>
+      </div>
     </div>
   </div>
 </footer>

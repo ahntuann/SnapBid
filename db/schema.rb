@@ -74,6 +74,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_111351) do
   create_table "listings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "title"
+    t.string "category"
     t.string "condition"
     t.text "seller_note"
     t.integer "status"
@@ -87,7 +88,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_111351) do
     t.datetime "auction_ends_at"
     t.decimal "buy_now_price", precision: 12
     t.bigint "reference_item_id"
-    t.string "category"
     t.bigint "category_id"
     t.index ["category_id"], name: "index_listings_on_category_id"
     t.index ["published_at"], name: "index_listings_on_published_at"
@@ -128,7 +128,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_111351) do
     t.string "recipient_name"
     t.string "recipient_phone"
     t.text "shipping_address"
-    t.datetime "received_at"
     t.index ["buyer_id"], name: "index_orders_on_buyer_id"
     t.index ["listing_id"], name: "index_orders_on_listing_id", unique: true
   end

@@ -1,5 +1,7 @@
 // Import and register all your controllers from the importmap via controllers/**/*_controller
 import { application } from "controllers/application"
+import CountdownController from "./countdown_controller";
+application.register("countdown", CountdownController);
 import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
 eagerLoadControllersFrom("controllers", application)
 import GalleryController from "./gallery_controller"

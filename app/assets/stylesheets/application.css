@@ -2,23 +2,21 @@
  *= require_tree .
  *= require_self
  */
+
+/* helpers */
 .hidden { display: none !important; }
 
+/* notifications dropdown */
 .notifications-menu {
   width: min(420px, 92vw);
   border-radius: 16px;
   overflow: hidden;
-
-  /* ép luôn mở sang trái */
   right: 0 !important;
   left: auto !important;
   transform: translateX(0) !important;
-
-  /* luôn nổi trên navbar + content */
-  z-index: 1080;
+  z-index: 1200; /* luôn nổi hơn mega menu */
 }
 
-/* mobile + màn hình hẹp */
 @media (max-width: 576px) {
   .notifications-menu {
     width: calc(100vw - 16px);
@@ -26,35 +24,23 @@
   }
 }
 
-
-
 /* nice defaults */
 body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 a { text-decoration: none; }
 a:hover { text-decoration: underline; }
 
+/* gallery */
 .gallery-thumb {
   width: 92px;
   height: 66px;
   opacity: 0.85;
   transition: all 120ms ease;
 }
+.gallery-thumb:hover { opacity: 1; transform: translateY(-1px); }
+.gallery-thumb.active { outline: 2px solid #0d6efd; opacity: 1; }
 
-.gallery-thumb:hover {
-  opacity: 1;
-  transform: translateY(-1px);
-}
-
-.gallery-thumb.active {
-  outline: 2px solid #0d6efd;
-  opacity: 1;
-}
-
-/* Pagination (Kaminari / WillPaginate basic) */
-.pagination {
-  margin: 0;
-  gap: 6px;
-}
+/* Pagination */
+.pagination { margin: 0; gap: 6px; }
 .pagination .page a,
 .pagination .page span,
 .pagination .first a,
@@ -102,26 +88,433 @@ a:hover { text-decoration: underline; }
   background: #f3f4f6;
 }
 
-.pagination .page-link {
-  border-radius: 12px;
-  padding: 10px 14px;
-}
+.pagination .page-link { border-radius: 12px; padding: 10px 14px; }
+.pagination .page-item.active .page-link { color: #fff; }
 
-.pagination .page-item.active .page-link {
-  color: #fff;
-}
-
+/* home filter */
 .home-filter-card,
-.home-filter-card .card-body {
-  overflow: visible !important;
-}
+.home-filter-card .card-body { overflow: visible !important; }
 
-.home-filter-card {
-  position: relative;
-  z-index: 10;
-}
+.home-filter-card { position: relative; z-index: 10; }
 
 .home-filter-spacer { height: 260px; }
-@media (min-width: 768px) {
-  .home-filter-spacer { height: 0; }
+@media (min-width: 768px) { .home-filter-spacer { height: 0; } }
+
+/* =========================
+   APP NAV OFFSETS
+   ========================= */
+:root{
+  --sb-bg: #fbf4df;        /* vàng kem nhẹ */
+  --sb-bg-2: #fff7e6;      /* lớp glow */
+  --sb-surface: #ffffff;
+  --sb-text: #111827;
+  --sb-muted: #6b7280;
+
+  --sb-gold: #c88a1c;
+  --sb-gold-dark: #8a5a00;
+  --sb-link: #0a66ff;
+
+  --sb-main-top: 84px;
 }
+
+
+
+.app-main { padding-top: var(--nav-offset); }
+
+/* =========================
+   APPLE-STYLE NAVBAR
+   ========================= */
+.apple-navbar.navbar{
+  min-height: var(--apple-nav-h);
+  padding: 0;
+  background: rgba(255,255,255,.72) !important;
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(0,0,0,.08) !important;
+  z-index: 1040; /* nav trên cùng */
+}
+
+.apple-navbar .container { min-height: var(--apple-nav-h); }
+.apple-navbar .navbar-brand { font-size: 13px; letter-spacing: .01em; }
+
+.apple-navbar__menu{
+  gap: 18px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.apple-navbar .nav-link{
+  font-size: 12.5px;
+  letter-spacing: .01em;
+  color: rgba(0,0,0,.78);
+  padding: 8px 8px;
+  border-radius: 10px;
+  text-decoration: none !important; /* override global underline */
+}
+.apple-navbar .nav-link:hover{
+  color: rgba(0,0,0,.95);
+  background: rgba(0,0,0,.04);
+  text-decoration: none !important;
+}
+
+.apple-navbar .navbar-toggler{
+  border: 0;
+  padding: 8px;
+  border-radius: 10px;
+}
+.apple-navbar .navbar-toggler:focus{ box-shadow: none; }
+
+/* dropdown profile “clean” hơn */
+.apple-navbar .dropdown-menu{
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.12);
+  padding: 8px;
+}
+.apple-navbar .dropdown-item{
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+/* nút auth dạng pill */
+.apple-navbar__btn{
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+}
+
+/* Mobile collapse thành panel blur */
+@media (max-width: 991.98px){
+  .apple-navbar .navbar-collapse{
+    position: fixed;
+    top: var(--apple-nav-h);
+    left: 0; right: 0;
+    padding: 12px 14px 16px;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    z-index: 1035;
+  }
+
+  .apple-navbar__menu{
+    gap: 6px;
+    align-items: stretch !important;
+    margin-bottom: 10px;
+  }
+
+  .apple-navbar .nav-link{
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(0,0,0,.03);
+  }
+}
+
+/* =========================
+   APPLE MEGA MENU + OVERLAY
+   (Panel trắng đặc; nền bên dưới blur)
+   ========================= */
+
+/* Overlay: KHÔNG che tối, chỉ tạo blur cho phần phía sau overlay */
+.apple-mega-overlay{
+  position: fixed;
+  top: var(--apple-nav-h);
+  left: 0; right: 0; bottom: 0;
+
+  /* quan trọng: cần 1 nền cực nhẹ để backdrop-filter hoạt động ổn định */
+  background: rgba(255,255,255,0.06);
+
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+
+  opacity: 0;
+  transition: opacity 220ms cubic-bezier(.28,.11,.32,1);
+  z-index: 1020;
+}
+.apple-mega-overlay.is-open{ opacity: 1; }
+
+/* Wrapper */
+.apple-mega-panels{
+  position: fixed;
+  top: var(--apple-nav-h);
+  left: 0; right: 0;
+  z-index: 1030;
+  pointer-events: none;
+}
+
+/* Panel dropdown: NỀN TRẮNG ĐẶC, không blur */
+.apple-mega-panel{
+  pointer-events: auto;
+
+  background: #fff;               /* trắng đặc */
+  border-bottom: 1px solid rgba(0,0,0,.10);
+  box-shadow: 0 24px 60px rgba(0,0,0,.12);
+
+  opacity: 0;
+  transform: translateY(-14px);   /* “chạy xuống” rõ hơn */
+  transition:
+    transform 340ms cubic-bezier(.28,.11,.32,1),
+    opacity   220ms cubic-bezier(.28,.11,.32,1);
+
+  will-change: transform, opacity;
+}
+
+.apple-mega-panel.is-open{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.apple-mega-panel__inner{
+  padding: 18px 0 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  gap: 18px;
+}
+
+.apple-mega-title{
+  font-size: 12px;
+  color: rgba(0,0,0,.55);
+  letter-spacing: .02em;
+  margin-bottom: 10px;
+}
+
+.apple-mega-link{
+  display: block;
+  text-decoration: none !important;
+  color: rgba(0,0,0,.86);
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+.apple-mega-link:hover{
+  background: rgba(0,0,0,.04);
+  text-decoration: none !important;
+}
+
+.apple-mega-col--cards{ padding-left: 4px; }
+
+.apple-mega-card{
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  text-decoration: none !important;
+  color: rgba(0,0,0,.9);
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.03);
+  margin-bottom: 10px;
+}
+.apple-mega-card:hover{ background: rgba(0,0,0,.05); }
+.apple-mega-card--static:hover{ background: rgba(0,0,0,.03); }
+
+.apple-mega-card__icon{
+  width: 34px; height: 34px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.06);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.apple-mega-card__headline{ font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.apple-mega-card__sub{ font-size: 12.5px; color: rgba(0,0,0,.62); }
+
+.apple-mega-tip{
+  font-size: 12.5px;
+  color: rgba(0,0,0,.6);
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.02);
+}
+
+/* Desktop only: mega menu; Mobile tắt (dùng collapse) */
+@media (max-width: 991.98px){
+  .apple-mega-overlay,
+  .apple-mega-panels{ display:none !important; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .apple-mega-overlay,
+  .apple-mega-panel{ transition: none; }
+}
+
+/* ===== SnapBid Warm Theme (match banner) ===== */
+body{
+  background:
+    radial-gradient(circle at 30% 0%, rgba(200,138,28,0.10), transparent 45%),
+    radial-gradient(circle at 70% 10%, rgba(255,219,140,0.18), transparent 48%),
+    linear-gradient(180deg, var(--sb-bg-2), var(--sb-bg));
+  color: var(--sb-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+a{ color: var(--sb-link); }
+a:hover{ color: var(--sb-link); }
+
+/* Bootstrap primary -> vàng đồng bộ banner */
+.btn.btn-primary{
+  background-color: var(--sb-gold) !important;
+  border-color: var(--sb-gold) !important;
+  color: #fff !important;
+}
+.btn.btn-primary:hover{
+  background-color: #b57a12 !important;
+  border-color: #b57a12 !important;
+}
+
+/* ===== Store Hero (banner) ===== */
+.sb-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+.sb-full-bleed{
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+}
+
+.sb-store-hero{
+  position: relative;
+  padding: 62px 0 0;            /* tăng padding top */
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: 100% auto;
+  background-color: #fafafa;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  overflow: hidden;
+  min-height: 340px;            /* TO hơn */
+}
+
+.sb-store-title{
+  font-size: clamp(3rem, 5.2vw, 5rem);  /* TO hơn */
+  letter-spacing: -0.03em;
+  font-weight: 850;
+  color: var(--sb-gold-dark);
+  margin: 0;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+}
+
+.sb-store-sub{
+  font-weight: 800;
+  font-size: clamp(1.15rem, 2.2vw, 1.9rem); /* to hơn */
+  line-height: 1.15;
+  color: #0f172a;
+}
+
+@media (max-width: 576px){
+  .sb-store-hero{ min-height: 260px; padding-top: 46px; }
+}
+
+
+/* overlay nhẹ để chữ đọc rõ */
+.sb-store-hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(
+    to bottom,
+    rgba(251,248,242,0.0) 0%,
+    rgba(251,248,242,0.35) 35%,
+    rgba(251,248,242,0.72) 100%
+  );
+  pointer-events:none;
+}
+
+.sb-hero-content{ position: relative; z-index: 1; padding-bottom: 12px; }
+
+
+.sb-store-link{
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .95rem;
+  text-decoration: none;
+}
+.sb-store-link:hover{ text-decoration: underline; }
+
+/* categories row */
+.sb-store-cats-wrap{
+  padding: 12px 0 10px;                 /* thấp hơn */
+  background: rgba(255,255,255,0.70);
+  backdrop-filter: blur(6px);
+}
+
+.sb-cat{
+  flex: 1 1 86px;
+  max-width: 110px;                      /* nhỏ hơn */
+}
+
+.sb-cat-icon{
+  width: 44px;                           /* nhỏ icon box */
+  height: 44px;
+  margin: 0 auto 8px;
+  border-radius: 14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.06);
+  transition: transform 140ms ease;
+}
+
+.sb-cat-icon i{ font-size: 20px; }       /* nhỏ icon */
+.sb-cat-label{ font-size: .86rem; font-weight: 700; }
+
+
+.sb-store-cats{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content: space-between;
+  gap: 14px 18px;
+}
+
+.sb-cat{
+  flex: 1 1 92px;
+  max-width: 120px;
+  text-align:center;
+  color:#111;
+  text-decoration:none !important;
+}
+
+.sb-cat-icon{
+  width:56px;
+  height:56px;
+  margin:0 auto 10px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.06);
+  transition: transform 140ms ease;
+}
+.sb-cat:hover .sb-cat-icon{ transform: translateY(-1px); }
+.sb-cat-icon i{ font-size:24px; }
+
+.sb-cat-label{
+  font-size: .92rem;
+  font-weight: 700;
+}
+
+/* Sticky filter dưới navbar */
+.sb-sticky-under-nav{
+  position: sticky;
+  top: calc(var(--sb-main-top) + 8px);
+  z-index: 1020;
+}
+
+@media (max-width: 576px){
+  .sb-store-hero{ min-height: 210px; padding-top: 34px; }
+  .sb-store-cats{ justify-content: center; }
+  .sb-cat{ max-width: 96px; }
+}
+
+

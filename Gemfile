@@ -26,6 +26,8 @@ gem "kaminari"
 gem "solid_queue"
 gem "image_processing", "~> 1.2"
 gem "cloudinary"
+# Handle Cross-Origin Resource Sharing (CORS)
+gem "rack-cors"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
@@ -73,3 +75,7 @@ end
 group :development do
   gem "letter_opener"
 end
+
+gem "cssbundling-rails", "~> 1.4"
+
+gem "dartsass-sprockets"

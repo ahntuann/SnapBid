@@ -39,6 +39,10 @@ RUN bundle install && \
 # Copy application code
 COPY . .
 
+# Fix line endings for executables and precompile assets
+RUN find . -type f -executable -exec sed -i 's/\r$//' {} \; 2>/dev/null || true
+RUN sed -i 's/\r$//' bin/* 2>/dev/null || true
+
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 

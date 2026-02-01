@@ -1,34 +1,97 @@
-<div class="container" style="max-width: 1100px;">
-  
-  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
-    <h1 class="fw-semibold fs-4 mb-0">Các sản phẩm đấu giá</h1>
+<div class="container home-page" style="max-width: 1100px;">
 
-    <form method="get" action="<%= root_path %>" class="d-flex gap-2 flex-wrap flex-grow-1 justify-content-md-end">
-      <input type="text"
-             name="q"
-             value="<%= @q %>"
-             placeholder="<%= t("home.search_placeholder") %>"
-             class="form-control"
-             style="max-width: 420px; min-width: 200px;" />
+  <%# ===== Store Hero (Apple Store vibe) ===== %>
+  <section
+    class="sb-store-hero sb-full-bleed mb-4"
+    style="background-image: url('<%= asset_path("snapbid_banner_combined_v2.png") %>');"
+  >
+    <div class="container" style="max-width: 1100px;">
+      <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 sb-hero-content">
+        <h1 class="sb-store-title mb-0">Cửa Hàng</h1>
 
-      <button type="submit" class="btn btn-primary">
-        <i class="bi bi-search"></i>
-      </button>
-    </form>
+        <div class="text-md-end">
+          <div class="sb-store-sub mb-1">
+            Săn deal phút chót, chốt giá thông minh.
+          </div>
+          <a class="sb-store-link" href="#browse">
+            Khám phá sản phẩm <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <%# ===== Category icons row ===== %>
+    <div class="sb-store-cats-wrap">
+      <div class="container" style="max-width: 1100px;">
+        <% icons = %w[
+          bi-laptop bi-phone bi-tablet bi-smartwatch
+          bi-headphones bi-gem bi-house bi-car-front
+        ] %>
+
+        <div class="sb-store-cats">
+          <% (@categories || []).first(8).each_with_index do |cat, idx| %>
+            <a class="sb-cat" href="<%= root_path(category_id: cat.id, q: @q, condition: @condition, sort: @sort) %>">
+              <span class="sb-cat-icon"><i class="bi <%= icons[idx % icons.length] %>"></i></span>
+              <span class="sb-cat-label"><%= cat.name %></span>
+            </a>
+          <% end %>
+
+          <a class="sb-cat" href="<%= root_path %>">
+            <span class="sb-cat-icon"><i class="bi bi-grid-3x3-gap"></i></span>
+            <span class="sb-cat-label">Tất cả</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="browse"></div>
+
+  <%# ===== Section header + Search ===== %>
+  <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+    <div class="me-auto">
+      <h2 class="fw-semibold fs-4 mb-1">Sản phẩm đang đấu giá</h2>
+      <div class="text-muted small">
+        Ưu tiên xem “Sắp kết thúc” để không bỏ lỡ.
+      </div>
+    </div>
+
+    
   </div>
 
-  <div class="card shadow-sm mb-4 home-filter-card bg-light border-0">
-    <div class="card-body">
+  <%# ===== Summary + Mobile filter button ===== %>
+  <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+    <div class="text-muted small">
+      <% total = (@listings.respond_to?(:total_count) ? @listings.total_count : @listings.size) %>
+      <span class="fw-semibold"><%= total %></span> sản phẩm
+      <% if @q.present? %>
+        <span class="ms-1">· Kết quả cho: <span class="fw-semibold">"<%= @q %>"</span></span>
+      <% end %>
+    </div>
+
+    <div class="d-md-none">
+      <button class="btn btn-outline-secondary btn-sm"
+              type="button"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#homeFilters"
+              aria-controls="homeFilters">
+        <i class="bi bi-sliders"></i>
+        Bộ lọc
+      </button>
+    </div>
+  </div>
+
+  <%# ===== Desktop Filter Bar (sticky dưới navbar) ===== %>
+  <div class="card shadow-sm mb-4 bg-light border-0 d-none d-md-block sb-sticky-under-nav">
+    <div class="card-body py-3 home-filter-card">
       <form method="get" action="<%= root_path %>" class="row g-2 align-items-end">
         <input type="hidden" name="q" value="<%= @q %>">
 
-        <div class="col-12 col-md-3">
+        <div class="col-md-3">
           <label class="form-label small text-muted mb-1"><%= t("home.filters.category") %></label>
-          <select name="category_id"
-                  class="form-select form-select-sm"
-                  onchange="this.form.requestSubmit()">
+          <select name="category_id" class="form-select form-select-sm" onchange="this.form.requestSubmit()">
             <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.category") %></option>
-            <% @categories.each do |cat| %>
+            <% (@categories || []).each do |cat| %>
               <option value="<%= cat.id %>" <%= "selected" if @category_id.to_s == cat.id.to_s %>>
                 <%= cat.name %>
               </option>
@@ -36,44 +99,66 @@
           </select>
         </div>
 
-        <div class="col-12 col-md-3">
+        <div class="col-md-3">
           <label class="form-label small text-muted mb-1"><%= t("home.filters.condition") %></label>
-          <select name="condition"
-                  class="form-select form-select-sm"
-                  onchange="this.form.requestSubmit()">
+          <select name="condition" class="form-select form-select-sm" onchange="this.form.requestSubmit()">
             <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.condition") %></option>
-            <% @conditions.each do |c| %>
+            <% (@conditions || []).each do |c| %>
               <option value="<%= c %>" <%= "selected" if @condition == c %>><%= c %></option>
             <% end %>
           </select>
         </div>
 
-        <div class="col-12 col-md-3">
+        <div class="col-md-3">
           <label class="form-label small text-muted mb-1"><%= t("home.filters.sort") %></label>
-          <select name="sort"
-                  class="form-select form-select-sm"
-                  onchange="this.form.requestSubmit()">
+          <select name="sort" class="form-select form-select-sm" onchange="this.form.requestSubmit()">
             <option value="newest" <%= "selected" if @sort == "newest" %>><%= t("home.filters.newest") %></option>
-            <option value="price_asc" <%= "selected" if @sort == "price_asc" %>>Giá khởi điểm ↑</option>
-            <option value="price_desc" <%= "selected" if @sort == "price_desc" %>>Giá khởi điểm ↓</option>
+            <option value="ending_soon" <%= "selected" if @sort == "ending_soon" %>>Sắp kết thúc</option>
+            <option value="price_asc" <%= "selected" if @sort == "price_asc" %>>Giá hiện tại ↑</option>
+            <option value="price_desc" <%= "selected" if @sort == "price_desc" %>>Giá hiện tại ↓</option>
           </select>
         </div>
 
-        <div class="col-12 col-md-3 d-flex gap-2">
-          <a href="<%= root_path %>" class="btn btn-outline-secondary btn-sm flex-grow-1">Reset</a>
+        <div class="col-md-3 d-flex gap-2">
+          <a href="<%= root_path %>" class="btn btn-outline-secondary btn-sm flex-grow-1">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset
+          </a>
         </div>
       </form>
-
     </div>
   </div>
 
-  <div class="row g-3">
-    <% @listings.each do |listing| %>
-      <%= render "listings/grid_card", listing: listing %>
-    <% end %>
+  <%# ===== Mobile Offcanvas Filters ===== %>
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="homeFilters" aria-labelledby="homeFiltersLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="homeFiltersLabel"><i class="bi bi-sliders"></i> Bộ lọc</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Đóng"></button>
+    </div>
+    
   </div>
 
-  <div class="d-flex justify-content-center mt-5 mb-4">
-    <%= paginate @listings %>
-  </div>
+  <%# ===== Grid ===== %>
+  <% if @listings.blank? %>
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4 text-center">
+        <div class="display-6 mb-2">😕</div>
+        <div class="fw-semibold mb-1">Chưa có sản phẩm phù hợp</div>
+        <div class="text-muted mb-3">Thử đổi bộ lọc hoặc tìm kiếm từ khoá khác nhé.</div>
+        <a class="btn btn-outline-primary" href="<%= root_path %>">
+          <i class="bi bi-arrow-counterclockwise"></i> Reset bộ lọc
+        </a>
+      </div>
+    </div>
+  <% else %>
+    <div class="row g-3">
+      <% @listings.each do |listing| %>
+        <%= render "listings/grid_card", listing: listing %>
+      <% end %>
+    </div>
+
+    <div class="d-flex justify-content-center mt-5 mb-4">
+      <%= paginate @listings %>
+    </div>
+  <% end %>
+
 </div>

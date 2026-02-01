@@ -10,8 +10,17 @@ Rails.application.routes.draw do
   get "home/index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-   root "home#index"
-   resources :listings, only: [:show]
+  root "home#index"
+  resources :listings, only: [:show]
+
+  # API Routes
+  # namespace :api do
+  #   namespace :v1 do
+  #     resources :listings, only: [:index, :show]
+  #     post '/login', to: 'users#login'
+  #     get '/profile', to: 'users#profile'
+  #   end
+  # end
 
   namespace :admin do
     resource :settings, only: %i[show edit update]
