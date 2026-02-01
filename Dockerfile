@@ -16,7 +16,7 @@ ENV RAILS_ENV="production" \
 
 FROM base AS build
 
-# --- Cài Nodejs va Yarn ---
+# --- 1. Cài Nodejs va Yarn ---
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
@@ -24,10 +24,14 @@ RUN apt-get update -qq && \
     npm install -g yarn && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+# --- 2. Cài Gems (Ruby) ---
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
+
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
 COPY . .
 
