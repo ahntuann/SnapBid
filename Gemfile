@@ -76,6 +76,3 @@ group :development do
   gem "letter_opener"
 end
 
-gem "cssbundling-rails", "~> 1.4"
-
-gem "dartsass-sprockets"
