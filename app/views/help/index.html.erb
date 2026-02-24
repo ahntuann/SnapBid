@@ -1,0 +1,132 @@
+<div class="help-page">
+  <%# Hero Banner (Search Section) %>
+  <section class="help-hero sb-full-bleed">
+    <div class="container text-center" style="max-width: 800px;">
+      <h1 class="help-hero-title mb-4">Bạn cần hỗ trợ gì?</h1>
+      <div class="help-search-container">
+        <form action="<%= help_path %>" method="get" class="help-search-form">
+          <i class="bi bi-search help-search-icon"></i>
+          <input type="text" name="q" class="form-control help-search-input" placeholder="Tìm kiếm câu hỏi, hướng dẫn, v.v..." autocomplete="off">
+          <button type="submit" class="btn btn-primary help-search-btn d-none d-md-block">Tìm kiếm</button>
+        </form>
+      </div>
+      <p class="mt-3 help-hero-sub">Các chủ đề phổ biến: 
+        <a href="#faq">đặt giá thầu</a>, <a href="#faq">chính sách trả hàng</a>, <a href="#faq">bán đấu giá</a>
+      </p>
+    </div>
+  </section>
+
+  <%# Cấu trúc nội dung chính %>
+  <div class="container py-5" style="max-width: 1100px;">
+    
+    <%# Categories Grid %>
+    <section class="help-section mb-5">
+      <h2 class="help-section-title text-center mb-4">Chủ đề hỗ trợ</h2>
+      <div class="row g-4">
+        
+        <div class="col-md-4 col-sm-6">
+          <a href="#" class="help-category-card">
+            <div class="help-cat-icon bg-light-gold">
+              <i class="bi bi-bag-check-fill text-gold"></i>
+            </div>
+            <h3 class="help-cat-title">Mua & Đấu giá</h3>
+            <p class="help-cat-desc">Cách đặt giá, theo dõi sản phẩm, thanh toán đơn hàng thành công.</p>
+          </a>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <a href="#" class="help-category-card">
+            <div class="help-cat-icon bg-light-blue">
+              <i class="bi bi-shop text-blue"></i>
+            </div>
+            <h3 class="help-cat-title">Bán hàng</h3>
+            <p class="help-cat-desc">Hướng dẫn tạo phiên đấu giá, duyệt bài AI, rút tiền về ví.</p>
+          </a>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <a href="#" class="help-category-card">
+            <div class="help-cat-icon bg-light-green">
+              <i class="bi bi-box-seam text-green"></i>
+            </div>
+            <h3 class="help-cat-title">Giao nhận hàng</h3>
+            <p class="help-cat-desc">Theo dõi mã vận đơn, chính sách đóng gói, xử lý khiếu nại.</p>
+          </a>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <a href="#" class="help-category-card">
+            <div class="help-cat-icon bg-light-purple">
+              <i class="bi bi-person-fill-gear text-purple"></i>
+            </div>
+            <h3 class="help-cat-title">Tài khoản & Bảo mật</h3>
+            <p class="help-cat-desc">Đổi mật khẩu, quản lý thông tin, xác thực danh tính.</p>
+          </a>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <a href="#" class="help-category-card">
+            <div class="help-cat-icon bg-light-orange">
+              <i class="bi bi-shield-check text-orange"></i>
+            </div>
+            <h3 class="help-cat-title">Chính sách & Quy định</h3>
+            <p class="help-cat-desc">Điều khoản dịch vụ, hàng hoá bị cấm, quy tắc ứng xử.</p>
+          </a>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <a href="#" class="help-category-card">
+            <div class="help-cat-icon bg-light-gray">
+              <i class="bi bi-chat-dots-fill text-dark"></i>
+            </div>
+            <h3 class="help-cat-title">Liên hệ CSKH</h3>
+            <p class="help-cat-desc">Cách liên lạc trực tiếp với đội ngũ hỗ trợ SnapBid.</p>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <hr class="mb-5 help-divider">
+
+    <%# FAQs %>
+    <section class="help-section mb-5" id="faq">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <h2 class="help-section-title mb-4">Câu hỏi thường gặp (FAQ)</h2>
+          
+          <div class="accordion help-accordion" id="helpFaqAccordion">
+            <% @popular_faqs.each_with_index do |faq, index| %>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFAQ<%= faq[:id] %>">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFAQ<%= faq[:id] %>" aria-expanded="false" aria-controls="collapseFAQ<%= faq[:id] %>">
+                    <%= faq[:question] %>
+                  </button>
+                </h2>
+                <div id="collapseFAQ<%= faq[:id] %>" class="accordion-collapse collapse" aria-labelledby="headingFAQ<%= faq[:id] %>" data-bs-parent="#helpFaqAccordion">
+                  <div class="accordion-body">
+                    <%= faq[:answer] %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          
+        </div>
+      </div>
+    </section>
+
+    <%# Call to action %>
+    <section class="help-cta text-center py-5 px-3 rounded-4 bg-white shadow-sm mt-5">
+      <div class="mb-3">
+        <i class="bi bi-envelope-paper display-5 text-muted"></i>
+      </div>
+      <h3 class="h4 fw-bold">Vẫn không tìm thấy câu trả lời?</h3>
+      <p class="text-muted mb-4">Đội ngũ CSKH của chúng tôi luôn sẵn sàng hỗ trợ 24/7.</p>
+      <a href="mailto:support@snapbid.vn" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
+        <i class="bi bi-envelope me-2"></i> Gửi email cho chúng tôi
+      </a>
+    </section>
+
+  </div>
+</div>

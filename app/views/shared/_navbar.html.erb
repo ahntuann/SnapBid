@@ -52,6 +52,15 @@
                 aria: { controls: "mega-mine", expanded: "false" },
                 "aria-haspopup": "true" %>
           </li>
+
+          <li class="nav-item">
+            <%= link_to "Hỗ Trợ", help_path,
+                class: "nav-link js-mega-trigger",
+                data: { mega: "support" },
+                role: "button",
+                aria: { controls: "mega-support", expanded: "false" },
+                "aria-haspopup": "true" %>
+          </li>
         <% else %>
           <li class="nav-item">
             <%= link_to "Cửa Hàng", root_path,
@@ -72,7 +81,7 @@
           </li>
 
           <li class="nav-item">
-            <%= link_to "Hỗ Trợ", "#",
+            <%= link_to "Hỗ Trợ", help_path,
                 class: "nav-link js-mega-trigger",
                 data: { mega: "support" },
                 role: "button",
@@ -318,10 +327,10 @@
       <div class="container apple-mega-panel__inner">
         <div class="apple-mega-col">
           <div class="apple-mega-title">Hỗ trợ</div>
-          <a class="apple-mega-link" href="#">FAQ</a>
+          <a class="apple-mega-link" href="<%= help_path %>">Trung tâm Hỗ trợ</a>
+          <a class="apple-mega-link" href="<%= help_path %>#faq">Hỏi & Đáp (FAQ)</a>
           <a class="apple-mega-link" href="#">Chính sách</a>
           <a class="apple-mega-link" href="#">Liên hệ</a>
-          <a class="apple-mega-link" href="#">Báo cáo vấn đề</a>
         </div>
         <div class="apple-mega-col">
           <div class="apple-mega-title">Tài khoản</div>
