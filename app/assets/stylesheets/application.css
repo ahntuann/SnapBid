@@ -34,6 +34,9 @@
 
   /* Navbar height */
   --apple-nav-h: 44px;
+
+  /* Offset cho app-main padding-top (bằng navbar height) */
+  --nav-offset: var(--apple-nav-h);
 }
 
 
@@ -317,14 +320,18 @@ a:hover {
 .apple-mega-panels.is-active .apple-mega-panel {
   transition: opacity 150ms ease, visibility 150ms;
 }
+
 .apple-mega-panels.is-active .apple-mega-panel:not(.is-open) {
-  transform: translateY(0); /* Đứng im tại chỗ rồi mờ dần */
+  transform: translateY(0);
+  /* Đứng im tại chỗ rồi mờ dần */
 }
 
 /* Panel dropdown: nền trắng đặc */
 .apple-mega-panel {
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   pointer-events: auto;
   background: #fff;
   border-bottom: 1px solid rgba(0, 0, 0, .10);
@@ -471,7 +478,7 @@ a:hover {
 
 
 /* ============================================================
-   10. STORE HERO (Banner trang chủ)
+   10. STORE HERO (Banner trang chủ — Apple Store style)
    ============================================================ */
 
 /* Full-bleed: kéo section ra hết chiều rộng viewport */
@@ -484,145 +491,205 @@ a:hover {
   width: 100vw;
 }
 
-/* Wrapper nội dung canh giữa */
-.sb-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 12px;
-}
-
-/* Section hero */
+/* Section hero — flex column, text đẩy xuống dưới */
 .sb-store-hero {
   position: relative;
-  padding: 62px 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 260px;
+  background-color: #fdf6e3;
   background-repeat: no-repeat;
   background-position: center top;
   background-size: 100% auto;
-  background-color: #fafafa;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: none;
   overflow: hidden;
-  min-height: 340px;
 }
 
-/* Overlay gradient nhẹ giúp chữ dễ đọc */
-.sb-store-hero::after {
+/* Overlay gradient từ dưới lên — bảo vệ chữ  */
+.sb-store-hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom,
-      rgba(251, 248, 242, 0.00) 0%,
-      rgba(251, 248, 242, 0.35) 35%,
-      rgba(251, 248, 242, 0.72) 100%);
+  background: linear-gradient(to top,
+      rgba(253, 246, 227, 0.70) 0%,
+      rgba(253, 246, 227, 0.15) 40%,
+      rgba(253, 246, 227, 0.00) 70%);
   pointer-events: none;
+  z-index: 0;
 }
 
-/* Tiêu đề lớn */
-.sb-store-title {
-  font-size: clamp(3rem, 5.2vw, 5rem);
-  letter-spacing: -0.03em;
-  font-weight: 850;
-  color: var(--sb-gold-dark);
-  margin: 0;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+.sb-store-hero::after {
+  display: none;
 }
 
-/* Phụ đề */
-.sb-store-sub {
-  font-weight: 800;
-  font-size: clamp(1.15rem, 2.2vw, 1.9rem);
-  line-height: 1.15;
-  color: #0f172a;
+/* Wrapper nội dung hero — rộng, sát viền */
+.sb-hero-inner {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
-/* Link "Khám phá →" */
-.sb-store-link {
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
-  font-size: .95rem;
-  text-decoration: none;
-}
-
-.sb-store-link:hover {
-  text-decoration: underline;
-}
-
-/* Nội dung hero nằm trên overlay */
+/* Nội dung hero nằm trên overlay, sát dưới */
 .sb-hero-content {
   position: relative;
   z-index: 1;
-  padding-bottom: 12px;
+  width: 100%;
+  padding-bottom: 28px;
+  align-items: flex-start !important;
+}
+
+/* Tiêu đề lớn — dùng font hệ thống Apple (SF Pro trên Mac/iOS) */
+.sb-store-title {
+  font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: clamp(3.2rem, 6vw, 5.5rem);
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  line-height: 1.0;
+  color: var(--sb-gold-dark);
+  margin: 0;
+}
+
+/* Phụ đề — to, đậm, dark như Apple */
+.sb-store-sub {
+  font-weight: 700;
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
+  line-height: 1.15;
+  color: #1d1d1f;
+  letter-spacing: -0.02em;
+}
+
+/* Link "Khám phá →" — style Apple blue link */
+.sb-store-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: 1rem;
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: 400;
+  margin-top: 6px;
+}
+
+.sb-store-link:hover {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+.sb-store-link i {
+  font-size: .85rem;
+  transition: transform 180ms ease;
+}
+
+.sb-store-link:hover i {
+  transform: translateX(3px);
 }
 
 /* Responsive hero */
-@media (max-width: 576px) {
+@media (max-width: 768px) {
   .sb-store-hero {
-    min-height: 210px;
-    padding-top: 34px;
+    padding-top: 36px;
+  }
+
+  .sb-hero-content {
+    padding-bottom: 28px;
+    gap: 16px !important;
+  }
+
+  .sb-store-sub {
+    font-size: 1.1rem;
   }
 }
 
 
 /* ============================================================
-   11. CATEGORY ICONS ROW (dưới hero)
+   11. CATEGORY ICONS ROW (dưới hero — Apple style)
    ============================================================ */
 .sb-store-cats-wrap {
-  padding: 12px 0 10px;
-  background: rgba(255, 255, 255, 0.70);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  padding: 20px 0 18px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .sb-store-cats {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 14px 18px;
+  gap: 8px;
 }
 
 .sb-cat {
-  flex: 1 1 92px;
-  max-width: 120px;
+  flex: 1 1 80px;
+  max-width: 110px;
   text-align: center;
-  color: #111;
+  color: #1d1d1f;
+  text-decoration: none !important;
+  transition: opacity 200ms ease;
+}
+
+.sb-cat:hover {
+  opacity: 0.75;
   text-decoration: none !important;
 }
 
 .sb-cat-icon {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 10px;
-  border-radius: 18px;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  transition: transform 140ms ease;
+  background: #e8e8ed;
+  transition: background 200ms ease;
 }
 
 .sb-cat:hover .sb-cat-icon {
-  transform: translateY(-1px);
+  background: #d2d2d7;
 }
 
 .sb-cat-icon i {
-  font-size: 24px;
+  font-size: 26px;
+  color: #1d1d1f;
 }
 
 .sb-cat-label {
-  font-size: .92rem;
-  font-weight: 700;
+  font-size: .82rem;
+  font-weight: 500;
+  color: #1d1d1f;
+  letter-spacing: -0.01em;
 }
 
-/* Mobile: căn giữa, thu nhỏ */
+/* Mobile: scroll ngang nếu nhiều category */
 @media (max-width: 576px) {
   .sb-store-cats {
-    justify-content: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 20px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .sb-store-cats::-webkit-scrollbar {
+    display: none;
   }
 
   .sb-cat {
-    max-width: 96px;
+    flex: 0 0 72px;
+    max-width: 72px;
+  }
+
+  .sb-cat-icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .sb-cat-icon i {
+    font-size: 22px;
   }
 }
 
