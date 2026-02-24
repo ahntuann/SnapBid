@@ -8,4 +8,8 @@ class HelpController < ApplicationController
       { id: 4, question: "Làm sao để đăng bán một sản phẩm?", answer: "Truy cập mục 'Bán hàng', điền đầy đủ hình ảnh, mô tả, mức giá khởi điểm và thời gian kết thúc mong muốn." }
     ]
   end
+
+  def selling
+    # Trang hướng dẫn dành cho người bán
+  end
 end

@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
   root "home#index"
   get "/help", to: "help#index", as: :help
+  get "/help/selling", to: "help#selling", as: :help_selling
   resources :listings, only: [:show]
 
   # API Routes
