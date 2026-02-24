@@ -313,22 +313,35 @@ a:hover {
   pointer-events: none;
 }
 
+/* Khi đang chuyển giữa các menu -> tắt transform trượt, chỉ fade nhẹ */
+.apple-mega-panels.is-active .apple-mega-panel {
+  transition: opacity 150ms ease, visibility 150ms;
+}
+.apple-mega-panels.is-active .apple-mega-panel:not(.is-open) {
+  transform: translateY(0); /* Đứng im tại chỗ rồi mờ dần */
+}
+
 /* Panel dropdown: nền trắng đặc */
 .apple-mega-panel {
+  position: absolute;
+  top: 0; left: 0; right: 0;
   pointer-events: auto;
   background: #fff;
   border-bottom: 1px solid rgba(0, 0, 0, .10);
   box-shadow: 0 24px 60px rgba(0, 0, 0, .12);
   opacity: 0;
+  visibility: hidden;
   transform: translateY(-14px);
   transition:
     transform 340ms cubic-bezier(.28, .11, .32, 1),
-    opacity 220ms cubic-bezier(.28, .11, .32, 1);
+    opacity 220ms cubic-bezier(.28, .11, .32, 1),
+    visibility 340ms;
   will-change: transform, opacity;
 }
 
 .apple-mega-panel.is-open {
   opacity: 1;
+  visibility: visible;
   transform: translateY(0);
 }
 

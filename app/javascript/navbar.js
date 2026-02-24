@@ -4,60 +4,109 @@ document.addEventListener("DOMContentLoaded", function () {
   // ============================================================
   // 1. MEGA MENU (hover desktop)
   // ============================================================
-  const overlay  = document.querySelector(".apple-mega-overlay");
-  const panels   = document.querySelectorAll(".apple-mega-panel");
+  const overlay = document.querySelector(".apple-mega-overlay");
+  const panels = document.querySelectorAll(".apple-mega-panel");
   const triggers = document.querySelectorAll(".js-mega-trigger");
+  const panelsWrap = document.querySelector(".apple-mega-panels");
 
   if (!overlay || !triggers.length) return;
 
   let hideTimer = null;
+  let showTimer = null;
 
   function showPanel(panelId) {
     clearTimeout(hideTimer);
+
+    // Luôn báo hiệu wrapper mở (để lấy nền trắng chung và animation trượt xuống)
+    if (panelsWrap) {
+      panelsWrap.removeAttribute("hidden");
+      void panelsWrap.offsetWidth;
+      panelsWrap.classList.add("is-active");
+    }
+
     panels.forEach(p => {
       const shouldShow = p.id === panelId;
-      p.classList.toggle("is-open", shouldShow);
+      if (shouldShow) {
+        p.removeAttribute("hidden");
+        void p.offsetWidth; // ép reflow
+        p.classList.add("is-open");
+      } else {
+        p.classList.remove("is-open");
+      }
     });
-    overlay.classList.add("is-open");
+
     overlay.removeAttribute("hidden");
+    void overlay.offsetWidth;
+    overlay.classList.add("is-open");
   }
 
   function hideAll() {
     hideTimer = setTimeout(() => {
+      if (panelsWrap) panelsWrap.classList.remove("is-active");
       panels.forEach(p => p.classList.remove("is-open"));
       overlay.classList.remove("is-open");
-    }, 260);
+
+      setTimeout(() => {
+        const isActiveNow = panelsWrap ? panelsWrap.classList.contains("is-active") : false;
+        if (!isActiveNow) {
+          overlay.setAttribute("hidden", "");
+          panels.forEach(p => p.setAttribute("hidden", ""));
+          if (panelsWrap) panelsWrap.setAttribute("hidden", "");
+        }
+      }, 340);
+    }, 150); // Phản xạ đóng
   }
 
   triggers.forEach(trigger => {
     const panelId = trigger.getAttribute("aria-controls");
-    const panel   = panelId ? document.getElementById(panelId) : null;
+    const panel = panelId ? document.getElementById(panelId) : null;
 
     trigger.addEventListener("mouseenter", () => {
-      if (panel) showPanel(panelId);
+      clearTimeout(hideTimer); // Ngăn chặn việc đóng nếu đang hover nhanh qua lại
+      // Chờ 150ms để xác định ý định hover thực sự (Hover Intent)
+      showTimer = setTimeout(() => {
+        if (panel) showPanel(panelId);
+      }, 150);
     });
-    trigger.addEventListener("mouseleave", hideAll);
+
+    trigger.addEventListener("mouseleave", () => {
+      clearTimeout(showTimer); // Hủy ý định mở nếu chuột lướt qua quá nhanh
+      hideAll();
+    });
 
     if (panel) {
-      panel.addEventListener("mouseenter", () => clearTimeout(hideTimer));
-      panel.addEventListener("mouseleave", hideAll);
+      panel.addEventListener("mouseenter", () => {
+        clearTimeout(hideTimer);
+        clearTimeout(showTimer);
+      });
+      panel.addEventListener("mouseleave", () => {
+        hideAll();
+      });
     }
   });
 
   // Click overlay → đóng tất cả
   overlay.addEventListener("click", () => {
     clearTimeout(hideTimer);
-    panels.forEach(p => p.classList.remove("is-open"));
+    if (panelsWrap) {
+      panelsWrap.classList.remove("is-active");
+      panelsWrap.setAttribute("hidden", ""); // có thể chờ transition hoặc set luôn
+    }
+    panels.forEach(p => {
+      p.classList.remove("is-open");
+      p.setAttribute("hidden", "");
+    });
     overlay.classList.remove("is-open");
+    overlay.setAttribute("hidden", "");
   });
 
   // ============================================================
   // 2. SEARCH OVERLAY (icon → expand)
   // ============================================================
-  const searchBtn     = document.getElementById("sb-search-btn");
+  const searchBtn = document.getElementById("sb-search-btn");
   const searchOverlay = document.getElementById("sb-search-overlay");
-  const searchInput   = document.getElementById("sb-search-input");
-  const clearBtn      = document.getElementById("sb-search-clear");
+  const searchInput = document.getElementById("sb-search-input");
+  const clearBtn = document.getElementById("sb-search-clear");
 
   if (!searchBtn || !searchOverlay || !searchInput) return;
 
