@@ -8,5 +8,16 @@ export default class extends Controller {
          const toast = new bootstrap.Toast(el, { delay: 3000 })
          toast.show()
       })
+
+      // Xóa toast khỏi DOM trước khi Turbo lưu cache trang
+      // Ngăn toast cũ xuất hiện lại khi quay lại trang bằng nút Back
+      this.beforeCacheHandler = () => {
+         this.element.innerHTML = ""
+      }
+      document.addEventListener("turbo:before-cache", this.beforeCacheHandler)
+   }
+
+   disconnect() {
+      document.removeEventListener("turbo:before-cache", this.beforeCacheHandler)
    }
 }
