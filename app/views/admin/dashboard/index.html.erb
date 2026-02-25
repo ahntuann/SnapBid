@@ -1,60 +1,280 @@
-<div class="d-flex align-items-center justify-content-between mt-3">
-  <div>
-    <h1 class="h3 mb-1">Dashboard</h1>
-    <div class="text-muted small">Quản lý hệ thống SnapBid</div>
-  </div>
+<%= content_for :page_title, "Dashboard" %>
+
+<%# ── Chart.js ──────────────────────────────────────────── %>
+<%= content_for :head do %>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<% end %>
+
+<%# ── Page Header ─────────────────────────────────────────── %>
+<div class="admin-page-header">
+  <h1>Dashboard</h1>
+  <p class="subtitle">Tổng quan hệ thống SnapBid · Cập nhật <%= Time.current.strftime("%d/%m/%Y %H:%M") %></p>
 </div>
 
-<div class="row g-3 mt-1">
-  <div class="col-12 col-md-4">
-    <div class="card border-0 shadow-sm" style="border-radius:16px;">
-      <div class="card-body">
-        <div class="text-muted small">Users</div>
-        <div class="fs-4 fw-bold"><%= User.count %></div>
-        <%= link_to "Quản lý Users", admin_users_path, class: "btn btn-sm btn-outline-primary rounded-pill mt-2" %>
-      </div>
-    </div>
-  </div>
+<%# ── Stat Cards ───────────────────────────────────────────── %>
+<div class="admin-stat-cards">
 
-  <div class="col-12 col-md-4">
-    <div class="card border-0 shadow-sm" style="border-radius:16px;">
-      <div class="card-body">
-        <div class="text-muted small">Listings</div>
-        <div class="fs-4 fw-bold"><%= Listing.count %></div>
-        <%= link_to "Quản lý Listings", admin_listings_path, class: "btn btn-sm btn-outline-primary rounded-pill mt-2" %>
-      </div>
+  <a href="<%= admin_users_path %>" class="admin-stat-card">
+    <div class="admin-stat-icon blue"><i class="bi bi-people-fill"></i></div>
+    <div class="admin-stat-body">
+      <div class="admin-stat-label">Users</div>
+      <div class="admin-stat-value"><%= @users_count %></div>
+      <span class="admin-stat-link">Xem tất cả <i class="bi bi-arrow-right"></i></span>
     </div>
-  </div>
+  </a>
 
-  <div class="col-12 col-md-4">
-    <div class="card border-0 shadow-sm" style="border-radius:16px;">
-      <div class="card-body">
-        <div class="text-muted small">Orders</div>
-        <div class="fs-4 fw-bold"><%= Order.count %></div>
-        <%= link_to "Quản lý Orders", admin_orders_path, class: "btn btn-sm btn-outline-primary rounded-pill mt-2" %>
-      </div>
+  <a href="<%= admin_listings_path %>" class="admin-stat-card">
+    <div class="admin-stat-icon amber"><i class="bi bi-tag-fill"></i></div>
+    <div class="admin-stat-body">
+      <div class="admin-stat-label">Listings</div>
+      <div class="admin-stat-value"><%= @listings_count %></div>
+      <span class="admin-stat-link">Xem tất cả <i class="bi bi-arrow-right"></i></span>
     </div>
-  </div>
+  </a>
 
-  <div class="col-12 col-lg-4">
-    <div class="card border-0 shadow-sm" style="border-radius:16px;">
-      <div class="card-body">
-        <div class="text-muted small">Categories</div>
-        <div class="fs-4 fw-bold"><%= @categories_count %></div>
-        <%= link_to "Quản lý Categories", admin_categories_path,
-              class: "btn btn-outline-primary btn-sm rounded-pill mt-2" %>
-      </div>
+  <a href="<%= admin_orders_path %>" class="admin-stat-card">
+    <div class="admin-stat-icon green"><i class="bi bi-bag-check-fill"></i></div>
+    <div class="admin-stat-body">
+      <div class="admin-stat-label">Orders</div>
+      <div class="admin-stat-value"><%= @orders_count %></div>
+      <span class="admin-stat-link">Xem tất cả <i class="bi bi-arrow-right"></i></span>
     </div>
-  </div>
+  </a>
 
-  <div class="col-12 col-md-4">
-    <div class="card border-0 shadow-sm" style="border-radius:16px; background-color: #e3f2fd;">
-      <div class="card-body">
-        <div class="text-muted small">Dữ liệu chuẩn</div>
-        <div class="fs-4 fw-bold">Túi Mẫu (AI)</div>
-        <div class="small mb-2">Số lượng: <%= ReferenceItem.count %></div>
-        <%= link_to "Quản lý Túi Mẫu", admin_reference_items_path, class: "btn btn-sm btn-primary rounded-pill" %>
-      </div>
+  <a href="<%= admin_orders_path(status: "pending") %>" class="admin-stat-card">
+    <div class="admin-stat-icon rose"><i class="bi bi-hourglass-split"></i></div>
+    <div class="admin-stat-body">
+      <div class="admin-stat-label">Chờ xác nhận</div>
+      <div class="admin-stat-value"><%= @orders_pending %></div>
+      <span class="admin-stat-link" style="color:#f43f5e;">Xử lý ngay <i class="bi bi-arrow-right"></i></span>
     </div>
-  </div>
+  </a>
+
+  <a href="<%= admin_categories_path %>" class="admin-stat-card">
+    <div class="admin-stat-icon purple"><i class="bi bi-grid-fill"></i></div>
+    <div class="admin-stat-body">
+      <div class="admin-stat-label">Categories</div>
+      <div class="admin-stat-value"><%= @categories_count %></div>
+      <span class="admin-stat-link">Xem tất cả <i class="bi bi-arrow-right"></i></span>
+    </div>
+  </a>
+
 </div>
+
+<%# ── Charts Row ───────────────────────────────────────────── %>
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:24px;">
+
+  <%# Line chart: new listings + users last 7 days %>
+  <div class="admin-card" style="margin-bottom:0;">
+    <div class="admin-card-header">
+      <span class="admin-card-title"><i class="bi bi-graph-up me-1"></i> Hoạt động 7 ngày qua</span>
+      <span style="font-size:12px;color:#94a3b8;">listings & users mới</span>
+    </div>
+    <div class="admin-card-body">
+      <canvas id="activityChart" height="110"></canvas>
+    </div>
+  </div>
+
+  <%# Donut: listings by status %>
+  <div class="admin-card" style="margin-bottom:0;">
+    <div class="admin-card-header">
+      <span class="admin-card-title"><i class="bi bi-pie-chart me-1"></i> Listing theo trạng thái</span>
+    </div>
+    <div class="admin-card-body" style="display:flex;align-items:center;justify-content:center;">
+      <canvas id="statusChart" style="max-height:200px;max-width:200px;"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<%# ── Bottom Row: Recent Listings + Recent Orders ─────────── %>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px;">
+
+  <%# Recent Listings %>
+  <div class="admin-card" style="margin-bottom:0;">
+    <div class="admin-card-header">
+      <span class="admin-card-title"><i class="bi bi-tag me-1"></i> Listings gần đây</span>
+      <%= link_to "Xem tất cả", admin_listings_path, class: "admin-stat-link" %>
+    </div>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Tiêu đề</th>
+          <th>Trạng thái</th>
+          <th>Ngày</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @recent_listings.each do |l| %>
+          <tr>
+            <td>
+              <div style="font-weight:600;font-size:13px;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">
+                <%= link_to l.title, admin_listing_path(l), style: "color:inherit;text-decoration:none;" %>
+              </div>
+              <div style="font-size:11.5px;color:#94a3b8;"><%= l.user&.name %></div>
+            </td>
+            <td>
+              <% badge = l.blocked? ? "blocked" : (l.published_at? ? "published" : "draft") %>
+              <span class="admin-badge <%= badge %>"><%= badge %></span>
+            </td>
+            <td style="font-size:12px;color:#64748b;white-space:nowrap;"><%= l.created_at.strftime("%d/%m %H:%M") %></td>
+          </tr>
+        <% end %>
+        <% if @recent_listings.blank? %>
+          <tr><td colspan="3" style="text-align:center;color:#94a3b8;padding:24px;">Chưa có listing.</td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%# Recent Orders %>
+  <div class="admin-card" style="margin-bottom:0;">
+    <div class="admin-card-header">
+      <span class="admin-card-title"><i class="bi bi-bag-check me-1"></i> Orders gần đây</span>
+      <%= link_to "Xem tất cả", admin_orders_path, class: "admin-stat-link" %>
+    </div>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Listing</th>
+          <th>Trạng thái</th>
+          <th>Giá</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @recent_orders.each do |o| %>
+          <tr>
+            <td>
+              <div style="font-weight:600;font-size:13px;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;">
+                <%= link_to o.listing&.title.to_s, admin_order_path(o), style: "color:inherit;text-decoration:none;" %>
+              </div>
+              <div style="font-size:11.5px;color:#94a3b8;"><%= o.buyer&.name %></div>
+            </td>
+            <td>
+              <% ord_badge = case o.status when "paid" then "paid" when "cancelled" then "na" else "pending" end %>
+              <span class="admin-badge <%= ord_badge %>"><%= o.status %></span>
+            </td>
+            <td style="font-size:13px;font-weight:600;color:#1e293b;white-space:nowrap;">
+              <%= number_to_currency(o.price, unit: "₫", precision: 0) rescue "—" %>
+            </td>
+          </tr>
+        <% end %>
+        <% if @recent_orders.blank? %>
+          <tr><td colspan="3" style="text-align:center;color:#94a3b8;padding:24px;">Chưa có đơn hàng.</td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<%# ── Chart.js Scripts ─────────────────────────────────────── %>
+<script>
+(function () {
+  // ── 7-day Activity Line Chart ──────────────────────────
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().slice(0, 10));
+  }
+
+  const listingsByDay = <%= raw(@listings_by_day.transform_keys(&:to_s).to_json) %>;
+  const usersByDay    = <%= raw(@users_by_day.transform_keys(&:to_s).to_json) %>;
+
+  const listingData = days.map(d => listingsByDay[d] || 0);
+  const userData    = days.map(d => usersByDay[d] || 0);
+  const labels      = days.map(d => {
+    const [, m, day] = d.split('-');
+    return `${day}/${m}`;
+  });
+
+  const actCtx = document.getElementById('activityChart');
+  if (actCtx) {
+    new Chart(actCtx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Listings mới',
+            data: listingData,
+            borderColor: '#c9a84c',
+            backgroundColor: 'rgba(201,168,76,0.1)',
+            borderWidth: 2,
+            pointRadius: 4,
+            pointBackgroundColor: '#c9a84c',
+            fill: true,
+            tension: 0.4
+          },
+          {
+            label: 'Users mới',
+            data: userData,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59,130,246,0.08)',
+            borderWidth: 2,
+            pointRadius: 4,
+            pointBackgroundColor: '#3b82f6',
+            fill: true,
+            tension: 0.4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { size: 12, family: 'Inter' }, boxWidth: 12 } },
+          tooltip: { mode: 'index', intersect: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, font: { size: 11, family: 'Inter' }, color: '#94a3b8' },
+            grid: { color: '#f1f5f9' }
+          },
+          x: {
+            ticks: { font: { size: 11, family: 'Inter' }, color: '#94a3b8' },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  }
+
+  // ── Donut: Listings by Status ─────────────────────────
+  const statusData = <%= raw(@listings_by_status.to_json) %>;
+  const statusLabels = Object.keys(statusData);
+  const statusValues = Object.values(statusData);
+  const colorMap = {
+    draft: '#e2e8f0', submitted_for_ai: '#93c5fd', verified: '#6ee7b7',
+    rejected: '#fca5a5', manual_review: '#fcd34d', published: '#4ade80', blocked: '#f87171'
+  };
+  const statusColors = statusLabels.map(s => colorMap[s] || '#e2e8f0');
+
+  const statusCtx = document.getElementById('statusChart');
+  if (statusCtx) {
+    new Chart(statusCtx, {
+      type: 'doughnut',
+      data: {
+        labels: statusLabels,
+        datasets: [{
+          data: statusValues,
+          backgroundColor: statusColors,
+          borderWidth: 0,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '68%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { font: { size: 11, family: 'Inter' }, boxWidth: 10, padding: 10 }
+          }
+        }
+      }
+    });
+  }
+})();
+</script>

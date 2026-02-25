@@ -22,15 +22,28 @@
   <%# ===== Category icons row ===== %>
   <div class="sb-store-cats-wrap sb-full-bleed mb-4">
     <div class="container" style="max-width: 1400px;">
-      <% icons = %w[
-        bi-laptop bi-phone bi-tablet bi-smartwatch
-        bi-headphones bi-gem bi-house bi-car-front
-      ] %>
+      <%
+        # Icons verified in Bootstrap Icons 1.11.3 — order matches seed categories:
+        # Áo, Quần, Giày, Dép, Phụ kiện, Túi xách, Adidas, Dior, Chanel, Nike, Gucci
+        cat_icons = %w[
+          bi-tag-fill
+          bi-tags-fill
+          bi-person-walking
+          bi-sun
+          bi-gem
+          bi-handbag
+          bi-lightning-fill
+          bi-star-fill
+          bi-heart-fill
+          bi-play-fill
+          bi-crown
+        ]
+      %>
 
       <div class="sb-store-cats">
-        <% (@categories || []).first(8).each_with_index do |cat, idx| %>
+        <% (@categories || []).each_with_index do |cat, idx| %>
           <a class="sb-cat" href="<%= root_path(category_id: cat.id, q: @q, condition: @condition, sort: @sort) %>">
-            <span class="sb-cat-icon"><i class="bi <%= icons[idx % icons.length] %>"></i></span>
+            <span class="sb-cat-icon"><i class="bi <%= cat_icons[idx % cat_icons.length] %>"></i></span>
             <span class="sb-cat-label"><%= cat.name %></span>
           </a>
         <% end %>
