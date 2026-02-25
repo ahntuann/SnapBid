@@ -1,6 +1,5 @@
 class HelpController < ApplicationController
   def index
-    # Dummy data cho FAQs trang chủ Help
     @popular_faqs = [
       { id: 1, question: "Làm thế nào để đặt giá thầu (bid)?", answer: "Bạn cần đăng nhập, nạp đủ số dư khả dụng và nhấn nút Đặt giá tại trang chi tiết sản phẩm." },
       { id: 2, question: "Chi phí vận chuyển được tính như thế nào?", answer: "Phí vận chuyển phụ thuộc vào khoảng cách và kích thước kiện hàng. Phí này sẽ được hiển thị khi bạn tiến hành thanh toán." },
@@ -9,7 +8,10 @@ class HelpController < ApplicationController
     ]
   end
 
-  def selling
-    # Trang hướng dẫn dành cho người bán
-  end
+  def selling; end
+  def buying; end
+  def shipping; end
+  def account; end
+  def policies; end
+  def contact; end
 end

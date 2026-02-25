@@ -22,36 +22,13 @@
   <%# ===== Category icons row ===== %>
   <div class="sb-store-cats-wrap sb-full-bleed mb-4">
     <div class="container" style="max-width: 1400px;">
-      <%
-        # Icons verified in Bootstrap Icons 1.11.3 — order matches seed categories:
-        # Áo, Quần, Giày, Dép, Phụ kiện, Túi xách, Adidas, Dior, Chanel, Nike, Gucci
-        cat_icons = %w[
-          bi-tag-fill
-          bi-tags-fill
-          bi-person-walking
-          bi-sun
-          bi-gem
-          bi-handbag
-          bi-lightning-fill
-          bi-star-fill
-          bi-heart-fill
-          bi-play-fill
-          bi-crown
-        ]
-      %>
-
       <div class="sb-store-cats">
-        <% (@categories || []).each_with_index do |cat, idx| %>
-          <a class="sb-cat" href="<%= root_path(category_id: cat.id, q: @q, condition: @condition, sort: @sort) %>">
-            <span class="sb-cat-icon"><i class="bi <%= cat_icons[idx % cat_icons.length] %>"></i></span>
-            <span class="sb-cat-label"><%= cat.name %></span>
+        <% (@categories || []).each do |cat| %>
+          <a class="sb-cat-pill" href="<%= root_path(category_id: cat.id, q: @q, condition: @condition, sort: @sort) %>">
+            <%= cat.name %>
           </a>
         <% end %>
-
-        <a class="sb-cat" href="<%= root_path %>">
-          <span class="sb-cat-icon"><i class="bi bi-grid-3x3-gap"></i></span>
-          <span class="sb-cat-label">Tất cả</span>
-        </a>
+        <a class="sb-cat-pill sb-cat-pill--all" href="<%= root_path %>">Tất cả</a>
       </div>
     </div>
   </div>

@@ -604,10 +604,10 @@ a:hover {
 
 
 /* ============================================================
-   11. CATEGORY ICONS ROW (dưới hero — Apple style)
+   11. CATEGORY PILLS ROW (dưới hero — text only)
    ============================================================ */
 .sb-store-cats-wrap {
-  padding: 20px 0 18px;
+  padding: 14px 0;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -617,79 +617,52 @@ a:hover {
 .sb-store-cats {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
   gap: 8px;
-}
-
-.sb-cat {
-  flex: 1 1 80px;
-  max-width: 110px;
-  text-align: center;
-  color: #1d1d1f;
-  text-decoration: none !important;
-  transition: opacity 200ms ease;
-}
-
-.sb-cat:hover {
-  opacity: 0.75;
-  text-decoration: none !important;
-}
-
-.sb-cat-icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 8px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  background: #e8e8ed;
-  transition: background 200ms ease;
 }
 
-.sb-cat:hover .sb-cat-icon {
-  background: #d2d2d7;
-}
-
-.sb-cat-icon i {
-  font-size: 26px;
-  color: #1d1d1f;
-}
-
-.sb-cat-label {
-  font-size: .82rem;
+.sb-cat-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 13px;
   font-weight: 500;
   color: #1d1d1f;
+  background: rgba(0, 0, 0, 0.05);
+  text-decoration: none !important;
+  transition: background 180ms ease, color 180ms ease;
+  white-space: nowrap;
   letter-spacing: -0.01em;
 }
 
-/* Mobile: scroll ngang nếu nhiều category */
+.sb-cat-pill:hover {
+  background: rgba(0, 0, 0, 0.10);
+  color: #000;
+  text-decoration: none !important;
+}
+
+.sb-cat-pill--all {
+  background: #1d1d1f;
+  color: #fff;
+}
+
+.sb-cat-pill--all:hover {
+  background: #333;
+  color: #fff;
+}
+
 @media (max-width: 576px) {
   .sb-store-cats {
     flex-wrap: nowrap;
     overflow-x: auto;
     justify-content: flex-start;
-    gap: 20px;
     padding-bottom: 4px;
     scrollbar-width: none;
   }
 
   .sb-store-cats::-webkit-scrollbar {
     display: none;
-  }
-
-  .sb-cat {
-    flex: 0 0 72px;
-    max-width: 72px;
-  }
-
-  .sb-cat-icon {
-    width: 52px;
-    height: 52px;
-  }
-
-  .sb-cat-icon i {
-    font-size: 22px;
   }
 }
 
