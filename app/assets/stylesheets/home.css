@@ -1,3 +1,38 @@
+/* ============================================================
+   home.css — Styles cho trang chủ (home#index)
+   ============================================================ */
+
+
+/* ============================================================
+   1. HOME BACKGROUND (Warm gradient + grain texture)
+   ============================================================ */
+body.home-index {
+  background:
+    radial-gradient(1200px circle at 12% 0%, rgba(13, 110, 253, .20), transparent 60%),
+    radial-gradient(900px circle at 92% 18%, rgba(25, 135, 84, .14), transparent 55%),
+    radial-gradient(700px circle at 60% 110%, rgba(111, 66, 193, .10), transparent 55%),
+    linear-gradient(180deg, #f8fafc 0%, #f3f4f6 100%);
+  min-height: 100vh;
+}
+
+/* Grain texture overlay */
+body.home-index::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .08;
+  mix-blend-mode: multiply;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, .06) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, .05) 0 1px, transparent 1px 4px);
+}
+
+
+/* ============================================================
+   2. PRODUCT CARD (home grid)
+   ============================================================ */
 .home-card {
   border: 0;
   border-radius: 1rem;
@@ -9,48 +44,22 @@
   transform: translateY(-2px);
 }
 
+/* Tiêu đề sản phẩm: cắt tối đa 2 dòng */
 .home-card-title {
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* 2 dòng */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  line-height: 1.3;
   min-height: 2.6em;
+  max-height: 2.6em;
+  /* fallback cho browser không hỗ trợ line-clamp */
 }
 
+
+/* ============================================================
+   3. MISC UTILITIES (dùng riêng cho home)
+   ============================================================ */
 .object-fit-cover {
   object-fit: cover;
-}
-
-.home-card-title {
-  display: -webkit-box;
-  -webkit-line-clamp: 2; /* 2 dòng */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 2.6em;
-
-  /* fallback */
-  line-height: 1.3;
-  max-height: 2.6em;
-}
-
-body.home-index {
-  background:
-    radial-gradient(1200px circle at 12% 0%, rgba(13,110,253,.20), transparent 60%),
-    radial-gradient(900px circle at 92% 18%, rgba(25,135,84,.14), transparent 55%),
-    radial-gradient(700px circle at 60% 110%, rgba(111,66,193,.10), transparent 55%),
-    linear-gradient(180deg, #f8fafc 0%, #f3f4f6 100%);
-  min-height: 100vh;
-}
-
-body.home-index::before { /* grain */ 
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: .08;
-  mix-blend-mode: multiply;
-  background-image:
-    repeating-linear-gradient(0deg, rgba(0,0,0,.06) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(90deg, rgba(0,0,0,.05) 0 1px, transparent 1px 4px);
 }

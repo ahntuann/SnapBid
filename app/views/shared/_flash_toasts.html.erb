@@ -1,0 +1,23 @@
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 9999"
+     data-controller="flash-toast">
+  <% if notice.present? %>
+    <div class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <i class="bi bi-check-circle-fill me-2"></i><%= notice %>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  <% end %>
+  <% if alert.present? %>
+    <div class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <i class="bi bi-exclamation-circle-fill me-2"></i><%= alert %>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  <% end %>
+</div>

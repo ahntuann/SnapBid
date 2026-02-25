@@ -3,44 +3,100 @@
  *= require_self
  */
 
-/* helpers */
-.hidden { display: none !important; }
+/* ============================================================
+   1. SPROCKETS MANIFEST
+      (ở trên, không xoá)
+   ============================================================ */
 
-/* notifications dropdown */
-.notifications-menu {
-  width: min(420px, 92vw);
-  border-radius: 16px;
-  overflow: hidden;
-  right: 0 !important;
-  left: auto !important;
-  transform: translateX(0) !important;
-  z-index: 1200; /* luôn nổi hơn mega menu */
+
+/* ============================================================
+   2. CSS CUSTOM PROPERTIES (Design Tokens)
+   ============================================================ */
+:root {
+  /* Màu nền */
+  --sb-bg: #fbf4df;
+  /* vàng kem nhẹ */
+  --sb-bg-2: #fff7e6;
+  /* lớp glow */
+  --sb-surface: #ffffff;
+
+  /* Màu chữ */
+  --sb-text: #111827;
+  --sb-muted: #6b7280;
+
+  /* Màu thương hiệu */
+  --sb-gold: #c88a1c;
+  --sb-gold-dark: #8a5a00;
+  --sb-link: #0a66ff;
+
+  /* Layout */
+  --sb-main-top: 44px;
+
+  /* Navbar height */
+  --apple-nav-h: 44px;
+
+  /* Offset cho app-main padding-top (bằng navbar height) */
+  --nav-offset: var(--apple-nav-h);
 }
 
-@media (max-width: 576px) {
-  .notifications-menu {
-    width: calc(100vw - 16px);
-    right: 8px !important;
-  }
+
+/* ============================================================
+   3. GLOBAL RESETS & BASE
+   ============================================================ */
+body {
+  background:
+    radial-gradient(circle at 30% 0%, rgba(200, 138, 28, 0.10), transparent 45%),
+    radial-gradient(circle at 70% 10%, rgba(255, 219, 140, 0.18), transparent 48%),
+    linear-gradient(180deg, var(--sb-bg-2), var(--sb-bg));
+  color: var(--sb-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* nice defaults */
-body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-a { text-decoration: none; }
-a:hover { text-decoration: underline; }
-
-/* gallery */
-.gallery-thumb {
-  width: 92px;
-  height: 66px;
-  opacity: 0.85;
-  transition: all 120ms ease;
+a {
+  color: var(--sb-link);
+  text-decoration: none;
 }
-.gallery-thumb:hover { opacity: 1; transform: translateY(-1px); }
-.gallery-thumb.active { outline: 2px solid #0d6efd; opacity: 1; }
 
-/* Pagination */
-.pagination { margin: 0; gap: 6px; }
+a:hover {
+  color: var(--sb-link);
+  text-decoration: underline;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.app-main {
+  padding-top: var(--nav-offset);
+}
+
+
+/* ============================================================
+   4. BOOTSTRAP OVERRIDES
+   ============================================================ */
+
+/* Nút primary → vàng đồng bộ banner */
+.btn.btn-primary {
+  background-color: var(--sb-gold) !important;
+  border-color: var(--sb-gold) !important;
+  color: #fff !important;
+}
+
+.btn.btn-primary:hover {
+  background-color: #b57a12 !important;
+  border-color: #b57a12 !important;
+}
+
+
+/* ============================================================
+   5. PAGINATION
+   ============================================================ */
+.pagination {
+  margin: 0;
+  gap: 6px;
+}
+
 .pagination .page a,
 .pagination .page span,
 .pagination .first a,
@@ -59,17 +115,34 @@ a:hover { text-decoration: underline; }
   color: #111827;
   text-decoration: none;
 }
+
 .pagination .current {
   border-color: #2563eb;
   background: #2563eb;
   color: #fff;
 }
+
 .pagination a:hover {
   border-color: #cbd5e1;
   background: #f8fafc;
 }
 
-/* Thumbnail image helper */
+/* Bootstrap page-link override */
+.pagination .page-link {
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.pagination .page-item.active .page-link {
+  color: #fff;
+}
+
+
+/* ============================================================
+   6. SHARED IMAGE HELPERS
+   ============================================================ */
+
+/* Thumbnail nhỏ (bảng, notif, …) */
 .sb-thumb {
   width: 56px;
   height: 56px;
@@ -79,7 +152,7 @@ a:hover { text-decoration: underline; }
   background: #f3f4f6;
 }
 
-/* Card image ratio for home */
+/* Ảnh cover tỉ lệ vuông (card trang chủ) */
 .sb-cover {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -88,289 +161,328 @@ a:hover { text-decoration: underline; }
   background: #f3f4f6;
 }
 
-.pagination .page-link { border-radius: 12px; padding: 10px 14px; }
-.pagination .page-item.active .page-link { color: #fff; }
+/* Gallery thumbnails (trang chi tiết sản phẩm) */
+.gallery-thumb {
+  width: 92px;
+  height: 66px;
+  opacity: 0.85;
+  transition: all 120ms ease;
+}
 
-/* home filter */
-.home-filter-card,
-.home-filter-card .card-body { overflow: visible !important; }
+.gallery-thumb:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
 
-.home-filter-card { position: relative; z-index: 10; }
-
-.home-filter-spacer { height: 260px; }
-@media (min-width: 768px) { .home-filter-spacer { height: 0; } }
-
-/* =========================
-   APP NAV OFFSETS
-   ========================= */
-:root{
-  --sb-bg: #fbf4df;        /* vàng kem nhẹ */
-  --sb-bg-2: #fff7e6;      /* lớp glow */
-  --sb-surface: #ffffff;
-  --sb-text: #111827;
-  --sb-muted: #6b7280;
-
-  --sb-gold: #c88a1c;
-  --sb-gold-dark: #8a5a00;
-  --sb-link: #0a66ff;
-
-  --sb-main-top: 84px;
+.gallery-thumb.active {
+  outline: 2px solid #0d6efd;
+  opacity: 1;
 }
 
 
-
-.app-main { padding-top: var(--nav-offset); }
-
-/* =========================
-   APPLE-STYLE NAVBAR
-   ========================= */
-.apple-navbar.navbar{
+/* ============================================================
+   7. APPLE-STYLE NAVBAR
+   ============================================================ */
+.apple-navbar.navbar {
   min-height: var(--apple-nav-h);
   padding: 0;
-  background: rgba(255,255,255,.72) !important;
+  background: rgba(255, 255, 255, .72) !important;
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 1px solid rgba(0,0,0,.08) !important;
-  z-index: 1040; /* nav trên cùng */
+  border-bottom: 1px solid rgba(0, 0, 0, .08) !important;
+  z-index: 1040;
 }
 
-.apple-navbar .container { min-height: var(--apple-nav-h); }
-.apple-navbar .navbar-brand { font-size: 13px; letter-spacing: .01em; }
+.apple-navbar .container {
+  min-height: var(--apple-nav-h);
+}
 
-.apple-navbar__menu{
-  gap: 18px;
+.apple-navbar .navbar-brand {
+  font-size: 13px;
+  letter-spacing: .01em;
+}
+
+.apple-navbar__menu {
+  gap: 4px;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-.apple-navbar .nav-link{
+.apple-navbar .nav-link {
   font-size: 12.5px;
   letter-spacing: .01em;
-  color: rgba(0,0,0,.78);
-  padding: 8px 8px;
+  color: rgba(0, 0, 0, .78);
+  padding: 8px 14px;
   border-radius: 10px;
-  text-decoration: none !important; /* override global underline */
+  text-decoration: none !important;
+  transition: color 150ms ease, background 150ms ease;
 }
-.apple-navbar .nav-link:hover{
-  color: rgba(0,0,0,.95);
-  background: rgba(0,0,0,.04);
+
+.apple-navbar .nav-link:hover {
+  color: rgba(0, 0, 0, .95);
+  background: rgba(0, 0, 0, .04);
   text-decoration: none !important;
 }
 
-.apple-navbar .navbar-toggler{
+.apple-navbar .navbar-toggler {
   border: 0;
   padding: 8px;
   border-radius: 10px;
 }
-.apple-navbar .navbar-toggler:focus{ box-shadow: none; }
 
-/* dropdown profile “clean” hơn */
-.apple-navbar .dropdown-menu{
-  border: 1px solid rgba(0,0,0,.08);
+.apple-navbar .navbar-toggler:focus {
+  box-shadow: none;
+}
+
+/* Dropdown profile */
+.apple-navbar .dropdown-menu {
+  border: 1px solid rgba(0, 0, 0, .08);
   border-radius: 12px;
-  box-shadow: 0 18px 40px rgba(0,0,0,.12);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .12);
   padding: 8px;
 }
-.apple-navbar .dropdown-item{
+
+.apple-navbar .dropdown-item {
   border-radius: 10px;
   padding: 8px 10px;
 }
 
-/* nút auth dạng pill */
-.apple-navbar__btn{
+/* Nút auth dạng pill */
+.apple-navbar__btn {
   border-radius: 999px;
   padding: 6px 12px;
   font-size: 12.5px;
 }
 
-/* Mobile collapse thành panel blur */
-@media (max-width: 991.98px){
-  .apple-navbar .navbar-collapse{
+/* Mobile: collapse thành panel blur */
+@media (max-width: 991.98px) {
+  .apple-navbar .navbar-collapse {
     position: fixed;
     top: var(--apple-nav-h);
-    left: 0; right: 0;
+    left: 0;
+    right: 0;
     padding: 12px 14px 16px;
-    background: rgba(255,255,255,.92);
+    background: rgba(255, 255, 255, .92);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    border-bottom: 1px solid rgba(0,0,0,.06);
+    border-bottom: 1px solid rgba(0, 0, 0, .06);
     z-index: 1035;
   }
 
-  .apple-navbar__menu{
+  .apple-navbar__menu {
     gap: 6px;
     align-items: stretch !important;
     margin-bottom: 10px;
   }
 
-  .apple-navbar .nav-link{
+  .apple-navbar .nav-link {
     padding: 10px 12px;
     border-radius: 12px;
-    background: rgba(0,0,0,.03);
+    background: rgba(0, 0, 0, .03);
   }
 }
 
-/* =========================
-   APPLE MEGA MENU + OVERLAY
-   (Panel trắng đặc; nền bên dưới blur)
-   ========================= */
 
-/* Overlay: KHÔNG che tối, chỉ tạo blur cho phần phía sau overlay */
-.apple-mega-overlay{
+/* ============================================================
+   8. MEGA MENU (desktop only)
+   ============================================================ */
+
+/* Overlay: không che tối, chỉ blur phần phía sau */
+.apple-mega-overlay {
   position: fixed;
   top: var(--apple-nav-h);
-  left: 0; right: 0; bottom: 0;
-
-  /* quan trọng: cần 1 nền cực nhẹ để backdrop-filter hoạt động ổn định */
-  background: rgba(255,255,255,0.06);
-
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.06);
+  /* cần thiết để backdrop-filter ổn định */
   backdrop-filter: blur(10px) saturate(120%);
   -webkit-backdrop-filter: blur(10px) saturate(120%);
-
   opacity: 0;
-  transition: opacity 220ms cubic-bezier(.28,.11,.32,1);
+  transition: opacity 220ms cubic-bezier(.28, .11, .32, 1);
   z-index: 1020;
 }
-.apple-mega-overlay.is-open{ opacity: 1; }
 
-/* Wrapper */
-.apple-mega-panels{
+.apple-mega-overlay.is-open {
+  opacity: 1;
+}
+
+/* Wrapper chứa các panel */
+.apple-mega-panels {
   position: fixed;
   top: var(--apple-nav-h);
-  left: 0; right: 0;
+  left: 0;
+  right: 0;
   z-index: 1030;
   pointer-events: none;
 }
 
-/* Panel dropdown: NỀN TRẮNG ĐẶC, không blur */
-.apple-mega-panel{
+/* Khi đang chuyển giữa các menu -> tắt transform trượt, chỉ fade nhẹ */
+.apple-mega-panels.is-active .apple-mega-panel {
+  transition: opacity 150ms ease, visibility 150ms;
+}
+
+.apple-mega-panels.is-active .apple-mega-panel:not(.is-open) {
+  transform: translateY(0);
+  /* Đứng im tại chỗ rồi mờ dần */
+}
+
+/* Panel dropdown: nền trắng đặc */
+.apple-mega-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   pointer-events: auto;
-
-  background: #fff;               /* trắng đặc */
-  border-bottom: 1px solid rgba(0,0,0,.10);
-  box-shadow: 0 24px 60px rgba(0,0,0,.12);
-
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, .10);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .12);
   opacity: 0;
-  transform: translateY(-14px);   /* “chạy xuống” rõ hơn */
+  visibility: hidden;
+  transform: translateY(-14px);
   transition:
-    transform 340ms cubic-bezier(.28,.11,.32,1),
-    opacity   220ms cubic-bezier(.28,.11,.32,1);
-
+    transform 340ms cubic-bezier(.28, .11, .32, 1),
+    opacity 220ms cubic-bezier(.28, .11, .32, 1),
+    visibility 340ms;
   will-change: transform, opacity;
 }
 
-.apple-mega-panel.is-open{
+.apple-mega-panel.is-open {
   opacity: 1;
+  visibility: visible;
   transform: translateY(0);
 }
 
-.apple-mega-panel__inner{
+.apple-mega-panel__inner {
   padding: 18px 0 22px;
   display: grid;
   grid-template-columns: 1fr 1fr 1.2fr;
   gap: 18px;
 }
 
-.apple-mega-title{
+/* Typography trong mega menu */
+.apple-mega-title {
   font-size: 12px;
-  color: rgba(0,0,0,.55);
+  color: rgba(0, 0, 0, .55);
   letter-spacing: .02em;
   margin-bottom: 10px;
 }
 
-.apple-mega-link{
+.apple-mega-link {
   display: block;
   text-decoration: none !important;
-  color: rgba(0,0,0,.86);
+  color: rgba(0, 0, 0, .86);
   font-size: 14px;
   padding: 8px 10px;
   border-radius: 12px;
 }
-.apple-mega-link:hover{
-  background: rgba(0,0,0,.04);
+
+.apple-mega-link:hover {
+  background: rgba(0, 0, 0, .04);
   text-decoration: none !important;
 }
 
-.apple-mega-col--cards{ padding-left: 4px; }
+/* Card trong mega menu */
+.apple-mega-col--cards {
+  padding-left: 4px;
+}
 
-.apple-mega-card{
+.apple-mega-card {
   display: flex;
   gap: 12px;
   align-items: flex-start;
   text-decoration: none !important;
-  color: rgba(0,0,0,.9);
+  color: rgba(0, 0, 0, .9);
   padding: 10px 12px;
   border-radius: 14px;
-  background: rgba(0,0,0,.03);
+  background: rgba(0, 0, 0, .03);
   margin-bottom: 10px;
 }
-.apple-mega-card:hover{ background: rgba(0,0,0,.05); }
-.apple-mega-card--static:hover{ background: rgba(0,0,0,.03); }
 
-.apple-mega-card__icon{
-  width: 34px; height: 34px;
+.apple-mega-card:hover {
+  background: rgba(0, 0, 0, .05);
+}
+
+.apple-mega-card--static:hover {
+  background: rgba(0, 0, 0, .03);
+}
+
+.apple-mega-card__icon {
+  width: 34px;
+  height: 34px;
   border-radius: 12px;
-  background: rgba(0,0,0,.06);
+  background: rgba(0, 0, 0, .06);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
 }
-.apple-mega-card__headline{ font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-.apple-mega-card__sub{ font-size: 12.5px; color: rgba(0,0,0,.62); }
 
-.apple-mega-tip{
+.apple-mega-card__headline {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.apple-mega-card__sub {
   font-size: 12.5px;
-  color: rgba(0,0,0,.6);
+  color: rgba(0, 0, 0, .62);
+}
+
+.apple-mega-tip {
+  font-size: 12.5px;
+  color: rgba(0, 0, 0, .6);
   padding: 10px 12px;
   border-radius: 14px;
-  background: rgba(0,0,0,.02);
+  background: rgba(0, 0, 0, .02);
 }
 
-/* Desktop only: mega menu; Mobile tắt (dùng collapse) */
-@media (max-width: 991.98px){
+/* Tắt mega menu trên mobile */
+@media (max-width: 991.98px) {
+
   .apple-mega-overlay,
-  .apple-mega-panels{ display:none !important; }
+  .apple-mega-panels {
+    display: none !important;
+  }
 }
 
-@media (prefers-reduced-motion: reduce){
+/* Giảm chuyển động (accessibility) */
+@media (prefers-reduced-motion: reduce) {
+
   .apple-mega-overlay,
-  .apple-mega-panel{ transition: none; }
-}
-
-/* ===== SnapBid Warm Theme (match banner) ===== */
-body{
-  background:
-    radial-gradient(circle at 30% 0%, rgba(200,138,28,0.10), transparent 45%),
-    radial-gradient(circle at 70% 10%, rgba(255,219,140,0.18), transparent 48%),
-    linear-gradient(180deg, var(--sb-bg-2), var(--sb-bg));
-  color: var(--sb-text);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  .apple-mega-panel {
+    transition: none;
+  }
 }
 
 
-a{ color: var(--sb-link); }
-a:hover{ color: var(--sb-link); }
-
-/* Bootstrap primary -> vàng đồng bộ banner */
-.btn.btn-primary{
-  background-color: var(--sb-gold) !important;
-  border-color: var(--sb-gold) !important;
-  color: #fff !important;
-}
-.btn.btn-primary:hover{
-  background-color: #b57a12 !important;
-  border-color: #b57a12 !important;
-}
-
-/* ===== Store Hero (banner) ===== */
-.sb-inner{
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 12px;
+/* ============================================================
+   9. NOTIFICATIONS DROPDOWN
+   ============================================================ */
+.notifications-menu {
+  width: min(420px, 92vw);
+  border-radius: 16px;
+  overflow: hidden;
+  right: 0 !important;
+  left: auto !important;
+  transform: translateX(0) !important;
+  z-index: 1200;
+  /* luôn nổi hơn mega menu */
 }
 
-.sb-full-bleed{
+@media (max-width: 576px) {
+  .notifications-menu {
+    width: calc(100vw - 16px);
+    right: 8px !important;
+  }
+}
+
+
+/* ============================================================
+   10. STORE HERO (Banner trang chủ — Apple Store style)
+   ============================================================ */
+
+/* Full-bleed: kéo section ra hết chiều rộng viewport */
+.sb-full-bleed {
   position: relative;
   left: 50%;
   right: 50%;
@@ -379,142 +491,211 @@ a:hover{ color: var(--sb-link); }
   width: 100vw;
 }
 
-.sb-store-hero{
+/* Section hero — flex column, text đẩy xuống dưới */
+.sb-store-hero {
   position: relative;
-  padding: 62px 0 0;            /* tăng padding top */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 260px;
+  background-color: #fdf6e3;
   background-repeat: no-repeat;
   background-position: center top;
   background-size: 100% auto;
-  background-color: #fafafa;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  border-bottom: none;
   overflow: hidden;
-  min-height: 340px;            /* TO hơn */
 }
 
-.sb-store-title{
-  font-size: clamp(3rem, 5.2vw, 5rem);  /* TO hơn */
+/* Overlay gradient từ dưới lên — bảo vệ chữ  */
+.sb-store-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+      rgba(253, 246, 227, 0.70) 0%,
+      rgba(253, 246, 227, 0.15) 40%,
+      rgba(253, 246, 227, 0.00) 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sb-store-hero::after {
+  display: none;
+}
+
+/* Wrapper nội dung hero — rộng, sát viền */
+.sb-hero-inner {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Nội dung hero nằm trên overlay, sát dưới */
+.sb-hero-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding-bottom: 28px;
+  align-items: flex-start !important;
+}
+
+/* Tiêu đề lớn — dùng font hệ thống Apple (SF Pro trên Mac/iOS) */
+.sb-store-title {
+  font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: clamp(3.2rem, 6vw, 5.5rem);
   letter-spacing: -0.03em;
-  font-weight: 850;
+  font-weight: 700;
+  line-height: 1.0;
   color: var(--sb-gold-dark);
   margin: 0;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.55);
 }
 
-.sb-store-sub{
-  font-weight: 800;
-  font-size: clamp(1.15rem, 2.2vw, 1.9rem); /* to hơn */
+/* Phụ đề — to, đậm, dark như Apple */
+.sb-store-sub {
+  font-weight: 700;
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
   line-height: 1.15;
-  color: #0f172a;
+  color: #1d1d1f;
+  letter-spacing: -0.02em;
 }
 
-@media (max-width: 576px){
-  .sb-store-hero{ min-height: 260px; padding-top: 46px; }
-}
-
-
-/* overlay nhẹ để chữ đọc rõ */
-.sb-store-hero::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: linear-gradient(
-    to bottom,
-    rgba(251,248,242,0.0) 0%,
-    rgba(251,248,242,0.35) 35%,
-    rgba(251,248,242,0.72) 100%
-  );
-  pointer-events:none;
-}
-
-.sb-hero-content{ position: relative; z-index: 1; padding-bottom: 12px; }
-
-
-.sb-store-link{
+/* Link "Khám phá →" — style Apple blue link */
+.sb-store-link {
   display: inline-flex;
   align-items: center;
-  gap: .35rem;
-  font-size: .95rem;
+  gap: .3rem;
+  font-size: 1rem;
+  color: #0066cc;
   text-decoration: none;
-}
-.sb-store-link:hover{ text-decoration: underline; }
-
-/* categories row */
-.sb-store-cats-wrap{
-  padding: 12px 0 10px;                 /* thấp hơn */
-  background: rgba(255,255,255,0.70);
-  backdrop-filter: blur(6px);
+  font-weight: 400;
+  margin-top: 6px;
 }
 
-.sb-cat{
-  flex: 1 1 86px;
-  max-width: 110px;                      /* nhỏ hơn */
+.sb-store-link:hover {
+  color: #0066cc;
+  text-decoration: underline;
 }
 
-.sb-cat-icon{
-  width: 44px;                           /* nhỏ icon box */
-  height: 44px;
-  margin: 0 auto 8px;
-  border-radius: 14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#fff;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.06);
-  transition: transform 140ms ease;
+.sb-store-link i {
+  font-size: .85rem;
+  transition: transform 180ms ease;
 }
 
-.sb-cat-icon i{ font-size: 20px; }       /* nhỏ icon */
-.sb-cat-label{ font-size: .86rem; font-weight: 700; }
-
-
-.sb-store-cats{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content: space-between;
-  gap: 14px 18px;
+.sb-store-link:hover i {
+  transform: translateX(3px);
 }
 
-.sb-cat{
-  flex: 1 1 92px;
-  max-width: 120px;
-  text-align:center;
-  color:#111;
-  text-decoration:none !important;
+/* Responsive hero */
+@media (max-width: 768px) {
+  .sb-store-hero {
+    padding-top: 36px;
+  }
+
+  .sb-hero-content {
+    padding-bottom: 28px;
+    gap: 16px !important;
+  }
+
+  .sb-store-sub {
+    font-size: 1.1rem;
+  }
 }
 
-.sb-cat-icon{
-  width:56px;
-  height:56px;
-  margin:0 auto 10px;
-  border-radius:18px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#fff;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.06);
-  transition: transform 140ms ease;
-}
-.sb-cat:hover .sb-cat-icon{ transform: translateY(-1px); }
-.sb-cat-icon i{ font-size:24px; }
 
-.sb-cat-label{
-  font-size: .92rem;
-  font-weight: 700;
+/* ============================================================
+   11. CATEGORY PILLS ROW (dưới hero — text only)
+   ============================================================ */
+.sb-store-cats-wrap {
+  padding: 14px 0;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-/* Sticky filter dưới navbar */
-.sb-sticky-under-nav{
+.sb-store-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.sb-cat-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1d1d1f;
+  background: rgba(0, 0, 0, 0.05);
+  text-decoration: none !important;
+  transition: background 180ms ease, color 180ms ease;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.sb-cat-pill:hover {
+  background: rgba(0, 0, 0, 0.10);
+  color: #000;
+  text-decoration: none !important;
+}
+
+.sb-cat-pill--all {
+  background: #1d1d1f;
+  color: #fff;
+}
+
+.sb-cat-pill--all:hover {
+  background: #333;
+  color: #fff;
+}
+
+@media (max-width: 576px) {
+  .sb-store-cats {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .sb-store-cats::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+
+/* ============================================================
+   12. HOME FILTER BAR
+   ============================================================ */
+
+/* Cho phép dropdown select hiển thị tràn card */
+.home-filter-card,
+.home-filter-card .card-body {
+  overflow: visible !important;
+}
+
+.home-filter-card {
+  position: relative;
+  z-index: 10;
+}
+
+/* Sticky bám dưới navbar */
+.sb-sticky-under-nav {
   position: sticky;
   top: calc(var(--sb-main-top) + 8px);
   z-index: 1020;
 }
 
-@media (max-width: 576px){
-  .sb-store-hero{ min-height: 210px; padding-top: 34px; }
-  .sb-store-cats{ justify-content: center; }
-  .sb-cat{ max-width: 96px; }
+/* Spacer dự phòng trên mobile (nếu filter là absolute) */
+.home-filter-spacer {
+  height: 260px;
 }
 
-
+@media (min-width: 768px) {
+  .home-filter-spacer {
+    height: 0;
+  }
+}

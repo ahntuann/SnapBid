@@ -1,122 +1,134 @@
-<div class="container py-4">
-  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
-    <div>
-      <h1 class="h3 mb-1">Listings</h1>
-      <div class="text-muted">Quản lý bài đăng</div>
-    </div>
+<%= content_for :page_title, "Listings" %>
 
-    <%= form_with url: admin_listings_path, method: :get, local: true, class: "d-flex gap-2" do %>
-      <input name="q" value="<%= @q %>" class="form-control" placeholder="Tìm theo tiêu đề..." style="min-width:260px;">
-      <button class="btn btn-outline-primary">Search</button>
-    <% end %>
+<%# ── Page Header ─────────────────────────────────────────── %>
+<div class="admin-page-header d-flex flex-wrap justify-content-between align-items-end gap-3">
+  <div>
+    <h1>Listings</h1>
+    <p class="subtitle">Quản lý toàn bộ bài đăng sản phẩm</p>
   </div>
 
-  <div class="card shadow-sm">
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <thead class="table-light">
+  <%= form_with url: admin_listings_path, method: :get, local: true, class: "admin-search" do %>
+    <input name="q" value="<%= @q %>" class="admin-input" placeholder="Tìm theo tiêu đề..." style="min-width:240px;">
+    <button class="admin-btn admin-btn-outline" type="submit">
+      <i class="bi bi-search"></i> Tìm
+    </button>
+  <% end %>
+</div>
+
+<%# ── Table Card ──────────────────────────────────────────── %>
+<div class="admin-card">
+  <div class="admin-card-header">
+    <span class="admin-card-title">
+      <i class="bi bi-tag me-1"></i>
+      Danh sách
+      <span class="ms-2 admin-badge na"><%= @listings.respond_to?(:total_count) ? @listings.total_count : @listings.size %> mục</span>
+    </span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th style="width:76px;">Ảnh</th>
+          <th>Listing</th>
+          <th>Seller</th>
+          <th>Giá</th>
+          <th>AI</th>
+          <th>Trạng thái</th>
+          <th class="text-end">Hành động</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @listings.each do |l| %>
           <tr>
-            <th style="width:84px;">Ảnh</th>
-            <th>Listing</th>
-            <th class="text-nowrap">Seller</th>
-            <th class="text-nowrap">Giá</th>
-            <th class="text-nowrap">AI</th>
-            <th class="text-nowrap">Publish</th>
-            <th class="text-end text-nowrap">Hành động</th>
-          </tr>
-        </thead>
+            <td>
+              <% if l.images.attached? %>
+                <%= image_tag l.images.first, style: "width:52px;height:52px;object-fit:cover;border-radius:8px;" %>
+              <% else %>
+                <div style="width:52px;height:52px;border-radius:8px;background:#f1f5f9;border:1px solid #e2e8f0;"></div>
+              <% end %>
+            </td>
 
-        <tbody>
-          <% @listings.each do |l| %>
-            <tr>
-              <td>
-                <% if l.images.attached? %>
-                  <%= image_tag l.images.first, class: "rounded", style: "width:64px;height:64px;object-fit:cover;" %>
-                <% else %>
-                  <div class="rounded bg-light border" style="width:64px;height:64px;"></div>
+            <td>
+              <div class="fw-semibold" style="color:#1e293b;">
+                <%= link_to l.title, admin_listing_path(l), style: "color:inherit;text-decoration:none;" %>
+              </div>
+              <div style="font-size:12px;color:#94a3b8;margin-top:2px;">
+                #<%= l.id %> · <%= l.category&.name.presence || "—" %> · <%= l.condition.presence || "—" %>
+              </div>
+            </td>
+
+            <td>
+              <div class="fw-semibold" style="font-size:13.5px;"><%= l.user&.name || "—" %></div>
+              <div style="font-size:12px;color:#94a3b8;"><%= l.user&.email || "—" %></div>
+            </td>
+
+            <td style="font-size:13px;">
+              <div><span style="color:#94a3b8;font-size:11.5px;">Start:</span> <%= number_to_currency(l.start_price, unit: "₫", format: "%n %u", separator: ".", delimiter: ",") rescue (l.start_price || "—") %></div>
+              <div><span style="color:#94a3b8;font-size:11.5px;">Buy now:</span>
+                <%= l.buy_now_enabled? ? (number_to_currency(l.buy_now_price, unit: "₫", format: "%n %u", separator: ".", delimiter: ",") rescue (l.buy_now_price || "—")) : "off" %>
+              </div>
+            </td>
+
+            <td>
+              <span class="admin-badge na">
+                <%= l.respond_to?(:ai_status) ? (l.ai_status || "n/a") : "n/a" %>
+              </span>
+            </td>
+
+            <td>
+              <% if l.blocked? %>
+                <span class="admin-badge blocked"><i class="bi bi-slash-circle me-1"></i>Blocked</span>
+              <% elsif l.published_at.present? %>
+                <span class="admin-badge published"><i class="bi bi-check-circle me-1"></i>Published</span>
+                <div style="font-size:11px;color:#94a3b8;margin-top:2px;"><%= l.published_at.strftime("%d/%m %H:%M") %></div>
+              <% else %>
+                <span class="admin-badge draft"><i class="bi bi-clock me-1"></i>Draft</span>
+              <% end %>
+            </td>
+
+            <td>
+              <div class="d-flex justify-content-end gap-2">
+                <%= link_to admin_listing_path(l), class: "admin-btn admin-btn-outline admin-btn-sm" do %>
+                  <i class="bi bi-eye"></i> Xem
                 <% end %>
-              </td>
 
-              <td>
-                <div class="fw-semibold">
-                  <%= link_to l.title, admin_listing_path(l), class: "text-decoration-none" %>
-                </div>
-                <div class="text-muted small">
-                  <%= l.id %> • <%= l.category&.name.presence || "—" %> • <%= l.condition.presence || "-" %>
-                </div>
-              </td>
-
-              <td class="text-nowrap">
-                <div class="fw-semibold"><%= l.user&.name || "-" %></div>
-                <div class="text-muted small"><%= l.user&.email || "-" %></div>
-              </td>
-
-              <td class="text-nowrap">
-                <div><span class="text-muted small">Start:</span> <%= l.start_price || "-" %></div>
-                <div><span class="text-muted small">Buy now:</span> <%= l.buy_now_enabled? ? (l.buy_now_price || "-") : "off" %></div>
-              </td>
-
-              <td class="text-nowrap">
-                <%# tuỳ dự án: ai_status / verified? %>
-                <span class="badge bg-secondary"><%= l.respond_to?(:ai_status) ? (l.ai_status || "n/a") : "n/a" %></span>
-              </td>
-
-              <td class="text-nowrap">
                 <% if l.blocked? %>
-                  <span class="badge bg-danger">blocked</span>
-                <% elsif l.published_at.present? %>
-                  <span class="badge bg-success">published</span>
-                  <div class="text-muted small">
-                    <%= l.published_at.strftime("%d/%m %H:%M") %>
-                  </div>
+                  <%= button_to unblock_admin_listing_path(l),
+                        method: :patch,
+                        form: { class: "d-inline" },
+                        class: "admin-btn admin-btn-success admin-btn-sm",
+                        data: { turbo_confirm: "Bỏ chặn sản phẩm này?" } do %>
+                    <i class="bi bi-unlock"></i> Unblock
+                  <% end %>
                 <% else %>
-                  <span class="badge bg-warning text-dark">draft</span>
+                  <%= button_to block_admin_listing_path(l),
+                        method: :patch,
+                        form: { class: "d-inline" },
+                        class: "admin-btn admin-btn-danger admin-btn-sm",
+                        data: { turbo_confirm: "⚠️ Chặn sản phẩm này?" } do %>
+                    <i class="bi bi-slash-circle"></i> Block
+                  <% end %>
                 <% end %>
-              </td>
+              </div>
+            </td>
+          </tr>
+        <% end %>
 
-              <td class="text-end text-nowrap">
-                <div class="d-inline-flex align-items-center gap-2">
-                  <%= link_to admin_listing_path(l),
-                        class: "btn btn-sm btn-outline-secondary d-flex justify-content-center align-items-center",
-                        style: "min-width:86px" do %>
-                    Show
-                  <% end %>
+        <% if @listings.blank? %>
+          <tr>
+            <td colspan="7" style="text-align:center;color:#94a3b8;padding:40px 0;">
+              <i class="bi bi-inbox" style="font-size:28px;display:block;margin-bottom:8px;"></i>
+              Không có listing nào.
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 
-                  <% if l.blocked? %>
-                    <%= button_to unblock_admin_listing_path(l),
-                          method: :patch,
-                          form: { class: "d-inline" },
-                          class: "btn btn-sm btn-success d-flex justify-content-center align-items-center",
-                          style: "min-width:86px",
-                          data: { turbo_confirm: "Bỏ chặn sản phẩm này?" } do %>
-                      <i class="bi bi-unlock me-1"></i> Unblock
-                    <% end %>
-                  <% else %>
-                    <%= button_to block_admin_listing_path(l),
-                          method: :patch,
-                          form: { class: "d-inline" },
-                          class: "btn btn-sm btn-danger d-flex justify-content-center align-items-center",
-                          style: "min-width:86px",
-                          data: { turbo_confirm: "⚠️ Chặn sản phẩm này?" } do %>
-                      <i class="bi bi-slash-circle me-1"></i> Block
-                    <% end %>
-                  <% end %>
-                </div>
-              </td>
-            </tr>
-          <% end %>
-
-          <% if @listings.blank? %>
-            <tr>
-              <td colspan="7" class="text-center text-muted py-4">Không có listing nào.</td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="card-body d-flex justify-content-center">
-      <%= paginate @listings %>
-    </div>
+  <div style="padding:16px 20px;display:flex;justify-content:center;">
+    <%= paginate @listings %>
   </div>
 </div>

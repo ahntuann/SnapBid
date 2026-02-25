@@ -1,0 +1,102 @@
+<div class="help-page bg-light pt-4 pb-5">
+  <div class="container" style="max-width: 800px;">
+
+    <%# Breadcrumb %>
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="<%= help_path %>" class="text-decoration-none">Trung tâm Hỗ trợ</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Mua & Đấu giá</li>
+      </ol>
+    </nav>
+
+    <%# Header %>
+    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+      <div class="card-body p-4 p-md-5 bg-white position-relative">
+        <div class="position-absolute top-0 end-0 p-4 opacity-50 d-none d-sm-block">
+          <i class="bi bi-bag-check-fill text-gold" style="font-size: 6rem;"></i>
+        </div>
+        <div class="position-relative z-1">
+          <span class="badge bg-light-gold text-gold mb-3 px-3 py-2 rounded-pill fw-medium">Dành cho Người Mua</span>
+          <h1 class="fw-bold mb-3" style="font-family: -apple-system, 'SF Pro Display', sans-serif; letter-spacing: -0.02em;">
+            Hướng dẫn Mua hàng & Đấu giá
+          </h1>
+          <p class="text-muted fs-5 mb-0" style="max-width: 500px;">
+            Tìm hiểu cách tham gia đấu giá, đặt giá thầu và hoàn tất giao dịch an toàn trên SnapBid.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <%# Steps %>
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+      <div class="card-body p-4 p-md-5">
+
+        <div class="d-flex mb-5">
+          <div class="flex-shrink-0 me-4">
+            <div class="rounded-circle bg-light-gold text-gold d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px;">1</div>
+          </div>
+          <div>
+            <h3 class="h4 fw-bold mb-3">Tìm sản phẩm và xem chi tiết</h3>
+            <p class="text-muted mb-3">
+              Duyệt sản phẩm trên trang chủ hoặc dùng bộ lọc theo danh mục, giá, tình trạng. Nhấn vào sản phẩm để xem thông tin chi tiết, hình ảnh thực tế và thời gian kết thúc phiên đấu giá.
+            </p>
+            <ul class="text-muted ps-3 mb-0" style="line-height: 1.8;">
+              <li><strong>Đồng hồ đếm ngược:</strong> Hiển thị thời gian còn lại của phiên đấu giá.</li>
+              <li><strong>Giá hiện tại:</strong> Giá thầu cao nhất tại thời điểm bạn xem.</li>
+              <li><strong>Người bán:</strong> Xem lịch sử và đánh giá của người bán trước khi bid.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="d-flex mb-5">
+          <div class="flex-shrink-0 me-4">
+            <div class="rounded-circle bg-light-blue text-blue d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px;">2</div>
+          </div>
+          <div>
+            <h3 class="h4 fw-bold mb-3">Đặt giá thầu (Bid)</h3>
+            <p class="text-muted mb-3">
+              Nhập mức giá bạn muốn đặt — tối thiểu phải cao hơn mức giá hiện tại cộng bước nhảy tối thiểu (<strong>Bid Increment</strong>). Nhấn <strong>Đặt giá</strong> và xác nhận.
+            </p>
+            <div class="alert alert-light border border-warning border-opacity-25 rounded-3 d-flex align-items-center mb-0">
+              <i class="bi bi-exclamation-triangle text-warning fs-4 me-3"></i>
+              <span class="text-muted small">Một khi đã đặt giá, bạn <strong>không thể rút lại</strong>. Nếu thắng đấu giá, bạn có nghĩa vụ hoàn tất thanh toán.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex mb-5">
+          <div class="flex-shrink-0 me-4">
+            <div class="rounded-circle bg-light-green text-green d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px;">3</div>
+          </div>
+          <div>
+            <h3 class="h4 fw-bold mb-3">Mua ngay (Buy Now)</h3>
+            <p class="text-muted mb-0" style="line-height: 1.6;">
+              Nếu người bán bật tính năng <strong>Mua ngay</strong>, bạn có thể chốt sản phẩm ngay lập tức mà không cần chờ phiên kết thúc. Giá mua ngay thường cao hơn giá khởi điểm nhưng giúp bạn chắc chắn sở hữu sản phẩm.
+            </p>
+          </div>
+        </div>
+
+        <div class="d-flex">
+          <div class="flex-shrink-0 me-4">
+            <div class="rounded-circle bg-light-purple text-purple d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px;">4</div>
+          </div>
+          <div>
+            <h3 class="h4 fw-bold mb-3">Trúng đấu giá & Thanh toán</h3>
+            <p class="text-muted mb-0" style="line-height: 1.6;">
+              Khi phiên kết thúc, nếu bạn là người thắng, hệ thống sẽ tạo đơn hàng và gửi email thông báo. Truy cập mục <strong>Đơn hàng của tôi</strong> để xem thông tin thanh toán và liên lạc với người bán.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="text-center mt-5 mb-4">
+      <p class="text-muted mb-3">Sẵn sàng tham gia đấu giá?</p>
+      <a href="<%= root_path %>" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold shadow-sm">
+        <i class="bi bi-search me-2"></i> Xem sản phẩm ngay
+      </a>
+    </div>
+
+  </div>
+</div>

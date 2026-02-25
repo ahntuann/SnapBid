@@ -2,17 +2,17 @@
 puts "== Creating sample categories =="
 
 categories = [
-  { name: "Điện thoại & Máy tính bảng" },
-  { name: "Thời trang nam" },
-  { name: "Thời trang nữ" },
-  { name: "Đồng hồ & Trang sức" },
-  { name: "Thiết bị điện tử" },
-  { name: "Sức khỏe & Sắc đẹp" },
-  { name: "Nhà cửa & Đời sống" },
-  { name: "Mẹ & Bé" },
-  { name: "Thể thao & Du lịch" },
-  { name: "Xe cộ" },
-  { name: "Khác" }
+  { name: "Áo" },
+  { name: "Quần" },
+  { name: "Giày" },
+  { name: "Dép" },
+  { name: "Phụ kiện" },
+  { name: "Túi xách" },
+  { name: "Adidas" },
+  { name: "Dior" },
+  { name: "Chanel" },
+  { name: "Nike" },
+  { name: "Gucci" }
 ]
 
 categories.each do |cat_attrs|

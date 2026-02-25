@@ -1,0 +1,241 @@
+/* ============================================================
+   help.css — Styles cho trang Hỗ trợ (Help Center)
+   ============================================================ */
+
+.help-page {
+   /* Cho phép nội dung thả lỏng xuống đáy */
+   min-height: 80vh;
+}
+
+/* ============================================================
+   1. HERO BANNER (Search Section)
+   ============================================================ */
+.help-hero {
+   padding: 80px 20px 60px;
+   background-color: var(--sb-bg-2, #fff7e6);
+   /* Fallback cream */
+   background-image:
+      radial-gradient(circle at 50% 10%, rgba(200, 138, 28, 0.12), transparent 60%);
+   border-bottom: 1px solid rgba(200, 138, 28, 0.08);
+}
+
+.help-hero-title {
+   font-family: -apple-system, "SF Pro Display", sans-serif;
+   font-weight: 700;
+   font-size: clamp(2.2rem, 4vw, 3.5rem);
+   letter-spacing: -0.02em;
+   color: var(--sb-gold-dark, #8a5a00);
+}
+
+.help-search-container {
+   max-width: 680px;
+   margin: 0 auto;
+   position: relative;
+   z-index: 2;
+}
+
+.help-search-form {
+   position: relative;
+   display: flex;
+   align-items: center;
+   background: #fff;
+   border-radius: 999px;
+   padding: 6px;
+   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+   border: 1px solid rgba(0, 0, 0, 0.04);
+   transition: box-shadow 0.2s ease;
+}
+
+.help-search-form:focus-within {
+   box-shadow: 0 12px 40px rgba(200, 138, 28, 0.15);
+   border-color: rgba(200, 138, 28, 0.3);
+}
+
+.help-search-icon {
+   position: absolute;
+   left: 24px;
+   font-size: 1.25rem;
+   color: #9CA3AF;
+}
+
+.help-search-input {
+   border: none;
+   background: transparent;
+   padding: 16px 24px 16px 60px;
+   font-size: 1.1rem;
+   box-shadow: none !important;
+   flex: 1;
+}
+
+.help-search-input:focus {
+   outline: none;
+   background: transparent;
+}
+
+.help-search-input::placeholder {
+   color: #9CA3AF;
+}
+
+.help-search-btn {
+   border-radius: 999px;
+   padding: 12px 32px;
+   font-weight: 600;
+}
+
+.help-hero-sub {
+   color: #6B7280;
+   font-size: 0.95rem;
+}
+
+.help-hero-sub a {
+   color: var(--sb-link, #0a66ff);
+   text-decoration: underline;
+   text-underline-offset: 2px;
+   margin: 0 4px;
+}
+
+/* ============================================================
+   2. CATEGORY CARDS
+   ============================================================ */
+.help-section-title {
+   font-weight: 700;
+   font-size: 1.8rem;
+   letter-spacing: -0.01em;
+   color: #111827;
+}
+
+.help-category-card {
+   display: block;
+   background: #fff;
+   border-radius: 20px;
+   padding: 32px 24px;
+   text-decoration: none !important;
+   color: inherit;
+   height: 100%;
+   border: 1px solid rgba(0, 0, 0, 0.04);
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+   transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.help-category-card:hover {
+   transform: translateY(-4px);
+   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+   border-color: rgba(200, 138, 28, 0.15);
+}
+
+.help-cat-icon {
+   width: 56px;
+   height: 56px;
+   border-radius: 16px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-size: 1.5rem;
+   margin-bottom: 20px;
+}
+
+.help-cat-title {
+   font-size: 1.25rem;
+   font-weight: 600;
+   margin-bottom: 10px;
+   color: #1F2937;
+}
+
+.help-cat-desc {
+   font-size: 0.95rem;
+   color: #6B7280;
+   line-height: 1.5;
+   margin: 0;
+}
+
+/* Các màu nền Icon (soft pastel) */
+.bg-light-gold {
+   background-color: rgba(200, 138, 28, 0.1);
+}
+
+.text-gold {
+   color: var(--sb-gold, #c88a1c);
+}
+
+.bg-light-blue {
+   background-color: rgba(10, 102, 255, 0.1);
+}
+
+.text-blue {
+   color: #0a66ff;
+}
+
+.bg-light-green {
+   background-color: rgba(16, 185, 129, 0.1);
+}
+
+.text-green {
+   color: #10b981;
+}
+
+.bg-light-purple {
+   background-color: rgba(139, 92, 246, 0.1);
+}
+
+.text-purple {
+   color: #8b5cf6;
+}
+
+.bg-light-orange {
+   background-color: rgba(249, 115, 22, 0.1);
+}
+
+.text-orange {
+   color: #f97316;
+}
+
+.bg-light-gray {
+   background-color: #f3f4f6;
+}
+
+
+/* ============================================================
+   3. FAQ ACCORDION (Apple Style)
+   ============================================================ */
+.help-accordion .accordion-item {
+   border: none;
+   border-bottom: 1px solid #E5E7EB;
+   background: transparent;
+   border-radius: 0;
+}
+
+.help-accordion .accordion-item:last-child {
+   border-bottom: none;
+}
+
+.help-accordion .accordion-button {
+   background: transparent;
+   padding: 24px 16px;
+   font-weight: 600;
+   font-size: 1.1rem;
+   color: #1F2937;
+   box-shadow: none !important;
+}
+
+.help-accordion .accordion-button:not(.collapsed) {
+   color: var(--sb-gold-dark, #8a5a00);
+}
+
+.help-accordion .accordion-button::after {
+   background-size: 1.1rem;
+}
+
+.help-accordion .accordion-body {
+   padding: 0 16px 32px;
+   color: #4B5563;
+   line-height: 1.6;
+   font-size: 1.05rem;
+}
+
+/* ============================================================
+   4. DIVIDER
+   ============================================================ */
+.help-divider {
+   border-color: #E5E7EB;
+   opacity: 1;
+}

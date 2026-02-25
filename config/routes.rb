@@ -11,6 +11,13 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   root "home#index"
+  get "/help", to: "help#index", as: :help
+  get "/help/selling",  to: "help#selling",  as: :help_selling
+  get "/help/buying",   to: "help#buying",   as: :help_buying
+  get "/help/shipping", to: "help#shipping", as: :help_shipping
+  get "/help/account",  to: "help#account",  as: :help_account
+  get "/help/policies", to: "help#policies", as: :help_policies
+  get "/help/contact",  to: "help#contact",  as: :help_contact
   resources :listings, only: [:show]
 
   # API Routes

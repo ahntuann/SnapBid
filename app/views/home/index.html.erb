@@ -1,17 +1,15 @@
-<div class="container home-page" style="max-width: 1100px;">
+<div class="container home-page" style="max-width: 1400px;">
 
-  <%# ===== Store Hero (Apple Store vibe) ===== %>
-  <section
-    class="sb-store-hero sb-full-bleed mb-4"
-    style="background-image: url('<%= asset_path("snapbid_banner_combined_v2.png") %>');"
-  >
-    <div class="container" style="max-width: 1100px;">
-      <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 sb-hero-content">
+  <%# ===== Store Hero (Apple Store style) ===== %>
+  <section class="sb-store-hero sb-full-bleed"
+           style="background-image: url('<%= asset_path("snapbid_banner_combined_v2.png") %>');">
+    <div class="container" style="max-width: 1400px;">
+      <div class="d-flex flex-column flex-md-row align-items-md-start justify-content-between gap-4 sb-hero-content">
         <h1 class="sb-store-title mb-0">Cửa Hàng</h1>
 
         <div class="text-md-end">
-          <div class="sb-store-sub mb-1">
-            Săn deal phút chót, chốt giá thông minh.
+          <div class="sb-store-sub mb-0">
+            Săn deal phút chót,<br>chốt giá thông minh.
           </div>
           <a class="sb-store-link" href="#browse">
             Khám phá sản phẩm <i class="bi bi-arrow-right"></i>
@@ -19,31 +17,21 @@
         </div>
       </div>
     </div>
+  </section>
 
-    <%# ===== Category icons row ===== %>
-    <div class="sb-store-cats-wrap">
-      <div class="container" style="max-width: 1100px;">
-        <% icons = %w[
-          bi-laptop bi-phone bi-tablet bi-smartwatch
-          bi-headphones bi-gem bi-house bi-car-front
-        ] %>
-
-        <div class="sb-store-cats">
-          <% (@categories || []).first(8).each_with_index do |cat, idx| %>
-            <a class="sb-cat" href="<%= root_path(category_id: cat.id, q: @q, condition: @condition, sort: @sort) %>">
-              <span class="sb-cat-icon"><i class="bi <%= icons[idx % icons.length] %>"></i></span>
-              <span class="sb-cat-label"><%= cat.name %></span>
-            </a>
-          <% end %>
-
-          <a class="sb-cat" href="<%= root_path %>">
-            <span class="sb-cat-icon"><i class="bi bi-grid-3x3-gap"></i></span>
-            <span class="sb-cat-label">Tất cả</span>
+  <%# ===== Category icons row ===== %>
+  <div class="sb-store-cats-wrap sb-full-bleed mb-4">
+    <div class="container" style="max-width: 1400px;">
+      <div class="sb-store-cats">
+        <% (@categories || []).each do |cat| %>
+          <a class="sb-cat-pill" href="<%= root_path(category_id: cat.id, q: @q, condition: @condition, sort: @sort) %>">
+            <%= cat.name %>
           </a>
-        </div>
+        <% end %>
+        <a class="sb-cat-pill sb-cat-pill--all" href="<%= root_path %>">Tất cả</a>
       </div>
     </div>
-  </section>
+  </div>
 
   <div id="browse"></div>
 

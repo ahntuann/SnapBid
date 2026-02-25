@@ -1,0 +1,113 @@
+<div class="help-page bg-light pt-4 pb-5">
+  <div class="container" style="max-width: 800px;">
+
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="<%= help_path %>" class="text-decoration-none">Trung tâm Hỗ trợ</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Liên hệ CSKH</li>
+      </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+      <div class="card-body p-4 p-md-5 bg-white position-relative">
+        <div class="position-absolute top-0 end-0 p-4 opacity-50 d-none d-sm-block">
+          <i class="bi bi-chat-dots-fill text-dark" style="font-size: 6rem;"></i>
+        </div>
+        <div class="position-relative z-1">
+          <span class="badge bg-light-gray text-dark mb-3 px-3 py-2 rounded-pill fw-medium">Hỗ trợ 24/7</span>
+          <h1 class="fw-bold mb-3" style="font-family: -apple-system, 'SF Pro Display', sans-serif; letter-spacing: -0.02em;">
+            Liên hệ Chăm sóc Khách hàng
+          </h1>
+          <p class="text-muted fs-5 mb-0" style="max-width: 500px;">
+            Đội ngũ CSKH của SnapBid luôn sẵn sàng hỗ trợ bạn 24/7 qua nhiều kênh liên lạc.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <%# Contact channels %>
+    <div class="row g-4 mb-4">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-4">
+          <div class="mb-3">
+            <div class="rounded-circle bg-light-gold d-inline-flex align-items-center justify-content-center" style="width:56px;height:56px;">
+              <i class="bi bi-envelope-fill text-gold fs-4"></i>
+            </div>
+          </div>
+          <h5 class="fw-bold mb-2">Email</h5>
+          <p class="text-muted small mb-3">Phản hồi trong vòng 2–4 giờ trong giờ hành chính.</p>
+          <a href="mailto:support@snapbid.vn" class="btn btn-outline-secondary btn-sm rounded-pill">
+            support@snapbid.vn
+          </a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-4">
+          <div class="mb-3">
+            <div class="rounded-circle bg-light-green d-inline-flex align-items-center justify-content-center" style="width:56px;height:56px;">
+              <i class="bi bi-whatsapp text-green fs-4"></i>
+            </div>
+          </div>
+          <h5 class="fw-bold mb-2">Zalo / WhatsApp</h5>
+          <p class="text-muted small mb-3">Chat trực tiếp, phản hồi nhanh trong giờ làm việc.</p>
+          <a href="tel:+84987654321" class="btn btn-outline-secondary btn-sm rounded-pill">
+            0987 654 321
+          </a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-4">
+          <div class="mb-3">
+            <div class="rounded-circle bg-light-blue d-inline-flex align-items-center justify-content-center" style="width:56px;height:56px;">
+              <i class="bi bi-facebook text-blue fs-4"></i>
+            </div>
+          </div>
+          <h5 class="fw-bold mb-2">Facebook</h5>
+          <p class="text-muted small mb-3">Nhắn tin qua fanpage, hỗ trợ ngoài giờ hành chính.</p>
+          <a href="https://facebook.com/snapbid" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm rounded-pill">
+            fb.com/snapbid
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <%# FAQ shortcuts %>
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+      <div class="card-body p-4 p-md-5">
+        <h2 class="h5 fw-bold mb-4">Vấn đề thường gặp cần hỗ trợ</h2>
+
+        <div class="list-group list-group-flush">
+          <% [
+            { icon: "bi-bag-x",          label: "Tôi trúng đấu giá nhưng không nhận được hàng",       page: help_shipping_path },
+            { icon: "bi-currency-dollar", label: "Thanh toán không thành công hoặc bị lỗi",           page: help_buying_path },
+            { icon: "bi-person-x",        label: "Tài khoản bị khoá hoặc không đăng nhập được",       page: help_account_path },
+            { icon: "bi-shield-exclamation", label: "Báo cáo người dùng vi phạm hoặc hàng giả",       page: help_policies_path },
+            { icon: "bi-box-seam",        label: "Hàng nhận được không đúng mô tả / hư hỏng",        page: help_shipping_path },
+            { icon: "bi-question-circle", label: "Câu hỏi khác không có trong trang Hỗ trợ",         page: help_path }
+          ].each do |item| %>
+            <a href="<%= item[:page] %>" class="list-group-item list-group-item-action border-0 d-flex align-items-center gap-3 py-3 px-0">
+              <div class="rounded-circle bg-light d-flex align-items-center justify-content-center flex-shrink-0" style="width:36px;height:36px;">
+                <i class="bi <%= item[:icon] %> text-muted"></i>
+              </div>
+              <span class="text-dark"><%= item[:label] %></span>
+              <i class="bi bi-chevron-right text-muted ms-auto"></i>
+            </a>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <%# Direct email CTA %>
+    <div class="help-cta text-center py-5 px-3 rounded-4 bg-white shadow-sm">
+      <div class="mb-3">
+        <i class="bi bi-envelope-paper display-5 text-muted"></i>
+      </div>
+      <h3 class="h4 fw-bold">Không tìm thấy câu trả lời?</h3>
+      <p class="text-muted mb-4">Gửi cho chúng tôi một email — đội ngũ CSKH sẽ phản hồi trong vòng 24 giờ.</p>
+      <a href="mailto:support@snapbid.vn" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
+        <i class="bi bi-envelope me-2"></i> Gửi email cho chúng tôi
+      </a>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,106 @@
+<div class="help-page bg-light pt-4 pb-5">
+  <div class="container" style="max-width: 800px;">
+    
+    <%# Breadcrumb %>
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="<%= help_path %>" class="text-decoration-none">Trung tâm Hỗ trợ</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Hướng dẫn Bán hàng</li>
+      </ol>
+    </nav>
+
+    <%# Header %>
+    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+      <div class="card-body p-4 p-md-5 bg-white position-relative">
+        <div class="position-absolute top-0 end-0 p-4 opacity-50 d-none d-sm-block">
+          <i class="bi bi-shop text-blue" style="font-size: 6rem;"></i>
+        </div>
+        
+        <div class="position-relative z-1">
+          <span class="badge bg-light-blue text-blue mb-3 px-3 py-2 rounded-pill fw-medium">Dành cho Người Bán</span>
+          <h1 class="fw-bold mb-3" style="font-family: -apple-system, 'SF Pro Display', sans-serif; letter-spacing: -0.02em;">
+            Hướng dẫn Đăng bán & Quản lý
+          </h1>
+          <p class="text-muted fs-5 mb-0" style="max-width: 500px;">
+            Bắt đầu kiếm tiền từ những món đồ không sử dụng. Dưới đây là các bước chi tiết để tạo phiên đấu giá thành công trên SnapBid.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <%# Nội dung hướng dẫn (Steps) %>
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+      <div class="card-body p-4 p-md-5">
+        
+        <div class="d-flex mb-5">
+          <div class="flex-shrink-0 me-4">
+            <div class="rounded-circle bg-light-gold text-gold d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px;">1</div>
+          </div>
+          <div>
+            <h3 class="h4 fw-bold mb-3">Tạo phiên đấu giá mới</h3>
+            <p class="text-muted mb-3">
+              Truy cập trang <strong>Đăng bán</strong> từ thanh Menu chính. Tại đây bạn cần cung cấp đầy đủ thông tin về sản phẩm.
+            </p>
+            <ul class="text-muted ps-3 mb-0" style="line-height: 1.8;">
+              <li><strong>Hình ảnh:</strong> Tải lên ít nhất 1 hình ảnh rõ nét. Hạn chế dùng ảnh mạng, nên chụp thực tế món hàng.</li>
+              <li><strong>Tiêu đề & Mô tả:</strong> Viết rành mạch, chân thực về tình trạng sản phẩm (mới/cũ, trầy xước, phụ kiện đi kèm).</li>
+              <li><strong>Giá khởi điểm:</strong> Nên đặt mức giá hấp dẫn để thu hút nhiều người tham gia ngay từ đầu.</li>
+              <li><strong>Thời gian kết thúc:</strong> Từ 1 giờ đến tối đa 7 ngày tuỳ ý định của bạn.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="d-flex mb-5">
+          <div class="flex-shrink-0 me-4">
+            <div class="rounded-circle bg-light-blue text-blue d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px;">2</div>
+          </div>
+          <div>
+            <h3 class="h4 fw-bold mb-3">Kiểm duyệt bằng AI (Tính năng nổi bật)</h3>
+            <p class="text-muted mb-3">
+              Sau khi điền xong, hệ thống <strong>AI Verify của SnapBid</strong> sẽ tự động quét ảnh và mô tả để đảm bảo nội dung không chứa thông tin phản cảm hoặc hàng hoá cấm.
+            </p>
+            <div class="alert alert-light border border-primary border-opacity-25 rounded-3 d-flex align-items-center mb-0">
+              <i class="bi bi-robot text-primary fs-4 me-3"></i>
+              <span class="text-muted small">Thời gian duyệt thường chưa tới <strong>10 giây</strong>. Nếu nội dung an toàn, sản phẩm của bạn sẽ tự động Live (Hiển thị) trên sàn.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex mb-5">
+          <div class="flex-shrink-0 me-4">
+            <div class="rounded-circle bg-light-green text-green d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px;">3</div>
+          </div>
+          <div>
+            <h3 class="h4 fw-bold mb-3">Theo dõi phiên & Chốt giá</h3>
+            <p class="text-muted mb-0" style="line-height: 1.6;">
+              Trong suốt quá trình diễn ra, bạn có thể xem quản lý trực tiếp tại mục <strong>Sản phẩm đang bán</strong>. <br>
+              Khi đồng hồ đếm ngược kết thúc, người trả giá cao nhất sẽ giành chiến thắng. Hệ thống sẽ ngay lập tức gửi email thông báo và tạo Đơn hàng tự động.
+            </p>
+          </div>
+        </div>
+
+        <div class="d-flex">
+          <div class="flex-shrink-0 me-4">
+            <div class="rounded-circle bg-light-purple text-purple d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px;">4</div>
+          </div>
+          <div>
+            <h3 class="h4 fw-bold mb-3">Nhận thanh toán & Giao hàng</h3>
+            <p class="text-muted mb-0" style="line-height: 1.6;">
+              Người mua có trách nhiệm thanh toán cho bạn theo phương thức thoả thuận (Chuyển khoản / COD / Tiền mặt nếu gặp trực tiếp). Hãy chủ động nhắn tin với người mua trong trang chi tiết Đơn hàng để trao đổi cách thức đóng gói và nhận hàng.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <%# Call to Action %>
+    <div class="text-center mt-5 mb-4">
+      <p class="text-muted mb-3">Bạn đã sẵn sàng tạo ra lợi nhuận?</p>
+      <a href="<%= seller_listings_path %>" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold shadow-sm">
+        <i class="bi bi-plus-circle me-2"></i> Đăng bán sản phẩm đầu tiên
+      </a>
+    </div>
+
+  </div>
+</div>
