@@ -8,9 +8,9 @@
   <div class="container">
 
     <%# ===== BRAND / LOGO ===== %>
-    <%= link_to root_path, class: "navbar-brand fw-bold d-flex align-items-center gap-2", aria: { label: "SnapBid trang chủ" } do %>
-      <i class="bi bi-gem" style="font-size:1.1rem;"></i>
-      SnapBid
+    <%= link_to root_path, class: "navbar-brand d-flex align-items-center", aria: { label: "SnapBid trang chủ" } do %>
+      <%= image_tag "/icon.png", alt: "SnapBid", style: "height:32px;width:32px;object-fit:contain;border-radius:7px;" %>
+      <span class="fw-bold ms-2" style="font-size:14px;letter-spacing:0.01em;">SnapBid</span>
     <% end %>
 
     <%# ===== BURGER (mobile) ===== %>

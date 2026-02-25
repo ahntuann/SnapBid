@@ -2,6 +2,9 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
+  # Use a clean no-navbar layout for Devise auth pages
+  layout :choose_layout
+
   before_action :require_verified_email!, if: :user_signed_in?
   
   protect_from_forgery with: :null_session, if: Proc.new { |c| c.request.format.json? } # Cho phép JSON API hoạt động mà không cần CSRF token
@@ -36,5 +39,9 @@ class ApplicationController < ActionController::Base
   # def json_request?
   #   request.format.json? || request.headers['Accept']&.include?('application/json')
   # end
+
+  def choose_layout
+    devise_controller? ? "devise" : "application"
+  end
 
 end
