@@ -1,0 +1,208 @@
+/* ============================================================
+   navbar.css — Styles dành riêng cho Navbar SnapBid
+   ============================================================ */
+
+
+/* ============================================================
+   1. SEARCH ICON BUTTON
+   ============================================================ */
+
+/* Nút search dạng icon tròn (giống Apple) */
+.sb-nav-search-btn {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   width: 34px;
+   height: 34px;
+   border-radius: 50%;
+   border: none;
+   background: transparent;
+   cursor: pointer;
+   color: rgba(0, 0, 0, .78);
+   font-size: 1rem;
+   transition: background 150ms ease, color 150ms ease;
+   padding: 0;
+}
+
+.sb-nav-search-btn:hover {
+   background: rgba(0, 0, 0, .06);
+   color: rgba(0, 0, 0, .95);
+}
+
+.sb-nav-search-btn:focus-visible {
+   outline: 2px solid var(--sb-gold);
+   outline-offset: 2px;
+}
+
+/* Khi overlay đang mở: icon đổi sang X */
+.sb-nav-search-btn[aria-expanded="true"] .sb-search-open {
+   display: none;
+}
+
+.sb-nav-search-btn[aria-expanded="false"] .sb-search-close {
+   display: none;
+}
+
+
+/* ============================================================
+   2. SEARCH OVERLAY (expand xuống dưới navbar)
+   ============================================================ */
+.sb-nav-search-overlay {
+   position: fixed;
+   top: var(--apple-nav-h, 44px);
+   left: 0;
+   right: 0;
+   background: rgba(255, 255, 255, .96);
+   backdrop-filter: saturate(180%) blur(20px);
+   -webkit-backdrop-filter: saturate(180%) blur(20px);
+   border-bottom: 1px solid rgba(0, 0, 0, .10);
+   box-shadow: 0 12px 40px rgba(0, 0, 0, .10);
+   z-index: 1035;
+
+   /* Animation trạng thái đóng */
+   opacity: 0;
+   transform: translateY(-8px);
+   pointer-events: none;
+   transition:
+      opacity 200ms cubic-bezier(.28, .11, .32, 1),
+      transform 220ms cubic-bezier(.28, .11, .32, 1);
+}
+
+.sb-nav-search-overlay.is-open {
+   opacity: 1;
+   transform: translateY(0);
+   pointer-events: auto;
+}
+
+/* Nội dung bên trong overlay */
+.sb-nav-search-overlay__inner {
+   max-width: 640px;
+   margin: 0 auto;
+   padding: 16px 20px;
+}
+
+/* Input trong overlay */
+.sb-nav-search-input {
+   width: 100%;
+   height: 44px;
+   padding: 0 44px 0 48px;
+   border-radius: 22px;
+   border: 1px solid rgba(0, 0, 0, .12);
+   background: rgba(118, 118, 128, .10);
+   font-size: 1rem;
+   color: var(--sb-text);
+   outline: none;
+   transition: box-shadow 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.sb-nav-search-input:focus {
+   background: #fff;
+   border-color: rgba(0, 0, 0, .22);
+   box-shadow: 0 0 0 4px rgba(200, 138, 28, .18);
+}
+
+/* Icon trong input */
+.sb-nav-search-input-icon {
+   position: absolute;
+   left: 16px;
+   top: 50%;
+   transform: translateY(-50%);
+   color: rgba(0, 0, 0, .45);
+   font-size: 1rem;
+   pointer-events: none;
+}
+
+/* Nút clear input */
+.sb-nav-search-clear {
+   position: absolute;
+   right: 12px;
+   top: 50%;
+   transform: translateY(-50%);
+   width: 28px;
+   height: 28px;
+   border-radius: 50%;
+   border: none;
+   background: rgba(0, 0, 0, .08);
+   color: rgba(0, 0, 0, .55);
+   cursor: pointer;
+   display: none;
+   align-items: center;
+   justify-content: center;
+   font-size: .75rem;
+   transition: background 150ms;
+}
+
+.sb-nav-search-clear:hover {
+   background: rgba(0, 0, 0, .14);
+}
+
+.sb-nav-search-clear.visible {
+   display: inline-flex;
+}
+
+
+/* ============================================================
+   3. SEARCH WRAPPER (dùng input wrapper)
+   ============================================================ */
+.sb-search-form-wrap {
+   position: relative;
+}
+
+
+/* ============================================================
+   4. AVATAR BUTTON
+   ============================================================ */
+.sb-nav-avatar {
+   width: 32px;
+   height: 32px;
+   border-radius: 50%;
+   overflow: hidden;
+   border: 1.5px solid rgba(0, 0, 0, .12);
+   background: rgba(0, 0, 0, .06);
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   flex-shrink: 0;
+   transition: border-color 150ms ease;
+}
+
+.sb-nav-avatar img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+}
+
+/* Hover trên link chứa avatar */
+.sb-nav-profile-link:hover .sb-nav-avatar {
+   border-color: var(--sb-gold);
+}
+
+
+/* ============================================================
+   5. NAV-LINK ACTIVE INDICATOR
+   ============================================================ */
+/* Gạch dưới mỏng animation khi link active */
+.apple-navbar .nav-link.active {
+   color: rgba(0, 0, 0, .95);
+   font-weight: 600;
+}
+
+
+/* ============================================================
+   6. MEGA-MENU BLUR OVERLAY (cải thiện so với version cũ)
+   Mobile: tắt
+   ============================================================ */
+@media (max-width: 991.98px) {
+   .sb-nav-search-overlay {
+      top: var(--apple-nav-h, 44px);
+   }
+}
+
+/* Giảm chuyển động (accessibility) */
+@media (prefers-reduced-motion: reduce) {
+
+   .sb-nav-search-overlay,
+   .sb-nav-search-btn {
+      transition: none;
+   }
+}

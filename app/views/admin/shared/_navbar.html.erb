@@ -1,20 +1,77 @@
-<nav class="navbar navbar-expand-lg bg-white border-bottom fixed-top">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="<%= admin_root_path %>">SnapBid Admin</a>
+<aside class="admin-sidebar" id="adminSidebar">
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+  <%# ── Brand ──────────────────────────────────── %>
+  <%= link_to admin_root_path, class: "admin-sidebar-brand" do %>
+    <span class="brand-icon"><i class="bi bi-hammer"></i></span>
+    <span class="brand-text">
+      <span class="brand-name">SnapBid</span>
+      <span class="brand-sub">Admin Panel</span>
+    </span>
+  <% end %>
 
-    <div class="collapse navbar-collapse" id="adminNav">
-      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-        <li class="nav-item"><%= link_to "Orders", admin_orders_path, class: "nav-link" %></li>
-        <li class="nav-item"><%= link_to "Listings", admin_listings_path, class: "nav-link" %></li>
-        <li class="nav-item"><%= link_to "Users", admin_users_path, class: "nav-link" %></li>
-        <li class="nav-item">
-          <%= button_to "Logout", admin_logout_path, method: :delete, class: "btn btn-outline-danger btn-sm" %>
-        </li>
-      </ul>
-    </div>
+  <%# ── Main Nav ───────────────────────────────── %>
+  <div class="admin-nav-section">
+    <div class="admin-nav-section-label">Tổng quan</div>
   </div>
-</nav>
+  <ul class="admin-nav">
+    <li>
+      <%= link_to admin_root_path,
+            class: "admin-nav-link #{"active" if controller_name == "dashboard"}" do %>
+        <i class="bi bi-grid-1x2"></i> Dashboard
+      <% end %>
+    </li>
+  </ul>
+
+  <div class="admin-nav-section">
+    <div class="admin-nav-section-label">Quản lý</div>
+  </div>
+  <ul class="admin-nav">
+    <li>
+      <%= link_to admin_listings_path,
+            class: "admin-nav-link #{"active" if controller_name == "listings"}" do %>
+        <i class="bi bi-tag"></i> Listings
+      <% end %>
+    </li>
+    <li>
+      <%= link_to admin_orders_path,
+            class: "admin-nav-link #{"active" if controller_name == "orders"}" do %>
+        <i class="bi bi-bag-check"></i> Orders
+      <% end %>
+    </li>
+    <li>
+      <%= link_to admin_users_path,
+            class: "admin-nav-link #{"active" if controller_name == "users"}" do %>
+        <i class="bi bi-people"></i> Users
+      <% end %>
+    </li>
+    <li>
+      <%= link_to admin_categories_path,
+            class: "admin-nav-link #{"active" if controller_name == "categories"}" do %>
+        <i class="bi bi-grid"></i> Categories
+      <% end %>
+    </li>
+    <li>
+      <%= link_to admin_reference_items_path,
+            class: "admin-nav-link #{"active" if controller_name == "reference_items"}" do %>
+        <i class="bi bi-database"></i> Dữ liệu AI
+      <% end %>
+    </li>
+    <li>
+      <%= link_to admin_settings_path,
+            class: "admin-nav-link #{"active" if controller_name == "settings"}" do %>
+        <i class="bi bi-sliders"></i> Settings
+      <% end %>
+    </li>
+  </ul>
+
+  <%# ── Footer / Logout ────────────────────────── %>
+  <div class="admin-sidebar-footer">
+    <%= button_to admin_logout_path,
+          method: :delete,
+          class: "admin-nav-link logout-link",
+          form: { style: "width:100%" } do %>
+      <i class="bi bi-box-arrow-left"></i> Đăng xuất
+    <% end %>
+  </div>
+
+</aside>

@@ -1,21 +1,33 @@
+<%# ============================================================
+    SnapBid Navbar — Apple-style
+    CSS: app/assets/stylesheets/navbar.css + application.css (section 7–8)
+    JS:  app/javascript/navbar.js
+    ============================================================ %>
+
 <nav class="navbar navbar-expand-lg fixed-top apple-navbar" data-apple-mega="true">
   <div class="container">
-    <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="/">
-      <i class="bi bi-gem"></i>
-      SnapBid
-    </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+    <%# ===== BRAND / LOGO ===== %>
+    <%= link_to root_path, class: "navbar-brand fw-bold d-flex align-items-center gap-2", aria: { label: "SnapBid trang chủ" } do %>
+      <i class="bi bi-gem" style="font-size:1.1rem;"></i>
+      SnapBid
+    <% end %>
+
+    <%# ===== BURGER (mobile) ===== %>
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#mainNav"
+            aria-controls="mainNav" aria-expanded="false" aria-label="Mở menu">
       <span class="navbar-toggler-icon"></span>
     </button>
 
+    <%# ===== COLLAPSE WRAPPER ===== %>
     <div class="collapse navbar-collapse" id="mainNav">
-      <!-- MENU CHÍNH (căn giữa kiểu Apple) -->
+
+      <%# ===== MENU CHÍNH (căn giữa) ===== %>
       <ul class="navbar-nav mx-lg-auto align-items-lg-center apple-navbar__menu">
         <% if user_signed_in? %>
           <li class="nav-item">
-            <%= link_to "Trang chủ", root_path,
+            <%= link_to "Cửa Hàng", root_path,
                 class: "nav-link js-mega-trigger",
                 data: { mega: "explore" },
                 role: "button",
@@ -24,7 +36,7 @@
           </li>
 
           <li class="nav-item">
-            <%= link_to "Đăng bán", seller_listings_path,
+            <%= link_to "Đăng Bán", seller_listings_path,
                 class: "nav-link js-mega-trigger",
                 data: { mega: "sell" },
                 role: "button",
@@ -33,16 +45,25 @@
           </li>
 
           <li class="nav-item">
-            <%= link_to "Đấu giá của tôi", my_bids_path,
+            <%= link_to "Đấu Giá Của Tôi", my_bids_path,
                 class: "nav-link js-mega-trigger",
                 data: { mega: "mine" },
                 role: "button",
                 aria: { controls: "mega-mine", expanded: "false" },
                 "aria-haspopup": "true" %>
           </li>
+
+          <li class="nav-item">
+            <%= link_to "Hỗ Trợ", help_path,
+                class: "nav-link js-mega-trigger",
+                data: { mega: "support" },
+                role: "button",
+                aria: { controls: "mega-support", expanded: "false" },
+                "aria-haspopup": "true" %>
+          </li>
         <% else %>
           <li class="nav-item">
-            <%= link_to "Home", root_path,
+            <%= link_to "Cửa Hàng", root_path,
                 class: "nav-link js-mega-trigger",
                 data: { mega: "explore" },
                 role: "button",
@@ -51,7 +72,7 @@
           </li>
 
           <li class="nav-item">
-            <%= link_to "About", "#",
+            <%= link_to "Giới Thiệu", "#",
                 class: "nav-link js-mega-trigger",
                 data: { mega: "about" },
                 role: "button",
@@ -60,7 +81,7 @@
           </li>
 
           <li class="nav-item">
-            <%= link_to "Contact", "#",
+            <%= link_to "Hỗ Trợ", help_path,
                 class: "nav-link js-mega-trigger",
                 data: { mega: "support" },
                 role: "button",
@@ -68,90 +89,95 @@
                 "aria-haspopup": "true" %>
           </li>
         <% end %>
-        
-        <!-- Thanh tìm kiếm kiểu Apple -->
-        <li class="nav-item mx-lg-2">
-          <%= form_with url: root_path, method: :get, local: true, class: "search-form" do |form| %>
-            <div class="search-container position-relative">
-              <div class="search-wrapper d-flex align-items-center">
-                <span class="search-icon d-flex align-items-center justify-content-center position-absolute ps-3 z-1">
-                  <i class="bi bi-search"></i>
-                </span>
-                <%= form.text_field :q,
-                      value: params[:q],
-                      class: "form-control ps-5 search-input", 
-                      placeholder: "Tìm kiếm sản phẩm...",
-                      aria: { label: "Tìm kiếm" },
-                      autocomplete: "off",
-                      id: "navbar-search-input" %>
-                <span class="close-icon d-none d-flex align-items-center justify-content-center position-absolute end-0 pe-3 z-1" onclick="clearSearch()">
-                  <i class="bi bi-x-lg"></i>
-                </span>
-              </div>
-            </div>
-          <% end %>
-        </li>
       </ul>
 
-      <!-- ACTIONS (bên phải) -->
+      <%# ===== ACTIONS (bên phải) ===== %>
       <div class="apple-navbar__actions d-flex align-items-lg-center gap-2 ms-lg-auto">
+
+        <%# -- Search icon (desktop: icon expand; mobile: vào trong collapse) -- %>
+        <button class="sb-nav-search-btn d-none d-lg-inline-flex"
+                id="sb-search-btn"
+                type="button"
+                aria-label="Tìm kiếm"
+                aria-expanded="false"
+                aria-controls="sb-search-overlay">
+          <i class="bi bi-search sb-search-open"></i>
+          <i class="bi bi-x-lg sb-search-close"></i>
+        </button>
+
         <% if user_signed_in? %>
+          <%# -- Notification bell -- %>
           <div class="nav-item position-relative">
             <%= render "shared/notifications_bell" %>
           </div>
 
+          <%# -- Avatar dropdown -- %>
           <div class="nav-item position-relative" data-controller="dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2"
+            <a class="nav-link sb-nav-profile-link d-flex align-items-center gap-2 p-0"
                href="#"
                role="button"
-               data-action="click->dropdown#toggle">
-              <span class="rounded-circle bg-secondary-subtle d-inline-flex align-items-center justify-content-center overflow-hidden border"
-                    style="width:32px;height:32px;">
+               data-action="click->dropdown#toggle"
+               aria-label="Tài khoản của <%= current_user.name.presence || current_user.email %>">
+              <span class="sb-nav-avatar">
                 <% if current_user.avatar.attached? %>
                   <%= image_tag current_user.avatar.variant(resize_to_fill: [32, 32]),
-                        class: "w-100 h-100",
-                        style: "object-fit:cover;" %>
+                        alt: "Avatar" %>
                 <% else %>
                   <i class="bi bi-person"></i>
                 <% end %>
               </span>
-              <span class="d-none d-lg-inline"><%= current_user.name.presence || current_user.email %></span>
             </a>
 
-            <ul class="dropdown-menu dropdown-menu-end" data-dropdown-target="menu" style="margin-top: 8px;">
-              <li><%= link_to "Đơn hàng", orders_path, class: "dropdown-item" %></li>
+            <ul class="dropdown-menu dropdown-menu-end" data-dropdown-target="menu" style="margin-top:8px;">
+              <li><%= link_to "Đơn hàng",  orders_path,  class: "dropdown-item" %></li>
               <li><%= link_to "Tài khoản", profile_path, class: "dropdown-item" %></li>
-
               <% if current_user.admin? %>
                 <li><%= link_to "Admin", admin_root_path, class: "dropdown-item" %></li>
               <% end %>
-
               <li><hr class="dropdown-divider"></li>
-
               <li>
-                <%= button_to "Logout",
+                <%= button_to "Đăng xuất",
                       destroy_user_session_path,
-                      method: :delete,
-                      form: { class: "m-0" },
-                      class: "dropdown-item text-danger",
-                      data: { turbo_confirm: "Bạn chắc chắn muốn đăng xuất?" } %>
+                      method:  :delete,
+                      form:    { class: "m-0" },
+                      class:   "dropdown-item text-danger",
+                      data:    { turbo_confirm: "Bạn chắc chắn muốn đăng xuất?" } %>
               </li>
             </ul>
           </div>
-        <% else %>
-          <%= link_to "Đăng nhập", new_user_session_path, class: "btn btn-outline-primary btn-sm apple-navbar__btn" %>
-          <%= link_to "Đăng ký", new_user_registration_path, class: "btn btn-primary btn-sm apple-navbar__btn" %>
-        <% end %>
-      </div>
-    </div>
-  </div>
 
-  <!-- Overlay làm mờ (hover vào overlay sẽ auto đóng như Apple) -->
+        <% else %>
+          <%= link_to "Đăng nhập", new_user_session_path,    class: "btn btn-outline-primary btn-sm apple-navbar__btn" %>
+          <%= link_to "Đăng ký",   new_user_registration_path, class: "btn btn-primary     btn-sm apple-navbar__btn" %>
+        <% end %>
+
+        <%# -- Mobile search (trong collapse) -- %>
+        <div class="d-lg-none w-100 mt-2">
+          <%= form_with url: root_path, method: :get, local: true do |f| %>
+            <div class="sb-search-form-wrap">
+              <i class="bi bi-search sb-nav-search-input-icon"></i>
+              <%= f.text_field :q,
+                    value: params[:q],
+                    class: "sb-nav-search-input",
+                    placeholder: "Tìm kiếm sản phẩm...",
+                    aria: { label: "Tìm kiếm" },
+                    autocomplete: "off",
+                    id: "sb-search-mobile-input" %>
+            </div>
+          <% end %>
+        </div>
+
+      </div><%# /actions %>
+    </div><%# /collapse %>
+  </div><%# /container %>
+
+  <%# ===== MEGA MENU OVERLAY (desktop) ===== %>
   <div class="apple-mega-overlay" hidden></div>
 
-  <!-- Mega panels -->
+  <%# ===== MEGA PANELS ===== %>
   <div class="apple-mega-panels" aria-label="Mega menu">
-    <!-- EXPLORE -->
+
+    <%# -- EXPLORE / CỬA HÀNG -- %>
     <section id="mega-explore" class="apple-mega-panel" data-mega-panel="explore" hidden>
       <div class="container apple-mega-panel__inner">
         <div class="apple-mega-col">
@@ -173,7 +199,6 @@
 
         <div class="apple-mega-col apple-mega-col--cards">
           <div class="apple-mega-title">Gợi ý hôm nay</div>
-
           <a class="apple-mega-card" href="<%= root_path(sort: "ending_soon") %>">
             <div class="apple-mega-card__icon"><i class="bi bi-alarm"></i></div>
             <div>
@@ -181,7 +206,6 @@
               <div class="apple-mega-card__sub">Ưu tiên món còn dưới 30 phút.</div>
             </div>
           </a>
-
           <a class="apple-mega-card" href="<%= root_path(sort: "price_asc") %>">
             <div class="apple-mega-card__icon"><i class="bi bi-graph-down"></i></div>
             <div>
@@ -189,15 +213,12 @@
               <div class="apple-mega-card__sub">Xem món giá hiện tại thấp.</div>
             </div>
           </a>
-
-          <div class="apple-mega-tip">
-            Tip: Đặt giá 10–30 giây cuối thường "ăn" hơn.
-          </div>
+          <div class="apple-mega-tip">Tip: Đặt giá 10–30 giây cuối thường "ăn" hơn.</div>
         </div>
       </div>
     </section>
 
-    <!-- SELL -->
+    <%# -- SELL / ĐĂNG BÁN -- %>
     <section id="mega-sell" class="apple-mega-panel" data-mega-panel="sell" hidden>
       <div class="container apple-mega-panel__inner">
         <div class="apple-mega-col">
@@ -218,7 +239,6 @@
 
         <div class="apple-mega-col apple-mega-col--cards">
           <div class="apple-mega-title">Mẫu nhanh</div>
-
           <a class="apple-mega-card" href="<%= seller_listings_path %>">
             <div class="apple-mega-card__icon"><i class="bi bi-plus-circle"></i></div>
             <div>
@@ -226,23 +246,19 @@
               <div class="apple-mega-card__sub">5 phút là lên sàn.</div>
             </div>
           </a>
-
           <a class="apple-mega-card" href="#">
             <div class="apple-mega-card__icon"><i class="bi bi-shield-check"></i></div>
             <div>
               <div class="apple-mega-card__headline">Chính sách & phí</div>
-              <div class="apple-mega-card__sub">Nội dung mẫu để thay sau.</div>
+              <div class="apple-mega-card__sub">Minh bạch, không phát sinh.</div>
             </div>
           </a>
-
-          <div class="apple-mega-tip">
-            Tip: Ảnh đầu + tiêu đề quyết định phần lớn lượt click.
-          </div>
+          <div class="apple-mega-tip">Tip: Ảnh đầu + tiêu đề quyết định phần lớn lượt click.</div>
         </div>
       </div>
     </section>
 
-    <!-- MINE -->
+    <%# -- MINE / ĐẤU GIÁ CỦA TÔI -- %>
     <section id="mega-mine" class="apple-mega-panel" data-mega-panel="mine" hidden>
       <div class="container apple-mega-panel__inner">
         <div class="apple-mega-col">
@@ -263,7 +279,6 @@
 
         <div class="apple-mega-col apple-mega-col--cards">
           <div class="apple-mega-title">Mẹo chốt giá</div>
-
           <div class="apple-mega-card apple-mega-card--static">
             <div class="apple-mega-card__icon"><i class="bi bi-lightning-charge"></i></div>
             <div>
@@ -271,15 +286,12 @@
               <div class="apple-mega-card__sub">Đặt giá sát giờ kết thúc, tránh đẩy giá sớm.</div>
             </div>
           </div>
-
-          <div class="apple-mega-tip">
-            Tip: Đặt mức tối đa có thể chấp nhận và kỷ luật theo nó.
-          </div>
+          <div class="apple-mega-tip">Tip: Đặt mức tối đa có thể chấp nhận và kỷ luật theo nó.</div>
         </div>
       </div>
     </section>
 
-    <!-- ABOUT (guest sample) -->
+    <%# -- ABOUT / GIỚI THIỆU (guest) -- %>
     <section id="mega-about" class="apple-mega-panel" data-mega-panel="about" hidden>
       <div class="container apple-mega-panel__inner">
         <div class="apple-mega-col">
@@ -310,15 +322,15 @@
       </div>
     </section>
 
-    <!-- SUPPORT (guest sample) -->
+    <%# -- SUPPORT / HỖ TRỢ (guest) -- %>
     <section id="mega-support" class="apple-mega-panel" data-mega-panel="support" hidden>
       <div class="container apple-mega-panel__inner">
         <div class="apple-mega-col">
           <div class="apple-mega-title">Hỗ trợ</div>
-          <a class="apple-mega-link" href="#">FAQ</a>
+          <a class="apple-mega-link" href="<%= help_path %>">Trung tâm Hỗ trợ</a>
+          <a class="apple-mega-link" href="<%= help_path %>#faq">Hỏi & Đáp (FAQ)</a>
           <a class="apple-mega-link" href="#">Chính sách</a>
           <a class="apple-mega-link" href="#">Liên hệ</a>
-          <a class="apple-mega-link" href="#">Báo cáo vấn đề</a>
         </div>
         <div class="apple-mega-col">
           <div class="apple-mega-title">Tài khoản</div>
@@ -333,300 +345,37 @@
             <div class="apple-mega-card__icon"><i class="bi bi-chat-dots"></i></div>
             <div>
               <div class="apple-mega-card__headline">Phản hồi nhanh</div>
-              <div class="apple-mega-card__sub">Nội dung mẫu (thay sau).</div>
+              <div class="apple-mega-card__sub">Mô tả lỗi + ảnh chụp màn hình.</div>
             </div>
           </div>
           <div class="apple-mega-tip">Tip: Mô tả lỗi + ảnh chụp màn hình giúp xử lý nhanh.</div>
         </div>
       </div>
     </section>
-  </div>
+
+  </div><%# /apple-mega-panels %>
 </nav>
 
-<style>
-.search-container {
-  width: 100%;
-  max-width: 260px;
-}
+<%# ===== SEARCH OVERLAY (desktop, bên ngoài nav) ===== %>
+<div id="sb-search-overlay" class="sb-nav-search-overlay" role="search" aria-label="Tìm kiếm sản phẩm">
+  <div class="sb-nav-search-overlay__inner">
+    <%= form_with url: root_path, method: :get, local: true do |f| %>
+      <div class="sb-search-form-wrap position-relative">
+        <i class="bi bi-search sb-nav-search-input-icon"></i>
+        <%= f.text_field :q,
+              value: params[:q],
+              class: "sb-nav-search-input",
+              placeholder: "Tìm kiếm sản phẩm...",
+              aria: { label: "Tìm kiếm" },
+              autocomplete: "off",
+              id: "sb-search-input" %>
+        <button type="button" class="sb-nav-search-clear" id="sb-search-clear" aria-label="Xoá">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>
 
-.search-wrapper {
-  height: 40px;
-  border-radius: 20px;
-  background-color: rgba(118, 118, 128, 0.12);
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
-  overflow: hidden;
-}
-
-.search-wrapper:hover {
-  background-color: rgba(118, 118, 128, 0.2);
-}
-
-.search-wrapper.focus {
-  background-color: white;
-  border: 1px solid rgba(118, 118, 128, 0.35);
-  box-shadow: 0 0 0 4px rgba(82, 82, 94, 0.2);
-}
-
-.search-input {
-  height: 40px;
-  padding: 8px 24px 8px 40px;
-  font-size: 0.875rem;
-  border: none;
-  background-color: transparent;
-  color: inherit;
-  transition: none;
-  z-index: 0;
-}
-
-.search-input:focus {
-  box-shadow: none;
-  outline: none;
-}
-
-.search-icon {
-  color: #767680;
-  font-size: 1rem;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.close-icon {
-  color: #767680;
-  cursor: pointer;
-  font-size: 1rem;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: transparent;
-  transition: background-color 0.2s;
-}
-
-.close-icon:hover {
-  background-color: rgba(118, 118, 128, 0.15);
-}
-
-@media (max-width: 991.98px) {
-  .search-container {
-    max-width: 100%;
-    margin-top: 0.5rem;
-  }
-  
-  .search-wrapper {
-    height: 36px;
-  }
-  
-  .navbar-collapse.show .search-container {
-    order: -1;
-    margin-bottom: 0.5rem;
-  }
-}
-
-/* Cải tiến hiệu ứng làm mờ phần tử */
-.navbar-blur-enabled {
-  transition: filter 0.3s ease;
-}
-
-/* Tạo lớp phủ để làm mờ toàn bộ nội dung phía sau navbar */
-.navbar-blur-enabled::after {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.15);
-  z-index: 999;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.navbar-blur-enabled .apple-mega-overlay:not([hidden]) ~ .navbar-blur-enabled::after {
-  opacity: 1;
-  visibility: visible;
-}
-
-.navbar-blur-enabled .apple-mega-overlay[hidden] ~ *:not(.apple-mega-panels):not(.apple-mega-overlay) {
-  filter: blur(0px);
-}
-
-.navbar-blur-enabled .apple-mega-overlay:not([hidden]) ~ *:not(.apple-mega-panels):not(.apple-mega-overlay) {
-  filter: blur(2px);
-  pointer-events: none;
-  user-select: none;
-}
-
-/* Cải thiện hiệu ứng panel */
-.apple-mega-panel {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border-top: 1px solid #eee;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  z-index: 1000;
-  transform: translateY(-7px);
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-}
-
-.apple-mega-panel[hidden] {
-  display: block;
-}
-
-.apple-mega-panel:not([hidden]) {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const searchWrappers = document.querySelectorAll('.search-wrapper');
-  const navbar = document.querySelector('.apple-navbar');
-  const overlay = document.querySelector('.apple-mega-overlay');
-  const panels = document.querySelectorAll('.apple-mega-panel');
-  const triggers = document.querySelectorAll('.js-mega-trigger');
-  
-  // Thêm class cho navbar để áp dụng hiệu ứng blur
-  navbar.classList.add('navbar-blur-enabled');
-  
-  // Xử lý hiệu ứng tìm kiếm
-  searchWrappers.forEach(wrapper => {
-    const input = wrapper.querySelector('.search-input');
-    const closeIcon = wrapper.querySelector('.close-icon');
-    
-    input.addEventListener('focus', function() {
-      wrapper.parentElement.classList.add('focus');
-    });
-    
-    input.addEventListener('blur', function() {
-      if (!this.value.trim()) {
-        wrapper.parentElement.classList.remove('focus');
-      }
-    });
-    
-    input.addEventListener('input', function() {
-      if (this.value.trim()) {
-        closeIcon.classList.remove('d-none');
-      } else {
-        closeIcon.classList.add('d-none');
-      }
-    });
-    
-    // Thêm xử lý sự kiện submit form khi nhấn Enter
-    input.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        this.closest('form').submit();
-      }
-    });
-    
-    closeIcon.addEventListener('click', function() {
-      input.value = '';
-      input.focus();
-      closeIcon.classList.add('d-none');
-      
-      // Remove focus state if input is empty
-      if (!input.value.trim()) {
-        wrapper.parentElement.classList.remove('focus');
-      }
-    });
-  });
-
-  // Xử lý hiệu ứng hover trên các trigger
-  triggers.forEach(trigger => {
-    let timeoutId;
-    
-    trigger.addEventListener('mouseenter', function() {
-      clearTimeout(timeoutId);
-      
-      // Ẩn tất cả các panel khác
-      panels.forEach(panel => {
-        if (panel.id !== this.getAttribute('aria-controls')) {
-          panel.setAttribute('hidden', '');
-        }
-      });
-      
-      // Hiện panel tương ứng
-      const panelId = this.getAttribute('aria-controls');
-      const panel = document.getElementById(panelId);
-      
-      if (panel) {
-        panel.removeAttribute('hidden');
-        overlay.removeAttribute('hidden');
-      }
-    });
-    
-    trigger.addEventListener('mouseleave', function() {
-      timeoutId = setTimeout(() => {
-        const panelId = this.getAttribute('aria-controls');
-        const panel = document.getElementById(panelId);
-        
-        if (panel) {
-          panel.setAttribute('hidden', '');
-          
-          // Ẩn overlay nếu không còn panel nào hiện
-          const visiblePanels = document.querySelectorAll('.apple-mega-panel:not([hidden])');
-          if (visiblePanels.length === 0) {
-            overlay.setAttribute('hidden', '');
-          }
-        }
-      }, 300); // Thời gian chờ để vẫn có thể click vào panel
-    });
-    
-    // Xử lý khi rời khỏi cả panel
-    const panelId = trigger.getAttribute('aria-controls');
-    const panel = document.getElementById(panelId);
-    
-    if (panel) {
-      panel.addEventListener('mouseenter', function() {
-        clearTimeout(timeoutId);
-      });
-      
-      panel.addEventListener('mouseleave', function() {
-        const panelId = trigger.getAttribute('aria-controls');
-        const panel = document.getElementById(panelId);
-        
-        timeoutId = setTimeout(() => {
-          if (panel) {
-            panel.setAttribute('hidden', '');
-            
-            // Ẩn overlay nếu không còn panel nào hiện
-            const visiblePanels = document.querySelectorAll('.apple-mega-panel:not([hidden])');
-            if (visiblePanels.length === 0) {
-              overlay.setAttribute('hidden', '');
-            }
-          }
-        }, 300);
-      });
-    }
-  });
-  
-  // Xử lý khi click ra ngoài (trên overlay)
-  overlay.addEventListener('click', function() {
-    panels.forEach(panel => {
-      panel.setAttribute('hidden', '');
-    });
-    overlay.setAttribute('hidden', '');
-  });
-});
-
-function clearSearch() {
-  const input = document.getElementById('navbar-search-input');
-  input.value = '';
-  input.focus();
-  document.querySelector('.close-icon').classList.add('d-none');
-  
-  // Remove focus state if input is empty
-  if (!input.value.trim()) {
-    input.closest('.search-wrapper').parentElement.classList.remove('focus');
-  }
-}
-
-</script>
+<%# Navbar JS được load qua importmap: pin "navbar" trong config/importmap.rb %>
+<%= javascript_import_module_tag "navbar" %>
