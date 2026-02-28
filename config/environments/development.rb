@@ -101,6 +101,10 @@ Rails.application.configure do
 
   config.action_cable.allowed_request_origins = [
     %r{\Ahttp://localhost:\d+\z},
-    %r{\Ahttp://127\.0\.0\.1:\d+\z}
+    %r{\Ahttp://127\.0\.0\.1:\d+\z},
+    %r{\Ahttps://.*\.ngrok-free\.dev\z}
   ]
+
+  # Allow ngrok tunnels for local testing
+  config.hosts << /.*\.ngrok-free\.dev/
 end

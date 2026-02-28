@@ -1,16 +1,25 @@
 module VietqrHelper
   require "cgi"
 
+  # Tạo QR code thanh toán qua SePay (https://qr.sepay.vn)
+  def sepay_qr_image_url(amount: nil, des: nil)
+    bank = ENV.fetch("VIETQR_BANK")
+    acc  = ENV.fetch("VIETQR_ACCOUNT")
+
+    params = {
+      acc:      acc,
+      bank:     bank,
+      template: "compact2"
+    }
+    params[:amount] = amount.to_i if amount.present?
+    params[:des]    = des         if des.present?
+
+    query = params.map { |k, v| "#{k}=#{CGI.escape(v.to_s)}" }.join("&")
+    "https://qr.sepay.vn/img?#{query}"
+  end
+
+  # Giữ lại alias cũ phòng nơi nào đó còn dùng
   def vietqr_image_url(amount: nil, add_info: nil)
-    bank   = ENV.fetch("VIETQR_BANK")
-    acc    = ENV.fetch("VIETQR_ACCOUNT")
-    name   = ENV.fetch("VIETQR_NAME")
-
-    params = []
-    params << "accountName=#{CGI.escape(name)}"
-    params << "addInfo=#{CGI.escape(add_info)}" if add_info.present?
-    params << "amount=#{amount}" if amount.present?
-
-    "https://img.vietqr.io/image/#{bank}-#{acc}-compact2.png?#{params.join('&')}"
+    sepay_qr_image_url(amount: amount, des: add_info)
   end
 end

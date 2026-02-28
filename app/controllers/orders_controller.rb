@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_order, only: [:show, :update, :mark_paid]
+  before_action :set_order, only: [:show, :update, :mark_paid, :status]
 
   def index
     @orders = current_user.orders.order(created_at: :desc).page(params[:page]).per(10)
@@ -21,6 +21,18 @@ class OrdersController < ApplicationController
       flash.now[:alert] = @order.errors.full_messages.to_sentence
       render :show, status: :unprocessable_entity
     end
+  end
+
+  # GET /orders/:id/status  –  JSON polling fallback cho order_controller.js
+  def status
+    render json: {
+      id:                     @order.id,
+      status:                 @order.status,
+      paid:                   @order.paid?,
+      buyer_marked_paid_at:   @order.buyer_marked_paid_at&.iso8601,
+      admin_confirmed_paid_at: @order.admin_confirmed_paid_at&.iso8601,
+      sepay_paid_at:          @order.sepay_paid_at&.iso8601
+    }
   end
 
   def mark_paid

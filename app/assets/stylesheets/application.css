@@ -994,3 +994,11 @@ a:hover {
     padding: 40px 20px 60px;
   }
 }
+
+/* ============================================================
+   Payment toast animation
+   ============================================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

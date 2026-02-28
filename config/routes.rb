@@ -50,7 +50,8 @@ Rails.application.routes.draw do
 
   resources :orders, only: [:index, :show, :update] do
     member do
-      post :mark_paid  # buyer bấm "Tôi đã chuyển tiền"
+      post :mark_paid   # buyer bấm "Tôi đã chuyển tiền"
+      get  :status      # polling fallback – trả JSON {status, paid, ...}
     end
   end
 
@@ -112,4 +113,7 @@ Rails.application.routes.draw do
   end
 
   get "/my-bids", to: "bids#mine", as: :my_bids
+
+  # SePay webhook – SePay sẽ POST vào URL này khi nhận được chuyển khoản
+  post "/webhooks/sepay", to: "webhooks/sepay#create", as: :sepay_webhook
 end

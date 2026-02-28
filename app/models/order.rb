@@ -20,6 +20,7 @@ class Order < ApplicationRecord
   # validates :shipping_address, presence: true, if: :pending?
 
   after_create_commit :broadcast_sold
+  after_create_commit :generate_sepay_ref
   after_update_commit :broadcast_payment_updates
 
   def total_price
@@ -53,6 +54,27 @@ class Order < ApplicationRecord
     )
   end
 
+  # Tự động xác nhận thanh toán khi SePay webhook gọi về
+  def auto_confirm_by_sepay!(transaction_at: Time.current)
+    return if paid?
+
+    update!(
+      buyer_marked_paid_at: transaction_at,
+      admin_confirmed_paid_at: transaction_at,
+      sepay_paid_at: transaction_at,
+      status: :paid
+    )
+
+    NotificationService.notify!(
+      recipient: buyer,
+      actor: nil,
+      action: :payment_confirmed,
+      notifiable: self,
+      url: Rails.application.routes.url_helpers.order_path(self),
+      message: "Thanh toán đơn ##{id} đã được xác nhận tự động qua SePay."
+    )
+  end
+
   def cancel_by_admin!
     transaction do
       update!(status: :cancelled)
@@ -69,6 +91,11 @@ class Order < ApplicationRecord
   end
 
   private
+
+  def generate_sepay_ref
+    # VD: SNAPBID42 – SePay match nội dung CK chứa chuỗi này
+    update_column(:sepay_ref, "SNAPBID#{id}")
+  end
 
   def broadcast_sold
     ListingsChannel.broadcast_to(
