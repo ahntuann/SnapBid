@@ -6,18 +6,34 @@
 
       <%# Indicators / dots %>
       <div class="carousel-indicators sb-hero-indicators">
-        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Mua & Đấu giá"></button>
-        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="1" aria-label="Bán hàng"></button>
-        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="2" aria-label="Giao nhận hàng"></button>
-        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="3" aria-label="Tài khoản & Bảo mật"></button>
-        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="4" aria-label="Chính sách & Quy định"></button>
-        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="5" aria-label="Liên hệ CSKH"></button>
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Trang chủ"></button>
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="1" aria-label="Mua & Đấu giá"></button>
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="2" aria-label="Bán hàng"></button>
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="3" aria-label="Giao nhận hàng"></button>
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="4" aria-label="Tài khoản & Bảo mật"></button>
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="5" aria-label="Chính sách & Quy định"></button>
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="6" aria-label="Liên hệ CSKH"></button>
       </div>
 
       <div class="carousel-inner">
 
-        <%# Slide 1 — Mua & Đấu giá %>
+        <%# Slide 0 — Banner chính %>
         <div class="carousel-item active">
+          <div class="sb-hero-slide" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 45%, #334155 100%);">
+            <div class="sb-hero-slide-deco"><i class="bi bi-stars"></i></div>
+            <div class="container sb-hero-slide-body" style="max-width: 1400px;">
+              <div class="sb-hero-slide-badge" style="color: #60a5fa;">Chào mừng đến với SnapBid</div>
+              <h1 class="sb-hero-slide-title">Hệ thống đấu giá online hiện đại</h1>
+              <p class="sb-hero-slide-sub">Trải nghiệm mua sắm độc đáo. Đặt giá theo thời gian thực,<br class="d-none d-md-inline">minh bạch, an toàn và dễ dàng săn được những món hàng giá hời.</p>
+              <a class="sb-store-link sb-hero-slide-link" href="<%= root_path(sort: 'ending_soon') %>" style="color:#fff !important;">
+                Khám phá ngay <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <%# Slide 1 — Mua & Đấu giá %>
+        <div class="carousel-item">
           <div class="sb-hero-slide sb-hero--gold">
             <div class="sb-hero-slide-deco"><i class="bi bi-bag-check-fill"></i></div>
             <div class="container sb-hero-slide-body" style="max-width: 1400px;">

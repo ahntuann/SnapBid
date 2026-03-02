@@ -18,10 +18,16 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body style="margin:0;padding:0;background:#fff;min-height:100vh;overflow:hidden;">
-    <style>html,body{background:#fff!important;}</style>
-    <%= render "shared/flash_toasts" %>
-    <%= yield %>
+  <body class="<%= "#{controller_name}-#{action_name}" %> devise-layout d-flex flex-column min-vh-100" style="background:#fff;">
+    <%= render "shared/navbar" %>
+    
+    <main class="flex-grow-1 app-main p-0 m-0">
+      <%= render "shared/flash_toasts" %>
+      <%= yield %>
+    </main>
+
+    <%= render "shared/footer" %>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
