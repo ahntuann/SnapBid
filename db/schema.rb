@@ -117,6 +117,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_215407) do
     t.decimal "buy_now_price", precision: 12
     t.bigint "reference_item_id"
     t.bigint "category_id"
+    t.string "gender"
     t.index ["category_id"], name: "index_listings_on_category_id"
     t.index ["published_at"], name: "index_listings_on_published_at"
     t.index ["reference_item_id"], name: "index_listings_on_reference_item_id"

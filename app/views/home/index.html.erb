@@ -1,128 +1,336 @@
-<div class="container home-page" style="max-width: 1400px;">
+<div class="home-page">
 
-  <%# ===== Store Hero (Apple Store style) ===== %>
-  <section class="sb-store-hero sb-full-bleed"
-           style="background-image: url('<%= asset_path("snapbid_banner_combined_v2.png") %>');">
-    <div class="container" style="max-width: 1400px;">
-      <div class="d-flex flex-column flex-md-row align-items-md-start justify-content-between gap-4 sb-hero-content">
-        <h1 class="sb-store-title mb-0">Cửa Hàng</h1>
+  <%# ===== Store Hero Slideshow (6 chủ đề hỗ trợ) ===== %>
+  <section class="sb-full-bleed sb-hero-carousel-wrap">
+    <div id="sbHeroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
 
-        <div class="text-md-end">
-          <div class="sb-store-sub mb-0">
-            Săn deal phút chót,<br>chốt giá thông minh.
-          </div>
-          <a class="sb-store-link" href="#browse">
-            Khám phá sản phẩm <i class="bi bi-arrow-right"></i>
-          </a>
-        </div>
+      <%# Indicators / dots %>
+      <div class="carousel-indicators sb-hero-indicators">
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Trang chủ"></button>
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="1" aria-label="Mua & Đấu giá"></button>
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="2" aria-label="Bán hàng"></button>
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="3" aria-label="Giao nhận hàng"></button>
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="4" aria-label="Tài khoản & Bảo mật"></button>
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="5" aria-label="Chính sách & Quy định"></button>
+        <button type="button" data-bs-target="#sbHeroCarousel" data-bs-slide-to="6" aria-label="Liên hệ CSKH"></button>
       </div>
-    </div>
+
+      <div class="carousel-inner">
+
+        <%# Slide 0 — Banner chính %>
+        <div class="carousel-item active">
+          <div class="sb-hero-slide" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 45%, #334155 100%);">
+            <div class="sb-hero-slide-deco"><i class="bi bi-stars"></i></div>
+            <div class="container sb-hero-slide-body" style="max-width: 1400px;">
+              <div class="sb-hero-slide-badge" style="color: #60a5fa;">Chào mừng đến với SnapBid</div>
+              <h1 class="sb-hero-slide-title">Hệ thống đấu giá online hiện đại</h1>
+              <p class="sb-hero-slide-sub">Trải nghiệm mua sắm độc đáo. Đặt giá theo thời gian thực,<br class="d-none d-md-inline">minh bạch, an toàn và dễ dàng săn được những món hàng giá hời.</p>
+              <a class="sb-store-link sb-hero-slide-link" href="<%= root_path(sort: 'ending_soon') %>" style="color:#fff !important;">
+                Khám phá ngay <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <%# Slide 1 — Mua & Đấu giá %>
+        <div class="carousel-item">
+          <div class="sb-hero-slide sb-hero--gold">
+            <div class="sb-hero-slide-deco"><i class="bi bi-bag-check-fill"></i></div>
+            <div class="container sb-hero-slide-body" style="max-width: 1400px;">
+              <div class="sb-hero-slide-badge">Dành cho Người Mua</div>
+              <h1 class="sb-hero-slide-title">Mua &amp; Đấu giá</h1>
+              <p class="sb-hero-slide-sub">Cách đặt giá, theo dõi sản phẩm,<br class="d-none d-md-inline">thanh toán đơn hàng thành công.</p>
+              <a class="sb-store-link sb-hero-slide-link" href="<%= help_buying_path %>">
+                Tìm hiểu thêm <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <%# Slide 2 — Bán hàng %>
+        <div class="carousel-item">
+          <div class="sb-hero-slide sb-hero--blue">
+            <div class="sb-hero-slide-deco"><i class="bi bi-shop"></i></div>
+            <div class="container sb-hero-slide-body" style="max-width: 1400px;">
+              <div class="sb-hero-slide-badge">Dành cho Người Bán</div>
+              <h1 class="sb-hero-slide-title">Bán hàng</h1>
+              <p class="sb-hero-slide-sub">Hướng dẫn tạo phiên đấu giá,<br class="d-none d-md-inline">duyệt bài AI, xử lý đơn hàng.</p>
+              <a class="sb-store-link sb-hero-slide-link" href="<%= help_selling_path %>">
+                Tìm hiểu thêm <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <%# Slide 3 — Giao nhận hàng %>
+        <div class="carousel-item">
+          <div class="sb-hero-slide sb-hero--green">
+            <div class="sb-hero-slide-deco"><i class="bi bi-box-seam"></i></div>
+            <div class="container sb-hero-slide-body" style="max-width: 1400px;">
+              <div class="sb-hero-slide-badge">Vận chuyển</div>
+              <h1 class="sb-hero-slide-title">Giao nhận hàng</h1>
+              <p class="sb-hero-slide-sub">Theo dõi mã vận đơn, chính sách<br class="d-none d-md-inline">đóng gói và xử lý khiếu nại.</p>
+              <a class="sb-store-link sb-hero-slide-link" href="<%= help_shipping_path %>">
+                Tìm hiểu thêm <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <%# Slide 4 — Tài khoản & Bảo mật %>
+        <div class="carousel-item">
+          <div class="sb-hero-slide sb-hero--purple">
+            <div class="sb-hero-slide-deco"><i class="bi bi-person-fill-gear"></i></div>
+            <div class="container sb-hero-slide-body" style="max-width: 1400px;">
+              <div class="sb-hero-slide-badge">Bảo mật</div>
+              <h1 class="sb-hero-slide-title">Tài khoản &amp; Bảo mật</h1>
+              <p class="sb-hero-slide-sub">Đổi mật khẩu, quản lý thông tin<br class="d-none d-md-inline">và xác thực danh tính.</p>
+              <a class="sb-store-link sb-hero-slide-link" href="<%= help_account_path %>">
+                Tìm hiểu thêm <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <%# Slide 5 — Chính sách & Quy định %>
+        <div class="carousel-item">
+          <div class="sb-hero-slide sb-hero--orange">
+            <div class="sb-hero-slide-deco"><i class="bi bi-shield-check"></i></div>
+            <div class="container sb-hero-slide-body" style="max-width: 1400px;">
+              <div class="sb-hero-slide-badge">Quy định</div>
+              <h1 class="sb-hero-slide-title">Chính sách &amp; Quy định</h1>
+              <p class="sb-hero-slide-sub">Điều khoản dịch vụ, hàng hoá bị cấm<br class="d-none d-md-inline">và quy tắc ứng xử trên SnapBid.</p>
+              <a class="sb-store-link sb-hero-slide-link" href="<%= help_policies_path %>">
+                Tìm hiểu thêm <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <%# Slide 6 — Liên hệ CSKH %>
+        <div class="carousel-item">
+          <div class="sb-hero-slide sb-hero--dark">
+            <div class="sb-hero-slide-deco"><i class="bi bi-chat-dots-fill"></i></div>
+            <div class="container sb-hero-slide-body" style="max-width: 1400px;">
+              <div class="sb-hero-slide-badge">Hỗ trợ</div>
+              <h1 class="sb-hero-slide-title">Liên hệ CSKH</h1>
+              <p class="sb-hero-slide-sub">Cách liên lạc trực tiếp với đội ngũ<br class="d-none d-md-inline">hỗ trợ SnapBid 24/7.</p>
+              <a class="sb-store-link sb-hero-slide-link" href="<%= help_contact_path %>">
+                Tìm hiểu thêm <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div><%# /.carousel-inner %>
+
+      <%# Prev / Next controls %>
+      <button class="carousel-control-prev sb-hero-ctrl" type="button" data-bs-target="#sbHeroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next sb-hero-ctrl" type="button" data-bs-target="#sbHeroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+
+    </div><%# /#sbHeroCarousel %>
   </section>
 
-  <%# ===== Category icons row ===== %>
-  <div class="sb-store-cats-wrap sb-full-bleed mb-4">
-    <div class="container" style="max-width: 1400px;">
-      <div class="sb-store-cats">
-        <% (@categories || []).each do |cat| %>
-          <a class="sb-cat-pill" href="<%= root_path(category_id: cat.id, q: @q, condition: @condition, sort: @sort) %>">
-            <%= cat.name %>
+  <%# ===== Browse Tab Bar (Shopee/Tiki style) ===== %>
+  <div class="sb-full-bleed sb-browse-section">
+    <div class="container" style="max-width:1400px;">
+      <div class="sb-browse-tabs">
+        <% (@browse_categories || []).each do |cat| %>
+          <% is_active = @active_browse && @active_browse[:key] == cat[:key] %>
+          <a class="sb-browse-tab <%= 'is-active' if is_active %>"
+             href="<%= root_path(cat_key: cat[:key] == 'tat_ca' ? nil : cat[:key], q: @q, condition_simple: @condition_simple, sort: @sort, price_min: @price_min, price_max: @price_max) %>">
+            <span class="sb-browse-tab-icon"><i class="bi <%= cat[:icon] %>"></i></span>
+            <%= cat[:label] %>
+            <% count = (@browse_counts || {})[cat[:key]].to_i %>
+            <% if count > 0 %>
+              <span class="sb-browse-tab-count"><%= count %></span>
+            <% end %>
           </a>
         <% end %>
-        <a class="sb-cat-pill sb-cat-pill--all" href="<%= root_path %>">Tất cả</a>
       </div>
     </div>
   </div>
 
   <div id="browse"></div>
 
-  <%# ===== Section header + Search ===== %>
-  <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
-    <div class="me-auto">
-      <h2 class="fw-semibold fs-4 mb-1">Sản phẩm đang đấu giá</h2>
-      <div class="text-muted small">
-        Ưu tiên xem “Sắp kết thúc” để không bỏ lỡ.
-      </div>
-    </div>
-
-    
-  </div>
-
-  <%# ===== Summary + Mobile filter button ===== %>
-  <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+  <%# Summary row %>
+  <div class="d-flex align-items-center justify-content-between gap-2 mt-3 mb-0">
     <div class="text-muted small">
       <% total = (@listings.respond_to?(:total_count) ? @listings.total_count : @listings.size) %>
-      <span class="fw-semibold"><%= total %></span> sản phẩm
+      <span class="fw-semibold text-dark"><%= total %></span> sản phẩm
       <% if @q.present? %>
-        <span class="ms-1">· Kết quả cho: <span class="fw-semibold">"<%= @q %>"</span></span>
+        &middot; Kết quả: <span class="fw-semibold">&ldquo;<%= @q %>&rdquo;</span>
+      <% end %>
+      <% if @active_browse && @active_browse[:key] != 'tat_ca' %>
+        &middot; <span class="fw-semibold"><%= @active_browse[:label] %></span>
       <% end %>
     </div>
-
-    <div class="d-md-none">
-      <button class="btn btn-outline-secondary btn-sm"
-              type="button"
-              data-bs-toggle="offcanvas"
-              data-bs-target="#homeFilters"
-              aria-controls="homeFilters">
-        <i class="bi bi-sliders"></i>
-        Bộ lọc
-      </button>
-    </div>
+    <%# Mobile filter button %>
+    <button class="sb-mobile-filter-btn d-md-none"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#homeFilters"
+            aria-controls="homeFilters">
+      <i class="bi bi-sliders"></i> Bộ lọc
+    </button>
   </div>
 
-  <%# ===== Desktop Filter Bar (sticky dưới navbar) ===== %>
-  <div class="card shadow-sm mb-4 bg-light border-0 d-none d-md-block sb-sticky-under-nav">
-    <div class="card-body py-3 home-filter-card">
-      <form method="get" action="<%= root_path %>" class="row g-2 align-items-end">
+  <%# ===== Filter Bar (pill chips — desktop) ===== %>
+  <div class="sb-full-bleed sb-filter-bar d-none d-md-block">
+    <div class="container" style="max-width:1400px;">
+      <form method="get" action="<%= root_path %>" id="filterForm">
         <input type="hidden" name="q" value="<%= @q %>">
+        <input type="hidden" name="cat_key" value="<%= @cat_key %>">
+        <div class="sb-filter-row">
 
-        <div class="col-md-3">
-          <label class="form-label small text-muted mb-1"><%= t("home.filters.category") %></label>
-          <select name="category_id" class="form-select form-select-sm" onchange="this.form.requestSubmit()">
-            <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.category") %></option>
-            <% (@categories || []).each do |cat| %>
-              <option value="<%= cat.id %>" <%= "selected" if @category_id.to_s == cat.id.to_s %>>
-                <%= cat.name %>
-              </option>
-            <% end %>
-          </select>
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label small text-muted mb-1"><%= t("home.filters.condition") %></label>
-          <select name="condition" class="form-select form-select-sm" onchange="this.form.requestSubmit()">
-            <option value=""><%= t("home.filters.all") %> - <%= t("home.filters.condition") %></option>
-            <% (@conditions || []).each do |c| %>
-              <option value="<%= c %>" <%= "selected" if @condition == c %>><%= c %></option>
-            <% end %>
-          </select>
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label small text-muted mb-1"><%= t("home.filters.sort") %></label>
-          <select name="sort" class="form-select form-select-sm" onchange="this.form.requestSubmit()">
-            <option value="newest" <%= "selected" if @sort == "newest" %>><%= t("home.filters.newest") %></option>
-            <option value="ending_soon" <%= "selected" if @sort == "ending_soon" %>>Sắp kết thúc</option>
-            <option value="price_asc" <%= "selected" if @sort == "price_asc" %>>Giá hiện tại ↑</option>
-            <option value="price_desc" <%= "selected" if @sort == "price_desc" %>>Giá hiện tại ↓</option>
-          </select>
-        </div>
-
-        <div class="col-md-3 d-flex gap-2">
-          <a href="<%= root_path %>" class="btn btn-outline-secondary btn-sm flex-grow-1">
-            <i class="bi bi-arrow-counterclockwise"></i> Reset
+          <%# Tình trạng %>
+          <span class="sb-filter-label">Tình trạng:</span>
+          <a class="sb-chip <%= 'is-active' if @condition_simple == 'new' %>"
+             href="<%= root_path(cat_key: @cat_key, condition_simple: @condition_simple == 'new' ? nil : 'new', sort: @sort, price_min: @price_min, price_max: @price_max, q: @q) %>">
+            Mới
           </a>
+          <a class="sb-chip <%= 'is-active' if @condition_simple == 'used' %>"
+             href="<%= root_path(cat_key: @cat_key, condition_simple: @condition_simple == 'used' ? nil : 'used', sort: @sort, price_min: @price_min, price_max: @price_max, q: @q) %>">
+            Đã qua sử dụng
+          </a>
+
+          <span class="sb-filter-sep"></span>
+
+          <%# Sắp xếp theo giá %>
+          <span class="sb-filter-label">Sắp xếp:</span>
+          <a class="sb-chip <%= 'is-active' if @sort == 'price_asc' %>"
+             href="<%= root_path(cat_key: @cat_key, condition_simple: @condition_simple, sort: @sort == 'price_asc' ? 'newest' : 'price_asc', price_min: @price_min, price_max: @price_max, q: @q) %>">
+            Giá tăng dần
+          </a>
+          <a class="sb-chip <%= 'is-active' if @sort == 'price_desc' %>"
+             href="<%= root_path(cat_key: @cat_key, condition_simple: @condition_simple, sort: @sort == 'price_desc' ? 'newest' : 'price_desc', price_min: @price_min, price_max: @price_max, q: @q) %>">
+            Giá giảm dần
+          </a>
+
+          <span class="sb-filter-sep"></span>
+
+          <%# Khoảng giá %>
+          <span class="sb-filter-label">Khoảng giá:</span>
+          <div class="sb-price-range">
+            <input type="number" name="price_min" placeholder="Từ" value="<%= @price_min %>" min="0" step="10000"
+                   onchange="document.getElementById('filterForm').requestSubmit()">
+            <span class="sep">–</span>
+            <input type="number" name="price_max" placeholder="Đến" value="<%= @price_max %>" min="0" step="10000"
+                   onchange="document.getElementById('filterForm').requestSubmit()">
+          </div>
+
+          <span class="sb-filter-sep"></span>
+
+          <%# Thời gian %>
+          <a class="sb-chip <%= 'is-active' if @sort == 'ending_soon' %>"
+             href="<%= root_path(cat_key: @cat_key, condition_simple: @condition_simple, sort: @sort == 'ending_soon' ? 'newest' : 'ending_soon', price_min: @price_min, price_max: @price_max, q: @q) %>">
+            Sắp kết thúc
+          </a>
+          <a class="sb-chip <%= 'is-active' if @sort == 'newest' %>"
+             href="<%= root_path(cat_key: @cat_key, condition_simple: @condition_simple, sort: 'newest', price_min: @price_min, price_max: @price_max, q: @q) %>">
+            Mới nhất
+          </a>
+
+          <%# Reset — đẩy sang phải %>
+          <div class="ms-auto">
+            <a class="sb-chip sb-chip--reset" href="<%= root_path %>">
+              <i class="bi bi-x-circle"></i> Xóa bộ lọc
+            </a>
+          </div>
+
         </div>
       </form>
     </div>
   </div>
 
+  <div class="mb-3"></div>
+
   <%# ===== Mobile Offcanvas Filters ===== %>
   <div class="offcanvas offcanvas-end" tabindex="-1" id="homeFilters" aria-labelledby="homeFiltersLabel">
-    <div class="offcanvas-header">
+    <div class="offcanvas-header border-bottom">
       <h5 class="offcanvas-title" id="homeFiltersLabel"><i class="bi bi-sliders"></i> Bộ lọc</h5>
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Đóng"></button>
     </div>
-    
+    <div class="offcanvas-body">
+      <form method="get" action="<%= root_path %>" id="mobileFilterForm">
+        <input type="hidden" name="q" value="<%= @q %>">
+        <input type="hidden" name="cat_key" value="<%= @cat_key %>">
+
+        <%# Danh mục %>
+        <div class="mb-3">
+          <label class="form-label fw-semibold small">Danh mục</label>
+          <div class="d-flex flex-wrap gap-2">
+            <% (@browse_categories || []).each do |cat| %>
+              <div class="form-check form-check-inline m-0">
+                <input class="form-check-input" type="radio" name="cat_key"
+                       id="mob_cat_<%= cat[:key] %>" value="<%= cat[:key] == 'tat_ca' ? '' : cat[:key] %>"
+                       <%= "checked" if (@cat_key.blank? && cat[:key] == 'tat_ca') || @cat_key == cat[:key] %>>
+                <label class="form-check-label small" for="mob_cat_<%= cat[:key] %>">
+                  <i class="bi <%= cat[:icon] %>"></i> <%= cat[:label] %>
+                </label>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <%# Tình trạng %>
+        <div class="mb-3">
+          <label class="form-label fw-semibold small">Tình trạng</label>
+          <div class="d-flex gap-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="condition_simple" id="mob_cond_all" value="" <%= "checked" if @condition_simple.blank? %>>
+              <label class="form-check-label small" for="mob_cond_all">Tất cả</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="condition_simple" id="mob_cond_new" value="new" <%= "checked" if @condition_simple == 'new' %>>
+              <label class="form-check-label small" for="mob_cond_new">✨ Mới</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="condition_simple" id="mob_cond_used" value="used" <%= "checked" if @condition_simple == 'used' %>>
+              <label class="form-check-label small" for="mob_cond_used">♻️ Đã qua sử dụng</label>
+            </div>
+          </div>
+        </div>
+
+        <%# Khoảng giá %>
+        <div class="mb-3">
+          <label class="form-label fw-semibold small">Khoảng giá (₫)</label>
+          <div class="d-flex gap-2 align-items-center">
+            <input type="number" name="price_min" class="form-control form-control-sm"
+                   placeholder="Từ" value="<%= @price_min %>" min="0" step="10000">
+            <span class="text-muted">–</span>
+            <input type="number" name="price_max" class="form-control form-control-sm"
+                   placeholder="Đến" value="<%= @price_max %>" min="0" step="10000">
+          </div>
+        </div>
+
+        <%# Sắp xếp %>
+        <div class="mb-4">
+          <label class="form-label fw-semibold small">Sắp xếp</label>
+          <select name="sort" class="form-select form-select-sm">
+            <option value="newest"      <%= "selected" if @sort == "newest" %>>⭐ Mới nhất</option>
+            <option value="ending_soon" <%= "selected" if @sort == "ending_soon" %>>⏰ Sắp kết thúc</option>
+            <option value="price_asc"   <%= "selected" if @sort == "price_asc" %>>↑ Giá tăng dần</option>
+            <option value="price_desc"  <%= "selected" if @sort == "price_desc" %>>↓ Giá giảm dần</option>
+          </select>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="offcanvas">
+            <i class="bi bi-funnel-fill me-1"></i> Áp dụng
+          </button>
+          <a href="<%= root_path %>" class="btn btn-outline-secondary">
+            <i class="bi bi-x-circle me-1"></i> Xoá tất cả
+          </a>
+        </div>
+      </form>
+    </div>
   </div>
 
   <%# ===== Grid ===== %>
