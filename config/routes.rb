@@ -45,6 +45,7 @@ Rails.application.routes.draw do
 
   resources :listings, only: [:index, :show] do
     resources :bids, only: [:create]
+    resource :watchlist, only: [:create, :destroy]
     post :buy_now, on: :member
   end
 

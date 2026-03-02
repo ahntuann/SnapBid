@@ -10,6 +10,8 @@ class User < ApplicationRecord
   has_many :orders, foreign_key: :buyer_id, dependent: :nullify
   has_many :bids, dependent: :destroy
   has_many :notifications, foreign_key: :recipient_id, dependent: :destroy
+  has_many :watchlists, dependent: :destroy
+  has_many :watched_listings, through: :watchlists, source: :listing
 
   has_one_attached :avatar
 
