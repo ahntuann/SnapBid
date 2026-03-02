@@ -18,6 +18,12 @@ class Listing < ApplicationRecord
     blocked: 6
   }
 
+  # Predefined condition values (used by filter dropdown + seller form)
+  CONDITIONS = %w[new like_new good fair].freeze
+
+  # Predefined gender values
+  GENDERS = %w[male female unisex].freeze
+
   scope :published, -> {
     where.not(published_at: nil).order(published_at: :desc)
   }

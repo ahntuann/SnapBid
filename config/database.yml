@@ -17,8 +17,8 @@ default: &default
   encoding: unicode
   # Cấu hình cho Windows bắt buộc phải có host
   host: localhost
-  username: postgres
-  password: phu
+  username: vinhnx
+  password: 123456
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 development:
@@ -97,6 +97,6 @@ production:
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   host: <%= ENV.fetch("DB_HOST", nil) %>
-  username: postgres
+  username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
   password: <%= ENV.fetch("POSTGRES_PASSWORD", nil) %>
   database: snapbid_production

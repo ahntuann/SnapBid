@@ -182,19 +182,18 @@
       <div class="container apple-mega-panel__inner">
         <div class="apple-mega-col">
           <div class="apple-mega-title">Khám phá</div>
-          <a class="apple-mega-link" href="<%= root_path(sort: "ending_soon") %>">Sắp kết thúc</a>
-          <a class="apple-mega-link" href="<%= root_path(sort: "newest") %>">Mới đăng</a>
           <a class="apple-mega-link" href="<%= root_path %>">Tất cả sản phẩm</a>
-          <a class="apple-mega-link" href="#">Danh mục phổ biến</a>
+          <a class="apple-mega-link" href="<%= root_path(condition_simple: "new") %>">✨ Hàng mới</a>
+          <a class="apple-mega-link" href="<%= root_path(condition_simple: "used") %>">♻️ Đã qua sử dụng</a>
         </div>
 
         <div class="apple-mega-col">
-          <div class="apple-mega-title">Bộ lọc nhanh</div>
-          <a class="apple-mega-link" href="#">Điện tử</a>
-          <a class="apple-mega-link" href="#">Thời trang</a>
-          <a class="apple-mega-link" href="#">Đồ sưu tầm</a>
-          <a class="apple-mega-link" href="#">Gia dụng</a>
-          <a class="apple-mega-link" href="#">Đồ công nghệ</a>
+          <div class="apple-mega-title">Danh mục</div>
+          <a class="apple-mega-link" href="<%= root_path(cat_key: "giay") %>">Giày</a>
+          <a class="apple-mega-link" href="<%= root_path(cat_key: "quan_ao") %>">Quần áo</a>
+          <a class="apple-mega-link" href="<%= root_path(cat_key: "tui_xach") %>">Túi xách</a>
+          <a class="apple-mega-link" href="<%= root_path(cat_key: "vi") %>">Ví</a>
+          <a class="apple-mega-link" href="<%= root_path(cat_key: "mu") %>">Mũ</a>
         </div>
 
         <div class="apple-mega-col apple-mega-col--cards">
@@ -203,17 +202,17 @@
             <div class="apple-mega-card__icon"><i class="bi bi-alarm"></i></div>
             <div>
               <div class="apple-mega-card__headline">Canh phiên sắp chốt</div>
-              <div class="apple-mega-card__sub">Ưu tiên món còn dưới 30 phút.</div>
+              <div class="apple-mega-card__sub">Những sản phẩm sắp hết hạn đấu giá.</div>
             </div>
           </a>
           <a class="apple-mega-card" href="<%= root_path(sort: "price_asc") %>">
             <div class="apple-mega-card__icon"><i class="bi bi-graph-down"></i></div>
             <div>
               <div class="apple-mega-card__headline">Săn giá tốt</div>
-              <div class="apple-mega-card__sub">Xem món giá hiện tại thấp.</div>
+              <div class="apple-mega-card__sub">Các sản phẩm đang có mức giá hấp dẫn.</div>
             </div>
           </a>
-          <div class="apple-mega-tip">Tip: Đặt giá 10–30 giây cuối thường "ăn" hơn.</div>
+          <div class="apple-mega-tip">Tip: Để ý kết hợp khoảng giá tìm deal hời nhất nhé!</div>
         </div>
       </div>
     </section>
