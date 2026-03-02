@@ -90,6 +90,32 @@ class Order < ApplicationRecord
     recipient_name.present? && recipient_phone.present? && shipping_address.present?
   end
 
+  # Thanh toán đơn hàng bằng SnapBid Coin
+  def pay_with_coins!
+    return if paid?
+
+    coins_needed = User.vnd_to_coins(total_price)
+    raise "Insufficient SnapBid Coins" if buyer.coin_balance < coins_needed
+
+    ActiveRecord::Base.transaction do
+      buyer.deduct_coins!(coins_needed)
+      update!(
+        buyer_marked_paid_at: Time.current,
+        admin_confirmed_paid_at: Time.current,
+        status: :paid
+      )
+    end
+
+    NotificationService.notify!(
+      recipient: buyer,
+      actor: nil,
+      action: :payment_confirmed,
+      notifiable: self,
+      url: Rails.application.routes.url_helpers.order_path(self),
+      message: "Bạn đã thanh toán thành công đơn ##{id} bằng SnapBid Coin."
+    )
+  end
+
   private
 
   def generate_sepay_ref

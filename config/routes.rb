@@ -50,10 +50,13 @@ Rails.application.routes.draw do
 
   resources :orders, only: [:index, :show, :update] do
     member do
-      post :mark_paid   # buyer bấm "Tôi đã chuyển tiền"
-      get  :status      # polling fallback – trả JSON {status, paid, ...}
+      post :mark_paid        # kept for backward compat
+      post :pay_with_coins   # thanh toán bằng SnapBid Coin
+      get  :status           # polling fallback – trả JSON {status, paid, ...}
     end
   end
+
+  resource :wallet, only: [:show]
 
   # namespace :admin do
   #   resources :orders, only: [:index, :show] do

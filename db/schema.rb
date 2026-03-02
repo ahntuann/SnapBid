@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_27_000001) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_02_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -69,6 +69,20 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_27_000001) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_categories_on_name", unique: true
+  end
+
+  create_table "coin_deposits", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "amount_vnd", default: 0, null: false
+    t.integer "coins_credited", default: 0, null: false
+    t.string "deposit_ref", null: false
+    t.string "sepay_transaction_id"
+    t.datetime "credited_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deposit_ref"], name: "index_coin_deposits_on_deposit_ref"
+    t.index ["sepay_transaction_id"], name: "index_coin_deposits_on_sepay_transaction_id", unique: true
+    t.index ["user_id"], name: "index_coin_deposits_on_user_id"
   end
 
   create_table "listings", force: :cascade do |t|
@@ -175,6 +189,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_27_000001) do
     t.string "provider"
     t.string "uid"
     t.datetime "email_verified_at"
+    t.integer "snapbid_coins", default: 0, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -184,6 +199,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_27_000001) do
   add_foreign_key "ai_verifications", "listings"
   add_foreign_key "bids", "listings"
   add_foreign_key "bids", "users"
+  add_foreign_key "coin_deposits", "users"
   add_foreign_key "listings", "categories"
   add_foreign_key "listings", "reference_items"
   add_foreign_key "listings", "users"

@@ -7,7 +7,8 @@ module Webhooks
 
     # POST /webhooks/sepay
     # SePay gọi về mỗi khi có giao dịch chuyển khoản vào tài khoản.
-    # Docs: https://docs.sepay.vn/webhook.html
+    # Dùng để nạp SnapBid Coin cho người dùng.
+    # Nội dung CK phải chứa deposit_ref của user (VD: SBC42).
     #
     # Payload mẫu:
     # {
@@ -15,11 +16,10 @@ module Webhooks
     #   "gateway": "MBBank",
     #   "transactionDate": "2024-01-01 12:00:00",
     #   "accountNumber": "0123456789",
-    #   "content": "SNAPBID42 thanh toan",   ← chứa sepay_ref
+    #   "content": "SBC42 nap coin",
     #   "transferType": "in",
-    #   "transferAmount": 500000,
-    #   "referenceCode": "FT24001ABCD",
-    #   "description": "SNAPBID42"
+    #   "transferAmount": 50000,
+    #   "referenceCode": "FT24001ABCD"
     # }
     def create
       payload = JSON.parse(request.body.read) rescue {}
@@ -31,36 +31,48 @@ module Webhooks
         return render json: { success: false, message: "Not an inbound transfer" }, status: :ok
       end
 
-      content = payload["content"].to_s.upcase
+      transaction_id  = payload["id"].to_s
+      content         = payload["content"].to_s.upcase
+      amount_vnd      = payload["transferAmount"].to_i
 
-      # Tìm đơn hàng theo sepay_ref trong nội dung CK
-      order = Order.pending.find { |o| content.include?(o.sepay_ref.to_s.upcase) }
-
-      unless order
-        Rails.logger.warn("[SePay Webhook] No pending order matched content: #{content}")
-        return render json: { success: false, message: "No matching order" }, status: :ok
+      # Tránh xử lý trùng
+      if CoinDeposit.exists?(sepay_transaction_id: transaction_id)
+        Rails.logger.info("[SePay Webhook] Transaction #{transaction_id} already processed")
+        return render json: { success: true, message: "Already processed" }, status: :ok
       end
 
-      # Kiểm tra số tiền khớp (cho phép sai lệch 1000đ)
-      expected = order.total_price.to_i
-      received = payload["transferAmount"].to_i
-
-      if received < expected - 1000
-        Rails.logger.warn("[SePay Webhook] Amount mismatch for order ##{order.id}: expected #{expected}, got #{received}")
-        return render json: { success: false, message: "Amount mismatch" }, status: :ok
+      # Tìm user theo deposit_ref SBC{id} trong nội dung CK
+      match = content.match(/SBC(\d+)/)
+      unless match
+        Rails.logger.warn("[SePay Webhook] No SBC deposit ref found in content: #{content}")
+        return render json: { success: false, message: "No deposit ref found" }, status: :ok
       end
 
-      transaction_at = begin
-        Time.zone.parse(payload["transactionDate"])
-      rescue
-        Time.current
+      user = User.find_by(id: match[1].to_i)
+      unless user
+        Rails.logger.warn("[SePay Webhook] User not found for ref #{match[0]}")
+        return render json: { success: false, message: "User not found" }, status: :ok
       end
 
-      order.auto_confirm_by_sepay!(transaction_at: transaction_at)
+      if amount_vnd < User::COIN_EXCHANGE_RATE
+        Rails.logger.warn("[SePay Webhook] Amount #{amount_vnd} too small to credit any coins")
+        return render json: { success: false, message: "Amount too small" }, status: :ok
+      end
 
-      Rails.logger.info("[SePay Webhook] Order ##{order.id} confirmed via SePay")
+      coins = user.credit_coins!(amount_vnd: amount_vnd, transaction_id: transaction_id)
 
-      render json: { success: true, message: "Order ##{order.id} confirmed" }, status: :ok
+      NotificationService.notify!(
+        recipient: user,
+        actor: nil,
+        action: :payment_confirmed,
+        notifiable: nil,
+        url: "/wallet",
+        message: "Nạp thành công #{coins} SnapBid Coin (#{ActiveSupport::NumberHelper.number_to_delimited(amount_vnd)}₫). Số dư hiện tại: #{user.reload.coin_balance} coin."
+      )
+
+      Rails.logger.info("[SePay Webhook] Credited #{coins} coins to user ##{user.id}")
+
+      render json: { success: true, message: "Credited #{coins} coins to user ##{user.id}" }, status: :ok
 
     rescue => e
       Rails.logger.error("[SePay Webhook] Error: #{e.message}\n#{e.backtrace.first(5).join("\n")}")

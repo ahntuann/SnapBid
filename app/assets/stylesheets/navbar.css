@@ -179,8 +179,33 @@
 
 
 /* ============================================================
-   5. NAV-LINK ACTIVE INDICATOR
+   4b. COIN WALLET BUTTON
    ============================================================ */
+.sb-nav-coin-btn {
+   display: inline-flex;
+   align-items: center;
+   gap: 5px;
+   padding: 4px 10px;
+   border-radius: 20px;
+   background: rgba(99, 102, 241, 0.08);
+   color: #6366f1;
+   font-size: 13px;
+   font-weight: 600;
+   text-decoration: none;
+   border: 1.5px solid rgba(99, 102, 241, 0.2);
+   transition: background 150ms ease, border-color 150ms ease;
+   white-space: nowrap;
+}
+.sb-nav-coin-btn:hover {
+   background: rgba(99, 102, 241, 0.15);
+   border-color: rgba(99, 102, 241, 0.45);
+   color: #4f46e5;
+}
+.sb-nav-coin-btn .bi-coin {
+   font-size: 14px;
+}
+
+
 /* Gạch dưới mỏng animation khi link active */
 .apple-navbar .nav-link.active {
    color: rgba(0, 0, 0, .95);

@@ -106,6 +106,14 @@
         </button>
 
         <% if user_signed_in? %>
+          <%# -- Coin wallet button -- %>
+          <%= link_to wallet_path,
+                class: "sb-nav-coin-btn d-none d-lg-inline-flex align-items-center gap-1",
+                title: "Ví SnapBid Coin" do %>
+            <i class="bi bi-coin"></i>
+            <span class="fw-semibold"><%= number_with_delimiter(current_user.coin_balance) %></span>
+          <% end %>
+
           <%# -- Notification bell -- %>
           <div class="nav-item position-relative">
             <%= render "shared/notifications_bell" %>
@@ -129,6 +137,16 @@
             </a>
 
             <ul class="dropdown-menu dropdown-menu-end" data-dropdown-target="menu" style="margin-top:8px;">
+              <li>
+                <%= link_to wallet_path, class: "dropdown-item d-flex align-items-center gap-2" do %>
+                  <i class="bi bi-coin text-warning"></i>
+                  <span>
+                    <span class="fw-semibold"><%= number_with_delimiter(current_user.coin_balance) %></span>
+                    <span class="text-muted small"> Coin</span>
+                  </span>
+                <% end %>
+              </li>
+              <li><hr class="dropdown-divider"></li>
               <li><%= link_to "Đơn hàng",  orders_path,  class: "dropdown-item" %></li>
               <li><%= link_to "Tài khoản", profile_path, class: "dropdown-item" %></li>
               <% if current_user.admin? %>
