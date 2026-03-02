@@ -22,6 +22,11 @@ class WithdrawalRequest < ApplicationRecord
   end
 
   def deduct_coins_from_user
-    user.decrement!(:snapbid_coins, amount)
+    user.process_coin_transaction!(
+      amount: -amount,
+      transaction_type: :withdrawal,
+      description: "Tạo lệnh rút #{amount} coin",
+      subject: self
+    )
   end
 end

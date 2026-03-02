@@ -133,7 +133,13 @@
         <% if user_signed_in? %>
           <% if !@listing.sold? && !@listing.auction_ended? %>
             <div data-listing-target="bidForm">
-              <div class="text-uppercase small fw-semibold text-muted mb-2">Đặt giá</div>
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="text-uppercase small fw-semibold text-muted">Đặt giá</div>
+                <div class="text-muted small">
+                  Phí đặt giá lần đầu: <span class="fw-bold text-primary">5 Coin</span><br>
+                  Các lần sau: <span class="fw-bold text-primary">1 Coin</span>
+                </div>
+              </div>
               <div class="text-muted small mb-2">
                 Giá tối thiểu tiếp theo: <b><%= number_with_precision(@listing.min_next_bid) %></b>
               </div>

@@ -58,6 +58,7 @@ Rails.application.routes.draw do
 
   resource :wallet, only: [:show]
   resources :withdrawal_requests, only: [:index, :new, :create]
+  resources :coin_transactions, only: [:index]
 
   # namespace :admin do
   #   resources :orders, only: [:index, :show] do

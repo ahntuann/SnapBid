@@ -20,16 +20,38 @@ class AuctionCloseService
           listing,
           { type: "ended", has_winner: false }
         )
+        
+        # Hoàn tiền cho tất cả mọi người đã bid (nếu có, dù ở đây k có first bid nên sẽ ko có ai)
+        RefundService.refund_losers!(listing: listing, winner: nil)
+        
         return Result.new(status: :ended_no_winner)
       end
+
+      # Discount amount dựa trên số coin đã tiêu
+      coins_spent = winner_bid.user.coins_spent_on_listing(listing.id)
+      discount_amount = coins_spent * 1000 # 1 coin = 1000d
+
+      final_price = winner_bid.amount
+      final_total = final_price - discount_amount
+      final_total = 0 if final_total < 0 # Đảm bảo không âm
 
       order = Order.create!(
         listing: listing,
         buyer: winner_bid.user,
         kind: :auction_win,
         status: :pending,
-        price: winner_bid.amount
+        price: final_price,
+        total: final_total
       )
+
+      # Auto-pay or schedule expiration
+      order.auto_pay_if_possible!
+      if order.pending?
+        ExpireUnpaidOrderJob.set(wait: 24.hours).perform_later(order.id)
+      end
+
+      # Hoàn tiền cho những người thua cuộc
+      RefundService.refund_losers!(listing: listing, winner: winner_bid.user)
 
       NotificationService.notify!(
         recipient: winner_bid.user,

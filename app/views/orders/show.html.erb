@@ -7,10 +7,12 @@
     <%# ===== CANCELLED ALERT (TOP) ===== %>
     <% if @order.cancelled? %>
       <div class="alert alert-danger mb-4">
-        <% if @order.respond_to?(:cancelled_reason) && @order.cancelled_reason.to_s == "late_payment_3_days" %>
+        <% if @order.respond_to?(:cancelled_reason) && @order.cancelled_reason.to_s == "late_payment_24h" %>
+          Đơn Hàng đã bị huỷ do quá hạn 24 giờ không thanh toán. Phí đặt giá sẽ không được hoàn lại.
+        <% elsif @order.respond_to?(:cancelled_reason) && @order.cancelled_reason.to_s == "late_payment_3_days" %>
           Đơn Hàng đã bị Huỷ do bạn trễ hạn thanh toán quá 3 ngày.
         <% else %>
-          Đơn Hàng đã bị Hệ thống của chúng tôi Huỷ do bạn trễ hạn thanh toán quá 3 ngày.
+          Đơn Hàng đã bị huỷ bởi hệ thống.
         <% end %>
       </div>
     <% end %>
@@ -152,20 +154,30 @@
         <div class="fw-semibold mb-3">Chi tiết thanh toán</div>
 
         <% shipping_fee = 0 %>
-        <% total = @order.price.to_d + shipping_fee.to_d %>
+        <% discount = [0, @order.price.to_d - @order.total.to_d].max %>
+        <% total = @order.total.to_d + shipping_fee.to_d %>
 
         <div class="d-flex justify-content-between py-1">
-          <div class="text-muted">Giá sản phẩm</div>
+          <div class="text-muted">Giá sản phẩm (Lúc chốt)</div>
           <div class="fw-semibold"><%= number_to_currency(@order.price, unit: "₫", precision: 0, delimiter: ".", format: "%n %u") %></div>
         </div>
+        <% if discount > 0 %>
+          <div class="d-flex justify-content-between py-1 text-success">
+            <div>
+              Trừ phí đặt giá (khuyến mãi cho người thắng)
+              <div class="small opacity-75">(<%= number_with_delimiter(discount / 1000) %> Coin đổi thành VND)</div>
+            </div>
+            <div class="fw-semibold">-<%= number_to_currency(discount, unit: "₫", precision: 0, delimiter: ".", format: "%n %u") %></div>
+          </div>
+        <% end %>
         <div class="d-flex justify-content-between py-1">
           <div class="text-muted">Phí vận chuyển (tạm tính)</div>
           <div class="fw-semibold"><%= number_to_currency(shipping_fee, unit: "₫", precision: 0, delimiter: ".", format: "%n %u") %></div>
         </div>
         <hr class="my-2">
         <div class="d-flex justify-content-between py-1">
-          <div class="fw-semibold">Tổng cộng</div>
-          <div class="fw-bold"><%= number_to_currency(total, unit: "₫", precision: 0, delimiter: ".", format: "%n %u") %></div>
+          <div class="fw-semibold">Tổng cộng thực tế</div>
+          <div class="fw-bold fs-5 text-danger"><%= number_to_currency(total, unit: "₫", precision: 0, delimiter: ".", format: "%n %u") %></div>
         </div>
       </div>
     </div>

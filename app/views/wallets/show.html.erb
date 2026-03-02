@@ -16,8 +16,8 @@
             <div class="fw-semibold" style="font-size:1.1rem;">SnapBid Coin</div>
             <div class="opacity-75 small">≈ <%= number_to_currency(@coin_balance * @exchange_rate, unit: "₫", precision: 0, delimiter: ".") %></div>
           </div>
-        </div>
         <div>
+          <%= link_to "Lịch sử giao dịch", coin_transactions_path, class: "btn btn-outline-light btn-sm me-2", style: "border-radius:20px;" %>
           <%= link_to "Lịch sử rút tiền", withdrawal_requests_path, class: "btn btn-outline-light btn-sm me-2", style: "border-radius:20px;" %>
           <%= link_to "Rút tiền", new_withdrawal_request_path, class: "btn btn-light btn-sm fw-semibold", style: "border-radius:20px; color:#6366f1;" %>
         </div>

@@ -40,7 +40,12 @@ class Admin::WithdrawalRequestsController < Admin::BaseController
       ActiveRecord::Base.transaction do
         @withdrawal_request.update!(status: :rejected)
         # Refund coins
-        @withdrawal_request.user.increment!(:snapbid_coins, @withdrawal_request.amount)
+        @withdrawal_request.user.process_coin_transaction!(
+          amount: @withdrawal_request.amount,
+          transaction_type: :refund,
+          description: "Hoàn tiền lệnh rút bị từ chối (##{@withdrawal_request.id})",
+          subject: @withdrawal_request
+        )
         
         Notification.create!(
           recipient: @withdrawal_request.user,

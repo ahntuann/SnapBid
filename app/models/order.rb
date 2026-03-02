@@ -116,6 +116,39 @@ class Order < ApplicationRecord
     )
   end
 
+  # Thanh toán tự động nếu đủ tiền (Dùng sau khi chốt phiên hoặc mua ngay)
+  def auto_pay_if_possible!
+    return if paid? || cancelled?
+
+    coins_needed = User.vnd_to_coins(total_price)
+    if buyer.coin_balance >= coins_needed
+      pay_with_coins!
+    end
+  end
+
+  # Hủy đơn nếu sau 24h chưa thanh toán
+  def cancel_expired_24h!
+    return if paid? || cancelled?
+
+    transaction do
+      update!(status: :cancelled, cancelled_reason: "late_payment_24h")
+
+      listing.update!(
+        published_at: nil,
+        status: :draft
+      )
+    end
+
+    NotificationService.notify!(
+      recipient: buyer,
+      actor: nil,
+      action: :system_notification,
+      notifiable: self,
+      url: Rails.application.routes.url_helpers.order_path(self),
+      message: "Đơn hàng ##{id} đã bị hủy do quá hạn thanh toán 24 giờ. Phí đặt giá sẽ không được hoàn lại."
+    )
+  end
+
   private
 
   def generate_sepay_ref
