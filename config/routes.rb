@@ -57,6 +57,7 @@ Rails.application.routes.draw do
   end
 
   resource :wallet, only: [:show]
+  resources :withdrawal_requests, only: [:index, :new, :create]
 
   # namespace :admin do
   #   resources :orders, only: [:index, :show] do
@@ -80,6 +81,12 @@ Rails.application.routes.draw do
       member do
         post :confirm_paid  # admin bấm "Đã nhận tiền"
         patch :cancel
+      end
+    end
+    resources :withdrawal_requests, only: %i[index show] do
+      member do
+        post :approve
+        post :reject
       end
     end
   end

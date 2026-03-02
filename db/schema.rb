@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_02_000002) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_02_204435) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -194,6 +194,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_000002) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "withdrawal_requests", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "amount", null: false
+    t.string "bank_name", null: false
+    t.string "account_number", null: false
+    t.string "account_name", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_withdrawal_requests_on_user_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "ai_verifications", "listings"
@@ -208,4 +220,5 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_000002) do
   add_foreign_key "orders", "listings"
   add_foreign_key "orders", "users", column: "buyer_id"
   add_foreign_key "otps", "users"
+  add_foreign_key "withdrawal_requests", "users"
 end

@@ -7,13 +7,19 @@
   <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;background:linear-gradient(135deg,#6366f1,#8b5cf6);">
     <div class="card-body p-4 text-white">
       <div class="small opacity-75 mb-1">Số dư hiện tại</div>
-      <div class="d-flex align-items-center gap-3">
-        <div style="font-size:2.5rem;font-weight:700;line-height:1;">
-          <%= number_with_delimiter(@coin_balance) %>
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div style="font-size:2.5rem;font-weight:700;line-height:1;">
+            <%= number_with_delimiter(@coin_balance) %>
+          </div>
+          <div>
+            <div class="fw-semibold" style="font-size:1.1rem;">SnapBid Coin</div>
+            <div class="opacity-75 small">≈ <%= number_to_currency(@coin_balance * @exchange_rate, unit: "₫", precision: 0, delimiter: ".") %></div>
+          </div>
         </div>
         <div>
-          <div class="fw-semibold" style="font-size:1.1rem;">SnapBid Coin</div>
-          <div class="opacity-75 small">≈ <%= number_to_currency(@coin_balance * @exchange_rate, unit: "₫", precision: 0, delimiter: ".") %></div>
+          <%= link_to "Lịch sử rút tiền", withdrawal_requests_path, class: "btn btn-outline-light btn-sm me-2", style: "border-radius:20px;" %>
+          <%= link_to "Rút tiền", new_withdrawal_request_path, class: "btn btn-light btn-sm fw-semibold", style: "border-radius:20px; color:#6366f1;" %>
         </div>
       </div>
     </div>

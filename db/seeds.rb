@@ -25,25 +25,33 @@ puts "Seeding completed!"
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
-# SystemSetting.first_or_create!(
-#   ai_threshold: 0.85,
-#   commission_percent: 5.0,
-#   min_bid_step: 10.0
-# )
+SystemSetting.first_or_create!(
+  ai_threshold: 0.85,
+  commission_percent: 5.0,
+  min_bid_step: 10.0
+)
 
-# User.find_or_create_by!(email: "admin@snapbid.local") do |u|
-#   u.name = "Admin"
-#   u.role = :admin
-#   u.password = "admin123456"
-#   u.email_verified_at = Time.current
-# end
+User.find_or_create_by!(email: "admin@snapbid.local") do |u|
+  u.name = "Admin"
+  u.role = :admin
+  u.password = "admin123456"
+  u.email_verified_at = Time.current
+end
 
-# User.find_or_create_by!(email: "cs@snapbid.local") do |u|
-#   u.name = "Customer Support"
-#   u.role = :cs
-#   u.password = "cs123456"
-#   u.email_verified_at = Time.current
-# end
+User.find_or_create_by!(email: "cs@snapbid.local") do |u|
+  u.name = "Customer Support"
+  u.role = :cs
+  u.password = "cs123456"
+  u.email_verified_at = Time.current
+end
+
+User.find_or_create_by!(email: "test_withdraw@example.com") do |u|
+  u.name = "Test Withdraw"
+  u.role = :user
+  u.password = "password123"
+  u.email_verified_at = Time.current
+  u.snapbid_coins = 100
+end
 
 
 %w[Thời\ trang Túi\ sách Điện\ tử Đồ\ thủ\ công Tranh-ảnh Đồ\ gỗ Khác].each do |name|

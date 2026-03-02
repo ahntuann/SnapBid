@@ -11,6 +11,7 @@ class User < ApplicationRecord
   has_many :bids, dependent: :destroy
   has_many :notifications, foreign_key: :recipient_id, dependent: :destroy
   has_many :coin_deposits, dependent: :destroy
+  has_many :withdrawal_requests, dependent: :destroy
 
   has_one_attached :avatar
 
