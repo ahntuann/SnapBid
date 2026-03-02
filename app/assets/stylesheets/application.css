@@ -999,6 +999,65 @@ a:hover {
    Payment toast animation
    ============================================================ */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   14. AUTH PAGES NAVBAR HIDE/HOVER
+   ============================================================ */
+
+/* Hide trigger zone on normal pages */
+.navbar-trigger-zone {
+  display: none;
+}
+
+/* On auth pages, show trigger zone, hide navbar initially */
+body[class^="sessions-"] .navbar-trigger-zone,
+body[class^="registrations-"] .navbar-trigger-zone,
+body[class^="passwords-"] .navbar-trigger-zone,
+body.user-sessions .navbar-trigger-zone {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  z-index: 1050;
+}
+
+/* Move navbar up, add transition */
+body[class^="sessions-"] .apple-navbar,
+body[class^="registrations-"] .apple-navbar,
+body[class^="passwords-"] .apple-navbar,
+body.user-sessions .apple-navbar {
+  transform: translateY(-100%);
+  transition: transform 0.35s cubic-bezier(0.28, 0.11, 0.32, 1);
+}
+
+/* Hovering the trigger zone OR the navbar itself reveals it */
+body[class^="sessions-"] .navbar-trigger-zone:hover~.apple-navbar,
+body[class^="registrations-"] .navbar-trigger-zone:hover~.apple-navbar,
+body[class^="passwords-"] .navbar-trigger-zone:hover~.apple-navbar,
+body.user-sessions .navbar-trigger-zone:hover~.apple-navbar,
+body[class^="sessions-"] .apple-navbar:hover,
+body[class^="registrations-"] .apple-navbar:hover,
+body[class^="passwords-"] .apple-navbar:hover,
+body.user-sessions .apple-navbar:hover {
+  transform: translateY(0);
+}
+
+/* Fix main content padding on auth pages so split panel takes full viewport */
+body[class^="sessions-"] .app-main,
+body[class^="registrations-"] .app-main,
+body[class^="passwords-"] .app-main,
+body.user-sessions .app-main {
+  padding-top: 0;
 }

@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   get "/help", to: "help#index", as: :help
   get "/help/selling",  to: "help#selling",  as: :help_selling
   get "/help/buying",   to: "help#buying",   as: :help_buying
-  get "/help/shipping", to: "help#shipping", as: :help_shipping
+  get "/help/wallet",   to: "help#wallet",   as: :help_wallet
   get "/help/account",  to: "help#account",  as: :help_account
   get "/help/policies", to: "help#policies", as: :help_policies
   get "/help/contact",  to: "help#contact",  as: :help_contact

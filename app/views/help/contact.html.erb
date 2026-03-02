@@ -78,11 +78,11 @@
 
         <div class="list-group list-group-flush">
           <% [
-            { icon: "bi-bag-x",          label: "Tôi trúng đấu giá nhưng không nhận được hàng",       page: help_shipping_path },
+            { icon: "bi-bag-x",          label: "Tôi trúng đấu giá nhưng không nhận được hàng",       page: help_buying_path },
             { icon: "bi-currency-dollar", label: "Thanh toán không thành công hoặc bị lỗi",           page: help_buying_path },
             { icon: "bi-person-x",        label: "Tài khoản bị khoá hoặc không đăng nhập được",       page: help_account_path },
             { icon: "bi-shield-exclamation", label: "Báo cáo người dùng vi phạm hoặc hàng giả",       page: help_policies_path },
-            { icon: "bi-box-seam",        label: "Hàng nhận được không đúng mô tả / hư hỏng",        page: help_shipping_path },
+            { icon: "bi-box-seam",        label: "Hàng nhận được không đúng mô tả / hư hỏng",        page: help_buying_path },
             { icon: "bi-question-circle", label: "Câu hỏi khác không có trong trang Hỗ trợ",         page: help_path }
           ].each do |item| %>
             <a href="<%= item[:page] %>" class="list-group-item list-group-item-action border-0 d-flex align-items-center gap-3 py-3 px-0">

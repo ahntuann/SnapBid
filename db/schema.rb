@@ -210,16 +210,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_215407) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  create_table "watchlists", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "listing_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["listing_id"], name: "index_watchlists_on_listing_id"
-    t.index ["user_id", "listing_id"], name: "index_watchlists_on_user_id_and_listing_id", unique: true
-    t.index ["user_id"], name: "index_watchlists_on_user_id"
-  end
-
   create_table "withdrawal_requests", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.integer "amount", null: false
@@ -247,7 +237,5 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_215407) do
   add_foreign_key "orders", "listings"
   add_foreign_key "orders", "users", column: "buyer_id"
   add_foreign_key "otps", "users"
-  add_foreign_key "watchlists", "listings"
-  add_foreign_key "watchlists", "users"
   add_foreign_key "withdrawal_requests", "users"
 end

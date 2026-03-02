@@ -2,7 +2,7 @@
 
   <%# ===== Store Hero Slideshow (6 chủ đề hỗ trợ) ===== %>
   <section class="sb-full-bleed sb-hero-carousel-wrap">
-    <div id="sbHeroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+    <div id="sbHeroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000" data-bs-pause="false">
 
       <%# Indicators / dots %>
       <div class="carousel-indicators sb-hero-indicators">
@@ -62,15 +62,15 @@
           </div>
         </div>
 
-        <%# Slide 3 — Giao nhận hàng %>
+        <%# Slide 3 — Ví Coin %>
         <div class="carousel-item">
           <div class="sb-hero-slide sb-hero--green">
-            <div class="sb-hero-slide-deco"><i class="bi bi-box-seam"></i></div>
+            <div class="sb-hero-slide-deco"><i class="bi bi-wallet2"></i></div>
             <div class="container sb-hero-slide-body" style="max-width: 1400px;">
-              <div class="sb-hero-slide-badge">Vận chuyển</div>
-              <h1 class="sb-hero-slide-title">Giao nhận hàng</h1>
-              <p class="sb-hero-slide-sub">Theo dõi mã vận đơn, chính sách<br class="d-none d-md-inline">đóng gói và xử lý khiếu nại.</p>
-              <a class="sb-store-link sb-hero-slide-link" href="<%= help_shipping_path %>">
+              <div class="sb-hero-slide-badge">Thanh toán</div>
+              <h1 class="sb-hero-slide-title">Ví SnapBid Coin</h1>
+              <p class="sb-hero-slide-sub">Nạp/rút coin an toàn, sử dụng coin<br class="d-none d-md-inline">để tham gia đấu giá nhanh chóng.</p>
+              <a class="sb-store-link sb-hero-slide-link" href="<%= wallet_path %>">
                 Tìm hiểu thêm <i class="bi bi-arrow-right"></i>
               </a>
             </div>
@@ -145,7 +145,9 @@
           <% is_active = @active_browse && @active_browse[:key] == cat[:key] %>
           <a class="sb-browse-tab <%= 'is-active' if is_active %>"
              href="<%= root_path(cat_key: cat[:key] == 'tat_ca' ? nil : cat[:key], q: @q, condition_simple: @condition_simple, sort: @sort, price_min: @price_min, price_max: @price_max) %>">
-            <span class="sb-browse-tab-icon"><i class="bi <%= cat[:icon] %>"></i></span>
+            <% if cat[:key] == 'tat_ca' %>
+              <span class="sb-browse-tab-icon"><i class="bi <%= cat[:icon] %>"></i></span>
+            <% end %>
             <%= cat[:label] %>
             <% count = (@browse_counts || {})[cat[:key]].to_i %>
             <% if count > 0 %>
