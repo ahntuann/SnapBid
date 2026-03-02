@@ -13,6 +13,8 @@ class User < ApplicationRecord
   has_many :coin_deposits, dependent: :destroy
   has_many :withdrawal_requests, dependent: :destroy
   has_many :coin_transactions, dependent: :destroy
+  has_many :watchlists, dependent: :destroy
+  has_many :watched_listings, through: :watchlists, source: :listing
 
   has_one_attached :avatar
 

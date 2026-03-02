@@ -1011,6 +1011,85 @@ a:hover {
 }
 
 /* ============================================================
+   13. CUSTOM TOASTS (Flash Messages)
+   ============================================================ */
+.toast-container {
+  z-index: 20000;
+  top: 1.5rem !important;
+  right: 1.5rem !important;
+  bottom: auto !important;
+}
+
+.sb-toast {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15) !important;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  min-width: 320px;
+}
+
+.sb-toast .toast-body {
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sb-toast i {
+  font-size: 1.25rem;
+}
+
+/* Success Toast */
+.sb-toast--success {
+  border-left: 5px solid #10b981 !important;
+}
+.sb-toast--success i {
+  color: #10b981;
+}
+
+/* Error/Alert Toast */
+.sb-toast--error {
+  border-left: 5px solid #ef4444 !important;
+}
+.sb-toast--error i {
+  color: #ef4444;
+}
+
+/* Info Toast */
+.sb-toast--info {
+  border-left: 5px solid var(--sb-gold) !important;
+}
+.sb-toast--info i {
+  color: var(--sb-gold);
+}
+
+.sb-toast .btn-close {
+  font-size: 0.8rem;
+  opacity: 0.6;
+  margin-right: 0.5rem;
+}
+
+/* Responsive: center on small screens */
+@media (max-width: 576px) {
+  .toast-container {
+    left: 1rem !important;
+    right: 1rem !important;
+    width: auto !important;
+    top: 1rem !important;
+  }
+  .sb-toast {
+    min-width: auto;
+  }
+}
+
+
+/* ============================================================
    14. AUTH PAGES NAVBAR HIDE/HOVER
    ============================================================ */
 

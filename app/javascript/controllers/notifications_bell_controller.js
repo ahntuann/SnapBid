@@ -42,10 +42,10 @@ export default class extends Controller {
     if (!this.hasBadgeTarget) return
     const count = Number(this.unreadValue || 0)
     if (count <= 0) {
-      this.badgeTarget.classList.add("hidden")
+      this.badgeTarget.classList.add("d-none")
       this.badgeTarget.innerText = ""
     } else {
-      this.badgeTarget.classList.remove("hidden")
+      this.badgeTarget.classList.remove("d-none")
       this.badgeTarget.innerText = count > 99 ? "99+" : String(count)
     }
   }
@@ -53,22 +53,30 @@ export default class extends Controller {
   prependToList(n) {
     if (!this.hasListTarget) return
 
-    const li = document.createElement("li")
-    li.style.padding = "8px"
-    li.style.borderBottom = "1px solid #eee"
-
-    const a = document.createElement("a")
-    a.href = n.url || "/notifications"
-    a.innerText = n.message
-    a.style.display = "block"
-
-    // click => mark_read (fire and forget)
+    const temp = document.createElement("div")
+    temp.innerHTML = `
+      <a href="${n.url || "/notifications"}" 
+         class="list-group-item list-group-item-action d-flex gap-3 align-items-start"
+         style="background:#f5f9ff;">
+        <div class="mt-1">
+          <span class="d-inline-flex align-items-center justify-content-center rounded-circle"
+                style="width:32px;height:32px;background:#e7f1ff;">
+            <i class="bi bi-dot"></i>
+          </span>
+        </div>
+        <div class="flex-grow-1">
+          <div class="fw-semibold">${n.message}</div>
+          <div class="text-muted small mt-1">Vừa xong</div>
+        </div>
+        <span class="badge text-bg-primary rounded-pill">Mới</span>
+      </a>
+    `
+    const a = temp.firstElementChild
     a.addEventListener("click", () => {
       if (n.id) this.markRead(n.id)
     })
 
-    li.appendChild(a)
-    this.listTarget.prepend(li)
+    this.listTarget.prepend(a)
 
     // giữ list max 8 items
     while (this.listTarget.children.length > 8) {
@@ -80,11 +88,11 @@ export default class extends Controller {
     if (!this.hasToastTarget) return
 
     this.toastTarget.innerText = message
-    this.toastTarget.classList.remove("hidden")
+    this.toastTarget.classList.remove("d-none")
 
     clearTimeout(this._toastTimer)
     this._toastTimer = setTimeout(() => {
-      this.toastTarget.classList.add("hidden")
+      this.toastTarget.classList.add("d-none")
       this.toastTarget.innerText = ""
     }, 3500)
   }
@@ -100,6 +108,6 @@ export default class extends Controller {
         "Accept": "text/vnd.turbo-stream.html, text/html, application/json"
       },
       credentials: "same-origin"
-    }).catch(() => {})
+    }).catch(() => { })
   }
 }

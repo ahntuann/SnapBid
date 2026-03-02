@@ -8,7 +8,7 @@ class Bid < ApplicationRecord
   validate :must_be_higher_than_minimum
 
   after_create_commit :broadcast_new_bid
-  after_create_commit :notify_outbid
+  after_create_commit :notify_interested_users
 
   private
 
@@ -28,30 +28,48 @@ class Bid < ApplicationRecord
     )
   end
 
-  # ✅ Notify người vừa bị vượt giá (previous top bid)
-  def notify_outbid
-    # Bid cao nhất trước đó (loại trừ bid hiện tại)
-    previous = listing.bids
-                      .where.not(id: id)
-                      .order(amount: :desc, created_at: :asc)
-                      .first
-    return if previous.nil?
+  # ✅ Notify những người quan tâm (previous bidders + watchers)
+  def notify_interested_users
+    # 1. Lấy danh sách những người đã từng bid (loại trừ người vừa bid)
+    bids_user_ids = listing.bids.where.not(user_id: user_id).pluck(:user_id).uniq
+    
+    # 2. Lấy danh sách những người đang theo dõi (loại trừ người vừa bid)
+    watchers_user_ids = listing.watchlists.where.not(user_id: user_id).pluck(:user_id).uniq
 
-    outbid_user = previous.user
-    return if outbid_user.id == user_id      # đừng tự notify chính mình
-    return if listing.user_id == outbid_user.id # nếu seller có bid (hiếm) thì bỏ
+    # 3. Hợp nhất danh sách
+    recipient_ids = (bids_user_ids + watchers_user_ids).uniq
+    
+    # 4. Xác định người đang giữ giá cao nhất trước đó để gửi tin nhắn "bị vượt giá"
+    previous_highest_bid = listing.bids
+                                  .where.not(id: id)
+                                  .order(amount: :desc, created_at: :asc)
+                                  .first
+    previous_highest_bidder_id = previous_highest_bid&.user_id
 
-    NotificationService.notify!(
-      recipient: outbid_user,
-      actor: user,
-      action: :outbid,
-      notifiable: listing,
-      url: Rails.application.routes.url_helpers.listing_path(listing),
-      message: "Có người đã trả giá cao hơn bạn cho sản phẩm “#{listing.title}”."
-    )
-    Rails.logger.info("############################################################################################################################")
-    Rails.logger.info("[notify_outbid] bid=#{id} actor=#{user_id} prev=#{previous&.id} recipient=#{previous&.user_id}")
-    Rails.logger.info("############################################################################################################################")
+    recipient_ids.each do |recipient_id|
+      recipient = User.find(recipient_id)
+      
+      # Không gửi cho seller (họ có notification riêng nếu cần, thường seller không bid)
+      next if recipient.id == listing.user_id
+
+      is_outbid = (recipient.id == previous_highest_bidder_id)
+      
+      action = is_outbid ? :outbid : :new_bid_on_watched_item
+      message = if is_outbid
+                  "Bạn đã bị vượt giá cho sản phẩm “#{listing.title}”. Giá mới là #{amount} ₫."
+                else
+                  "Sản phẩm “#{listing.title}” bạn quan tâm vừa có lượt đặt giá mới: #{amount} ₫."
+                end
+
+      NotificationService.notify!(
+        recipient: recipient,
+        actor: user,
+        action: action,
+        notifiable: listing,
+        url: Rails.application.routes.url_helpers.listing_path(listing),
+        message: message
+      )
+    end
   end
 
   # ===== Validations =====

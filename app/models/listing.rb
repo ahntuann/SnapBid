@@ -6,6 +6,8 @@ class Listing < ApplicationRecord
   has_many_attached :images
 
   has_many :bids, dependent: :destroy
+  has_many :watchlists, dependent: :destroy
+  has_many :watchers, through: :watchlists, source: :user
   has_one :order, dependent: :restrict_with_exception
 
   enum :status, {
