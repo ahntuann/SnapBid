@@ -1,20 +1,20 @@
-<div class="dropdown position-relative" data-controller="dropdown">
+<% unread_count = current_user.notifications.unread.count rescue 0 %>
+<div class="dropdown position-relative" 
+     data-controller="dropdown notifications-bell"
+     data-notifications-bell-unread-value="<%= unread_count %>">
   <button
     class="btn btn-light position-relative rounded-pill border"
     type="button"
-    data-notifications-dropdown-target="button"
     data-action="click->dropdown#toggle"
     aria-expanded="false"
     style="width:40px;height:40px;"
   >
     <i class="bi bi-bell"></i>
 
-    <% unread_count = current_user.notifications.unread.count rescue 0 %>
-    <% if unread_count > 0 %>
-      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-        <%= unread_count > 99 ? "99+" : unread_count %>
-      </span>
-    <% end %>
+    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger <%= 'd-none' if unread_count == 0 %>"
+          data-notifications-bell-target="badge">
+      <%= unread_count > 99 ? "99+" : unread_count %>
+    </span>
   </button>
 
   <div
@@ -30,7 +30,8 @@
     </div>
 
     <div class="bg-white" style="max-height: 420px; overflow:auto;">
-      <% notifications = (current_user.notifications.order(created_at: :desc).limit(8) rescue []) %>
+      <div class="list-group list-group-flush" data-notifications-bell-target="list">
+        <% notifications = (current_user.notifications.order(created_at: :desc).limit(8) rescue []) %>
 
       <% if notifications.blank? %>
         <div class="p-3 text-muted">Chưa có thông báo.</div>
@@ -67,6 +68,7 @@
           <% end %>
         </div>
       <% end %>
+      </div>
     </div>
 
     <div class="px-3 py-2 bg-white border-top d-flex justify-content-between">
@@ -79,4 +81,5 @@
       <%= link_to "Quản lý", notifications_path, class: "btn btn-sm btn-primary rounded-pill" %>
     </div>
   </div>
+  <div data-notifications-bell-target="toast" class="d-none position-fixed bottom-0 end-0 m-3 p-3 bg-dark text-white rounded shadow-lg" style="z-index: 10000; min-width: 250px;"></div>
 </div>
