@@ -76,8 +76,4 @@ group :development do
   gem "letter_opener"
 end
 
-gem "cssbundling-rails", "~> 1.4"
-
-gem "dartsass-sprockets"
-
 gem "faker", "~> 3.6", :groups => [:development, :test]
