@@ -1,21 +1,16 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static values = {
-    endAt: String
-  };
+  static values = { endAt: String };
 
-  static targets = ["label"];
+  // targets: days, hours, minutes, seconds (each has a "value" span)
+  static targets = ["days", "hours", "minutes", "seconds", "label"];
 
   connect() {
     this.tick = this.tick.bind(this);
-
-    // Nếu không có ends_at -> không chạy
     if (!this.endAtValue) return;
-
     this.endTime = new Date(this.endAtValue);
     if (isNaN(this.endTime.getTime())) return;
-
     this.tick();
     this.timer = setInterval(this.tick, 1000);
   }
@@ -29,8 +24,9 @@ export default class extends Controller {
     const diffMs = this.endTime - now;
 
     if (diffMs <= 0) {
-      this.labelTarget.textContent = "Đã kết thúc";
-      this.element.classList.add("text-muted");
+      this._setBlocks(0, 0, 0, 0);
+      if (this.hasLabelTarget) this.labelTarget.textContent = "Đã kết thúc";
+      this.element.classList.add("text-danger");
       if (this.timer) clearInterval(this.timer);
       return;
     }
@@ -41,21 +37,20 @@ export default class extends Controller {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
 
-    // Format gọn: ưu tiên “Còn …”
-    let text = "Còn ";
-    if (days > 0) {
-      text += `${days}n ${hours}g`;
-    } else if (hours > 0) {
-      text += `${hours}g ${minutes}p`;
-    } else {
-      text += `${minutes}p ${seconds}s`;
-    }
+    this._setBlocks(days, hours, minutes, seconds);
 
-    this.labelTarget.textContent = text;
-
-    // highlight khi < 1 giờ
+    // Đổi màu đỏ khi < 60 phút
     if (totalSeconds <= 3600) {
       this.element.classList.add("text-danger");
+    } else {
+      this.element.classList.remove("text-danger");
     }
+  }
+
+  _setBlocks(d, h, m, s) {
+    if (this.hasDaysTarget) this.daysTarget.textContent = String(d).padStart(2, "0");
+    if (this.hasHoursTarget) this.hoursTarget.textContent = String(h).padStart(2, "0");
+    if (this.hasMinutesTarget) this.minutesTarget.textContent = String(m).padStart(2, "0");
+    if (this.hasSecondsTarget) this.secondsTarget.textContent = String(s).padStart(2, "0");
   }
 }

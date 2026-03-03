@@ -1,4 +1,5 @@
-<div class="container" style="max-width: 920px;">
+<div class="container" style="max-width: 920px;"
+     data-controller="notifications-page">
   <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-3">
     <div>
       <h1 class="h3 mb-1">Thông báo</h1>
@@ -17,9 +18,10 @@
   <div class="card shadow-sm border-0" style="border-radius: 16px; overflow:hidden;">
     <div class="card-body p-0">
       <% if @notifications.blank? %>
-        <div class="p-4 text-muted">Chưa có thông báo.</div>
+        <div class="p-4 text-muted" data-notifications-page-target="empty">Chưa có thông báo.</div>
+        <div class="list-group list-group-flush" data-notifications-page-target="list"></div>
       <% else %>
-        <div class="list-group list-group-flush">
+        <div class="list-group list-group-flush" data-notifications-page-target="list">
           <% @notifications.each do |n| %>
             <% is_unread = n.read_at.blank? %>
 

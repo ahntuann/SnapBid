@@ -32,3 +32,10 @@ plugin :tmp_restart
 # Specify the PID file. Defaults to tmp/pids/server.pid in development.
 # In other environments, only set the PID file if requested.
 pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
+
+# Disable worker mode on Windows platforms
+if Gem.win_platform?
+  workers 0
+elsif ENV.fetch("WEB_CONCURRENCY", 0).to_i > 0
+  workers ENV.fetch("WEB_CONCURRENCY", 2)
+end

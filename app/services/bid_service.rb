@@ -11,6 +11,19 @@ class BidService
       return Result.new(status: :error, error: I18n.t("errors.bid.auction_ended")) if listing.auction_ended?
       return Result.new(status: :error, error: I18n.t("errors.bid.listing_sold")) if listing.sold?
 
+      coins_needed = user.coins_needed_for_next_bid(listing.id)
+      if user.snapbid_coins < coins_needed
+        return Result.new(status: :error, error: "Không đủ SnapBid Coin để tham gia trả giá (Cần #{coins_needed} coin). Vui lòng nạp thêm.")
+      end
+
+      # Trừ coin lấy phí
+      user.process_coin_transaction!(
+        amount: -coins_needed,
+        transaction_type: :bid_fee,
+        description: "Phí tham gia trả giá cho sản phẩm ##{listing.id}",
+        subject: listing
+      )
+
       bid = listing.bids.create!(user: user, amount: amount)
       Result.new(status: :bid_placed, bid: bid)
     end

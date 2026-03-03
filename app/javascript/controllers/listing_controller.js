@@ -2,7 +2,11 @@ import { Controller } from "@hotwired/stimulus"
 import consumer from "../channels/consumer"
 
 export default class extends Controller {
-  static targets = ["currentPrice", "bids", "bidForm", "status", "flash", "amount", "confirmBuyNow", "buyNowBox"]
+  static targets = [
+    "currentPrice", "bids", "bidForm", "status", "flash",
+    "amount", "amountHidden", "confirmBuyNow", "buyNowBox",
+    "bidCount", "minNextBid", "minNextBidHint"
+  ]
   static values = {
     id: Number,
     buyNowEnabled: Boolean,
@@ -25,35 +29,69 @@ export default class extends Controller {
     if (this._endTimer) clearTimeout(this._endTimer)
   }
 
-  // --- UI warning khi gõ ---
-  checkBuyNowThreshold() {
-    if (!this.buyNowEnabledValue) return
+  // ── Input formatting: hiển thị 1,000,000 ── //
+  formatAndCheck() {
     if (!this.hasAmountTarget) return
 
-    const amount = parseFloat(this.amountTarget.value || "0")
+    const displayInput = this.amountTarget
+    // Strip all non-digits/dots from current display
+    const raw = displayInput.value.replace(/[^\d]/g, "")
+    const num = parseInt(raw, 10)
+
+    if (raw === "") {
+      // Xóa hết → clear hidden
+      if (this.hasAmountHiddenTarget) this.amountHiddenTarget.value = ""
+      this.hideFlash()
+      return
+    }
+
+    // Format với dấu phẩy ngăn cách hàng nghìn (vi-VN style)
+    const formatted = Number(raw).toLocaleString("vi-VN")
+    displayInput.value = formatted
+
+    // Sync raw number vào hidden field (dùng cho submit)
+    if (this.hasAmountHiddenTarget) this.amountHiddenTarget.value = raw
+
+    // Kiểm tra buy now threshold
+    this.checkBuyNowThresholdValue(num)
+  }
+
+  checkBuyNowThresholdValue(amount) {
+    if (!this.buyNowEnabledValue) return
     const buyNow = parseFloat(this.buyNowPriceValue || "0")
     if (!buyNow || amount < buyNow) {
       this.hideFlash()
       return
     }
-
-    this.showFlash(`Giá bạn nhập (${amount}) ≥ giá mua ngay (${buyNow}). Nếu bấm "Đặt giá", hệ thống sẽ hỏi để MUA NGAY với giá ${buyNow}.`)
+    this.showFlash(`Giá bạn nhập (${this.formatNumber(amount)}) ≥ giá mua ngay (${this.formatNumber(buyNow)}). Nếu bấm "Đặt giá", hệ thống sẽ hỏi để MUA NGAY.`)
   }
 
-  // --- chặn submit để hỏi confirm ---
+  // Keep old action name for backward compat
+  checkBuyNowThreshold() {
+    if (!this.hasAmountTarget) return
+    const raw = this.amountTarget.value.replace(/[^\d]/g, "")
+    const num = parseInt(raw || "0", 10)
+    this.checkBuyNowThresholdValue(num)
+  }
+
+  // ── Submit: chặn để confirm buy-now ── //
   submitBid(event) {
     const form = event.target
-
-    // Nếu đây là lần submit "thật" sau khi đã confirm => cho chạy bình thường
     if (form.dataset.skipConfirm === "1") {
       form.dataset.skipConfirm = "0"
       return
     }
 
     if (!this.hasBuyNowEnabledValue || !this.buyNowEnabledValue) return
-    if (!this.hasBuyNowPriceValue || !this.hasAmountTarget || !this.hasConfirmBuyNowTarget) return
+    if (!this.hasBuyNowPriceValue || !this.hasConfirmBuyNowTarget) return
 
-    const amount = Number(this.amountTarget.value || 0)
+    // Read amount from hidden field (raw number) or display field
+    let amount = 0
+    if (this.hasAmountHiddenTarget && this.amountHiddenTarget.value) {
+      amount = Number(this.amountHiddenTarget.value)
+    } else if (this.hasAmountTarget) {
+      amount = Number(this.amountTarget.value.replace(/[^\d]/g, "") || 0)
+    }
     const buyNow = Number(this.buyNowPriceValue || 0)
     if (!amount || !buyNow) return
 
@@ -61,8 +99,8 @@ export default class extends Controller {
       event.preventDefault()
 
       const ok = window.confirm(
-        `Giá bạn nhập (${amount}) ≥ giá mua ngay (${buyNow}).\n` +
-        `Nếu tiếp tục, bạn sẽ MUA NGAY với giá ${buyNow}.\n\n` +
+        `Giá bạn nhập (${this.formatNumber(amount)}) ≥ giá mua ngay (${this.formatNumber(buyNow)}).\n` +
+        `Nếu tiếp tục, bạn sẽ MUA NGAY với giá ${this.formatNumber(buyNow)}.\n\n` +
         `Bạn có muốn mua ngay không?`
       )
 
@@ -71,21 +109,13 @@ export default class extends Controller {
         return
       }
 
-      // OK => set flag để backend xử lý mua ngay
       this.confirmBuyNowTarget.value = "1"
-
-      // Tránh confirm lặp khi submit lại
       form.dataset.skipConfirm = "1"
 
       const submitter = form.querySelector('input[type="submit"],button[type="submit"]')
-
-      // Quan trọng: submit sau khi handler hiện tại kết thúc
       setTimeout(() => {
-        if (submitter) {
-          form.requestSubmit(submitter)
-        } else {
-          form.requestSubmit()
-        }
+        if (submitter) form.requestSubmit(submitter)
+        else form.requestSubmit()
       }, 0)
     }
   }
@@ -94,6 +124,7 @@ export default class extends Controller {
     return this.submitBid(event)
   }
 
+  // ── Countdown local timer ── //
   scheduleAuctionEnd() {
     if (!this.hasAuctionEndsAtValue) return
     if (!this.auctionEndsAtValue) return
@@ -102,41 +133,28 @@ export default class extends Controller {
     if (Number.isNaN(endsAt)) return
 
     const delay = endsAt - Date.now()
+    if (delay <= 0) { this.markAsEndedUI(); return }
 
-    // Nếu đã quá giờ => update UI ngay
-    if (delay <= 0) {
-      this.markAsEndedUI()
-      return
-    }
-
-    // Đến giờ thì tự đổi UI (không cần reload)
-    this._endTimer = setTimeout(() => {
-      this.markAsEndedUI()
-    }, delay)
+    this._endTimer = setTimeout(() => this.markAsEndedUI(), delay)
   }
 
   markAsEndedUI() {
-    // Tránh chạy lại nhiều lần
     if (this._alreadyEnded) return
     this._alreadyEnded = true
 
     if (this.hasStatusTarget) this.statusTarget.innerText = "Đã kết thúc"
-
-    // Ẩn form bid
     if (this.hasBidFormTarget) this.bidFormTarget.remove()
-
-    // Ẩn box mua ngay (nếu có)
     if (this.hasBuyNowBoxTarget) this.buyNowBoxTarget.remove()
-
     this.showFlash("Phiên đấu giá đã kết thúc.")
   }
 
-
-  // --- realtime handlers ---
+  // ── WebSocket handlers ── //
   handleMessage(data) {
     switch (data.type) {
       case "new_bid":
         this.updatePrice(data.current_price)
+        this.updateBidCount(data.bid_count)
+        this.updateMinNextBid(data.min_next_bid)
         this.prependBid(data.bid)
         break
       case "sold":
@@ -149,45 +167,82 @@ export default class extends Controller {
   }
 
   markAsEnded(data) {
-  if (this.hasStatusTarget) {
-    this.statusTarget.innerText = "Đã kết thúc"
-  }
+    if (this.hasStatusTarget) this.statusTarget.innerText = "Đã kết thúc"
+    if (this.hasBidFormTarget) this.bidFormTarget.remove()
+    if (this.hasBuyNowBoxTarget) this.buyNowBoxTarget.remove()
 
-  if (this.hasBidFormTarget) {
-    this.bidFormTarget.remove()
+    this.showFlash(data?.has_winner === false
+      ? "Phiên đấu giá đã kết thúc và không có người thắng."
+      : "Phiên đấu giá đã kết thúc."
+    )
   }
-
-  if (this.hasBuyNowBoxTarget) this.buyNowBoxTarget.remove()
-
-  if (data?.has_winner === false) {
-    this.showFlash("Phiên đấu giá đã kết thúc và không có người thắng.")
-  } else {
-    this.showFlash("Phiên đấu giá đã kết thúc.")
-  }
-}
 
   updatePrice(price) {
-    if (this.hasCurrentPriceTarget) this.currentPriceTarget.innerText = price
+    if (price === null || price === undefined) return
+    const formatted = this.formatNumber(price) + " ₫"
+    this.currentPriceTargets.forEach(el => {
+      el.innerText = formatted
+      this.flashElement(el)
+    })
+  }
+
+  updateBidCount(count) {
+    if (count === undefined || count === null) return
+    this.bidCountTargets.forEach(el => { el.innerText = count })
+  }
+
+  updateMinNextBid(minBid) {
+    if (minBid === null || minBid === undefined) return
+    const formatted = this.formatNumber(minBid)
+    this.minNextBidTargets.forEach(el => { el.innerText = formatted + " ₫" })
+    this.minNextBidHintTargets.forEach(el => { el.innerText = formatted })
+
+    // Cập nhật placeholder input hiển thị
+    if (this.hasAmountTarget) {
+      this.amountTarget.placeholder = formatted
+    }
   }
 
   prependBid(bid) {
     if (!this.hasBidsTarget) return
-    const li = document.createElement("li")
-    li.innerText = `${bid.user_name}: ${bid.amount} - ${bid.created_at}`
-    this.bidsTarget.prepend(li)
+
+    const emptyRow = this.bidsTarget.querySelector("[data-empty-row]")
+    if (emptyRow) emptyRow.remove()
+
+    const tr = document.createElement("tr")
+    tr.innerHTML = `
+      <td class="text-truncate" style="max-width:220px;">${this.escapeHtml(bid.user_name)}</td>
+      <td class="fw-semibold">${this.formatNumber(bid.amount)} ₫</td>
+      <td class="text-end text-muted">${this.escapeHtml(bid.created_at)}</td>
+    `
+
+    tr.style.transition = "background 1.2s ease"
+    tr.style.background = "#e7f3ff"
+    this.bidsTarget.prepend(tr)
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { tr.style.background = "" })
+    })
+
+    const rows = this.bidsTarget.querySelectorAll("tr")
+    if (rows.length > 10) rows[rows.length - 1].remove()
   }
 
   markAsSold(_data) {
     if (this.hasStatusTarget) this.statusTarget.innerText = "Đã bán"
     if (this.hasBidFormTarget) this.bidFormTarget.remove()
+    if (this.hasBuyNowBoxTarget) this.buyNowBoxTarget.remove()
   }
 
-  // --- flash helpers ---
-  showFlash(message) {
+  // ── Flash helpers ── //
+  showFlash(message, type = "error") {
     if (!this.hasFlashTarget) return
-    this.flashTarget.classList.remove("hidden")
-    this.flashTarget.style.borderColor = "#f5c2c7"
-    this.flashTarget.style.background = "#f8d7da"
+    this.flashTarget.classList.remove("hidden", "d-none")
+    if (type === "success") {
+      this.flashTarget.style.cssText = "border-color:#badbcc;background:#d1e7dd;color:#0a3622;"
+    } else {
+      this.flashTarget.style.cssText = "border-color:#f5c2c7;background:#f8d7da;color:#58151c;"
+    }
     this.flashTarget.innerText = message
   }
 
@@ -195,5 +250,24 @@ export default class extends Controller {
     if (!this.hasFlashTarget) return
     this.flashTarget.classList.add("hidden")
     this.flashTarget.innerText = ""
+  }
+
+  // ── Helpers ── //
+  formatNumber(n) {
+    if (n === null || n === undefined) return ""
+    return Number(n).toLocaleString("vi-VN")
+  }
+
+  escapeHtml(str) {
+    if (!str) return ""
+    return String(str)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+  }
+
+  flashElement(el) {
+    el.style.transition = "color 0.3s ease"
+    el.style.color = "#0d6efd"
+    setTimeout(() => { el.style.color = "" }, 800)
   }
 }

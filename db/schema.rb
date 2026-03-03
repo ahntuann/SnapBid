@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_21_111351) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_03_004039) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -71,6 +71,34 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_111351) do
     t.index ["name"], name: "index_categories_on_name", unique: true
   end
 
+  create_table "coin_deposits", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "amount_vnd", default: 0, null: false
+    t.integer "coins_credited", default: 0, null: false
+    t.string "deposit_ref", null: false
+    t.string "sepay_transaction_id"
+    t.datetime "credited_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deposit_ref"], name: "index_coin_deposits_on_deposit_ref"
+    t.index ["sepay_transaction_id"], name: "index_coin_deposits_on_sepay_transaction_id", unique: true
+    t.index ["user_id"], name: "index_coin_deposits_on_user_id"
+  end
+
+  create_table "coin_transactions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "amount", null: false
+    t.integer "balance_after", null: false
+    t.integer "transaction_type", null: false
+    t.string "description"
+    t.string "subject_type"
+    t.bigint "subject_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["subject_type", "subject_id"], name: "index_coin_transactions_on_subject"
+    t.index ["user_id"], name: "index_coin_transactions_on_user_id"
+  end
+
   create_table "listings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "title"
@@ -89,6 +117,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_111351) do
     t.decimal "buy_now_price", precision: 12
     t.bigint "reference_item_id"
     t.bigint "category_id"
+    t.string "gender"
     t.index ["category_id"], name: "index_listings_on_category_id"
     t.index ["published_at"], name: "index_listings_on_published_at"
     t.index ["reference_item_id"], name: "index_listings_on_reference_item_id"
@@ -128,8 +157,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_111351) do
     t.string "recipient_name"
     t.string "recipient_phone"
     t.text "shipping_address"
+    t.string "sepay_ref"
+    t.datetime "sepay_paid_at"
+    t.string "cancelled_reason"
     t.index ["buyer_id"], name: "index_orders_on_buyer_id"
     t.index ["listing_id"], name: "index_orders_on_listing_id", unique: true
+    t.index ["sepay_ref"], name: "index_orders_on_sepay_ref", unique: true
   end
 
   create_table "otps", force: :cascade do |t|
@@ -172,8 +205,32 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_111351) do
     t.string "provider"
     t.string "uid"
     t.datetime "email_verified_at"
+    t.integer "snapbid_coins", default: 0, null: false
+    t.boolean "is_seller", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  create_table "watchlists", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "listing_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["listing_id"], name: "index_watchlists_on_listing_id"
+    t.index ["user_id", "listing_id"], name: "index_watchlists_on_user_id_and_listing_id", unique: true
+    t.index ["user_id"], name: "index_watchlists_on_user_id"
+  end
+
+  create_table "withdrawal_requests", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "amount", null: false
+    t.string "bank_name", null: false
+    t.string "account_number", null: false
+    t.string "account_name", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_withdrawal_requests_on_user_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -181,6 +238,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_111351) do
   add_foreign_key "ai_verifications", "listings"
   add_foreign_key "bids", "listings"
   add_foreign_key "bids", "users"
+  add_foreign_key "coin_deposits", "users"
+  add_foreign_key "coin_transactions", "users"
   add_foreign_key "listings", "categories"
   add_foreign_key "listings", "reference_items"
   add_foreign_key "listings", "users"
@@ -189,4 +248,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_111351) do
   add_foreign_key "orders", "listings"
   add_foreign_key "orders", "users", column: "buyer_id"
   add_foreign_key "otps", "users"
+  add_foreign_key "watchlists", "listings"
+  add_foreign_key "watchlists", "users"
+  add_foreign_key "withdrawal_requests", "users"
 end

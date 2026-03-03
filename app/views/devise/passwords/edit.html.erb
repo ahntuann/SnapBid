@@ -1,25 +1,73 @@
-<h2>Change your password</h2>
+<%# ── Reset Password Page — split-panel design (matches login) ── %>
+<div class="auth-page">
 
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-  <%= f.hidden_field :reset_password_token %>
-
-  <div class="field">
-    <%= f.label :password, "New password" %><br />
-    <% if @minimum_password_length %>
-      <em>(<%= @minimum_password_length %> characters minimum)</em><br />
-    <% end %>
-    <%= f.password_field :password, autofocus: true, autocomplete: "new-password" %>
+  <%# ── Left panel: branding ── %>
+  <div class="auth-panel-left d-none d-lg-flex">
+    <div class="auth-left-content">
+      <%= image_tag "/icon.png", alt: "SnapBid", class: "auth-logo-img" %>
+      <h1 class="auth-hero-title"><%= link_to "SnapBid", root_path, style: "color:inherit;text-decoration:none;" %></h1>
+      <p class="auth-hero-sub">Tạo mật khẩu mới<br>và bảo vệ tài khoản của bạn.</p>
+      <div class="auth-left-features">
+        <div class="auth-feature"><i class="bi bi-shield-lock"></i> Mật khẩu được mã hóa an toàn</div>
+        <div class="auth-feature"><i class="bi bi-lightning-charge"></i> Đặt lại nhanh, dùng ngay</div>
+        <div class="auth-feature"><i class="bi bi-lock"></i> Tối thiểu <%= @minimum_password_length %> ký tự</div>
+      </div>
+    </div>
   </div>
 
-  <div class="field">
-    <%= f.label :password_confirmation, "Confirm new password" %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
+  <%# ── Right panel: form ── %>
+  <div class="auth-panel-right">
+    <div class="auth-form-wrap">
 
-  <div class="actions">
-    <%= f.submit "Change my password" %>
-  </div>
-<% end %>
+      <%# Mobile logo %>
+      <div class="d-flex d-lg-none align-items-center gap-2 mb-5">
+        <%= image_tag "/icon.png", alt: "SnapBid", style: "height:28px;width:28px;border-radius:6px;object-fit:contain;" %>
+        <span class="fw-bold" style="font-size:15px;">SnapBid</span>
+      </div>
 
-<%= render "devise/shared/links" %>
+      <%# Icon + title %>
+      <div class="mb-4 text-center">
+        <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3"
+             style="width:52px;height:52px;background:linear-gradient(135deg,#c88a1c,#8a5a00);">
+          <i class="bi bi-lock-fill text-white" style="font-size:1.4rem;"></i>
+        </div>
+        <h2 class="auth-form-title mb-1">Đặt mật khẩu mới</h2>
+        <p class="auth-form-sub">Chọn mật khẩu mạnh để bảo vệ tài khoản SnapBid của bạn.</p>
+      </div>
+
+      <%# Error messages %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <%# Form %>
+      <%= form_for(resource, as: resource_name,
+            url: password_path(resource_name),
+            html: { method: :put }) do |f| %>
+        <%= f.hidden_field :reset_password_token %>
+
+        <div class="auth-field">
+          <%= f.label :password, "Mật khẩu mới", class: "auth-label" %>
+          <%= f.password_field :password,
+                autofocus: true,
+                autocomplete: "new-password",
+                class: "auth-input",
+                placeholder: "Tối thiểu #{@minimum_password_length} ký tự" %>
+        </div>
+
+        <div class="auth-field">
+          <%= f.label :password_confirmation, "Xác nhận mật khẩu", class: "auth-label" %>
+          <%= f.password_field :password_confirmation,
+                autocomplete: "new-password",
+                class: "auth-input",
+                placeholder: "Nhập lại mật khẩu mới" %>
+        </div>
+
+        <%= f.submit "Đặt lại mật khẩu", class: "auth-submit-btn mt-2" %>
+      <% end %>
+
+      <p class="auth-switch mt-4">
+        <%= link_to "← Quay lại đăng nhập", new_user_session_path, class: "auth-switch-link" %>
+      </p>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,93 @@
+<div class="container" style="padding-top:92px;padding-bottom:56px;max-width:600px;">
+  <div class="mb-4">
+    <%= link_to "<i class='bi bi-arrow-left'></i> Quay lại ví".html_safe, wallet_path, class: "text-decoration-none text-muted mb-2 d-inline-block" %>
+    <h1 class="h3 fw-bold mb-1">Rút tiền</h1>
+    <p class="text-muted">Chuyển đổi SnapBid Coin thành VNĐ vào tài khoản ngân hàng của bạn.</p>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+          <div class="small text-muted mb-1">Số dư khả dụng</div>
+          <div class="fw-semibold fs-5 text-primary"><%= number_with_delimiter(current_user.snapbid_coins) %> Coin</div>
+        </div>
+        <div class="text-end">
+          <div class="small text-muted mb-1">Tỷ lệ quy đổi</div>
+          <div class="fw-medium">1 Coin = 1.000 ₫</div>
+        </div>
+      </div>
+
+      <%= form_with model: @withdrawal_request, url: withdrawal_requests_path, local: true do |f| %>
+        <% if @withdrawal_request.errors.any? %>
+          <div class="alert alert-danger shadow-sm rounded-3 py-2 px-3 small border-0">
+            <ul class="mb-0 ps-3">
+              <% @withdrawal_request.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="mb-3">
+          <%= f.label :amount, "Số lượng Coin muốn rút", class: "form-label fw-medium small" %>
+          <div class="input-group">
+            <%= f.number_field :amount, class: "form-control form-control-lg", required: true, min: 1, max: current_user.snapbid_coins, placeholder: "0", id: "withdrawal_amount" %>
+            <span class="input-group-text bg-light text-muted">Coin</span>
+          </div>
+          <div class="form-text mt-2 text-success fw-medium" id="amount_preview" style="display:none;">
+            Tương đương: <span id="vnd_value">0</span> ₫
+          </div>
+        </div>
+
+        <h6 class="fw-bold mt-4 mb-3 border-bottom pb-2">Thông tin tài khoản nhận tiền</h6>
+        
+        <div class="mb-3">
+          <%= f.label :bank_name, "Tên ngân hàng", class: "form-label fw-medium small" %>
+          <%= f.text_field :bank_name, class: "form-control", required: true, placeholder: "VD: Vietcombank, Techcombank, MB Bank..." %>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <%= f.label :account_number, "Số tài khoản", class: "form-label fw-medium small" %>
+            <%= f.text_field :account_number, class: "form-control", required: true, placeholder: "Nhập số tài khoản" %>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <%= f.label :account_name, "Tên người nhận", class: "form-label fw-medium small" %>
+            <%= f.text_field :account_name, class: "form-control", required: true, placeholder: "NGUYEN VAN A" %>
+          </div>
+        </div>
+
+        <div class="alert alert-warning py-2 px-3 small mt-2 border-0 shadow-sm rounded-3">
+          <i class="bi bi-info-circle me-1"></i> Xin vui lòng kiểm tra kỹ thông tin tài khoản. SnapBid không chịu trách nhiệm nếu bạn nhập sai thông tin.
+        </div>
+
+        <div class="mt-4 pt-2">
+          <%= f.submit "Tạo yêu cầu rút tiền", class: "btn btn-primary btn-lg w-100 fw-semibold rounded-pill py-2" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const amountInput = document.getElementById("withdrawal_amount");
+    const previewDiv = document.getElementById("amount_preview");
+    const vndValueSpan = document.getElementById("vnd_value");
+
+    if(amountInput) {
+      amountInput.addEventListener("input", function() {
+        const value = parseInt(this.value);
+        if(!isNaN(value) && value > 0) {
+          const vnd = value * 1000;
+          vndValueSpan.textContent = new Intl.NumberFormat('vi-VN').format(vnd);
+          previewDiv.style.display = 'block';
+        } else {
+          previewDiv.style.display = 'none';
+        }
+      });
+    }
+  });
+</script>

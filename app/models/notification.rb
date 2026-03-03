@@ -7,7 +7,9 @@ class Notification < ApplicationRecord
     outbid: 0,
     auction_won: 1,
     buy_now_success: 2,
-    payment_confirmed: 3
+    payment_confirmed: 3,
+    system_notification: 4,
+    new_bid_on_watched_item: 5
   }
 
   scope :unread, -> { where(read_at: nil) }

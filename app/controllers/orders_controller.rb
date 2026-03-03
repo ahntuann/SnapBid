@@ -1,12 +1,13 @@
 class OrdersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_order, only: [:show, :update, :mark_paid]
+  before_action :set_order, only: [:show, :update, :mark_paid, :pay_with_coins, :status]
 
   def index
     @orders = current_user.orders.order(created_at: :desc).page(params[:page]).per(10)
   end
 
   def show
+    @coins_needed = User.vnd_to_coins(@order.total_price)
   end
 
   def update
@@ -23,19 +24,44 @@ class OrdersController < ApplicationController
     end
   end
 
-  def mark_paid
+  # GET /orders/:id/status  –  JSON polling fallback cho order_controller.js
+  def status
+    render json: {
+      id:                     @order.id,
+      status:                 @order.status,
+      paid:                   @order.paid?,
+      buyer_marked_paid_at:   @order.buyer_marked_paid_at&.iso8601,
+      admin_confirmed_paid_at: @order.admin_confirmed_paid_at&.iso8601
+    }
+  end
+
+  # POST /orders/:id/pay_with_coins  – thanh toán bằng SnapBid Coin
+  def pay_with_coins
     unless @order.pending?
       redirect_to @order, alert: "Đơn hàng không ở trạng thái chờ thanh toán."
       return
     end
 
     unless @order.shipping_info_complete?
-      redirect_to @order, alert: "Vui lòng nhập đầy đủ Tên / SĐT / Địa chỉ trước khi xác nhận đã chuyển tiền."
+      redirect_to @order, alert: "Vui lòng nhập đầy đủ Tên / SĐT / Địa chỉ trước khi thanh toán."
       return
     end
 
-    @order.mark_paid_by_buyer!
-    redirect_to @order, notice: "Đã ghi nhận bạn đã chuyển tiền. Vui lòng chờ admin xác nhận."
+    coins_needed = User.vnd_to_coins(@order.total_price)
+    if current_user.coin_balance < coins_needed
+      redirect_to wallet_path, alert: "Số dư SnapBid Coin không đủ. Cần #{coins_needed} coin, hiện có #{current_user.coin_balance} coin. Vui lòng nạp thêm."
+      return
+    end
+
+    @order.pay_with_coins!
+    redirect_to @order, notice: "Thanh toán thành công bằng SnapBid Coin!"
+  rescue => e
+    redirect_to @order, alert: "Thanh toán thất bại: #{e.message}"
+  end
+
+  # Giữ lại mark_paid để tránh lỗi routing cũ (không dùng nữa)
+  def mark_paid
+    redirect_to @order
   end
 
   private

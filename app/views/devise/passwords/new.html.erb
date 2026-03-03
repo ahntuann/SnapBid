@@ -1,16 +1,77 @@
-<h2>Forgot your password?</h2>
+<%# ── Forgot Password Page — split-panel design (matches login) ── %>
+<div class="auth-page">
 
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+  <%# ── Left panel: branding ── %>
+  <div class="auth-panel-left d-none d-lg-flex">
+    <div class="auth-left-content">
+      <%= image_tag "/icon.png", alt: "SnapBid", class: "auth-logo-img" %>
+      <h1 class="auth-hero-title"><%= link_to "SnapBid", root_path, style: "color:inherit;text-decoration:none;" %></h1>
+      <p class="auth-hero-sub">Đặt lại mật khẩu nhanh chóng<br>và tiếp tục trải nghiệm đấu giá.</p>
+      <div class="auth-left-features">
+        <div class="auth-feature"><i class="bi bi-envelope-check"></i> Email đặt lại được gửi ngay</div>
+        <div class="auth-feature"><i class="bi bi-shield-lock"></i> Bảo mật tài khoản của bạn</div>
+        <div class="auth-feature"><i class="bi bi-clock-history"></i> Liên kết hiệu lực trong 6 tiếng</div>
+      </div>
+    </div>
   </div>
 
-  <div class="actions">
-    <%= f.submit "Send me reset password instructions" %>
-  </div>
-<% end %>
+  <%# ── Right panel: form ── %>
+  <div class="auth-panel-right">
+    <div class="auth-form-wrap">
 
-<%= render "devise/shared/links" %>
+      <%# Mobile logo %>
+      <div class="d-flex d-lg-none align-items-center gap-2 mb-5">
+        <%= image_tag "/icon.png", alt: "SnapBid", style: "height:28px;width:28px;border-radius:6px;object-fit:contain;" %>
+        <span class="fw-bold" style="font-size:15px;">SnapBid</span>
+      </div>
+
+      <%# Back link %>
+      <%= link_to new_user_session_path,
+            class: "d-inline-flex align-items-center gap-1 text-muted small mb-4",
+            style: "text-decoration:none;" do %>
+        <i class="bi bi-arrow-left" style="font-size:13px;"></i> Quay lại đăng nhập
+      <% end %>
+
+      <%# Icon + title %>
+      <div class="mb-4 text-center">
+        <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3"
+             style="width:52px;height:52px;background:linear-gradient(135deg,#c88a1c,#8a5a00);">
+          <i class="bi bi-key-fill text-white" style="font-size:1.4rem;"></i>
+        </div>
+        <h2 class="auth-form-title mb-1">Quên mật khẩu?</h2>
+        <p class="auth-form-sub">Nhập email và chúng tôi sẽ gửi link đặt lại mật khẩu cho bạn.</p>
+      </div>
+
+      <%# Error messages %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <%# Form %>
+      <%= form_for(resource, as: resource_name,
+            url: password_path(resource_name),
+            html: { method: :post }) do |f| %>
+
+        <div class="auth-field">
+          <%= f.label :email, "Email", class: "auth-label" %>
+          <%= f.email_field :email,
+                autofocus: true,
+                autocomplete: "email",
+                class: "auth-input",
+                placeholder: "you@example.com" %>
+        </div>
+
+        <%= f.submit "Gửi hướng dẫn đặt lại mật khẩu", class: "auth-submit-btn mt-2" %>
+      <% end %>
+
+      <p class="auth-switch mt-4">
+        Nhớ ra mật khẩu rồi?
+        <%= link_to "Đăng nhập ngay", new_user_session_path, class: "auth-switch-link" %>
+      </p>
+
+      <p class="auth-switch">
+        Chưa có tài khoản?
+        <%= link_to "Đăng ký ngay", new_user_registration_path, class: "auth-switch-link" %>
+      </p>
+
+    </div>
+  </div>
+</div>

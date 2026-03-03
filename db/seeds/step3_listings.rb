@@ -1,5 +1,4 @@
 # db/seeds/step3_listings.rb
-require 'faker'
 
 puts "== Creating sample listings =="
 
@@ -10,10 +9,19 @@ buyer1 = User.find_by(email: "buyer1@test.com")
 buyer2 = User.find_by(email: "buyer2@test.com")
 
 # Get some categories
-categories = Category.limit(5).pluck(:name)
+categories = Category.limit(5).to_a
 
 # Create sample listings
 sample_listings = [
+  {
+    title: "Sản phẩm test giá 10000",
+    category: categories.sample,
+    condition: "new",
+    start_price: 10000,
+    bid_increment: 1000,
+    buy_now_price: 100000,
+    auction_ends_at: 1.day.from_now
+  },
   {
     title: "iPhone 13 Pro Max 256GB",
     category: categories.sample,
@@ -91,9 +99,9 @@ sample_listings = [
 sample_listings.each do |attrs|
   listing = Listing.find_or_create_by(title: attrs[:title], user: seller) do |l|
     l.title = attrs[:title]
-    l.category = attrs[:category]
+    l.category = attrs[:category] # This is now a Category object
     l.condition = attrs[:condition]
-    l.seller_note = Faker::Lorem.paragraph(sentence_count: 2)
+    l.seller_note = "Đây là mô tả mẫu cho sản phẩm. Hàng còn rất mới, sử dụng tốt, không lỗi lầm gì. Bao test 7 ngày, lỗi hoàn tiền 100%."
     l.start_price = attrs[:start_price]
     l.bid_increment = attrs[:bid_increment]
     l.buy_now_price = attrs[:buy_now_price]

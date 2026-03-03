@@ -4,34 +4,19 @@
 
 
 /* ============================================================
-   1. HOME BACKGROUND (Warm gradient + grain texture)
+   1. HOME BACKGROUND
    ============================================================ */
 body.home-index {
   background:
-    radial-gradient(1200px circle at 12% 0%, rgba(13, 110, 253, .20), transparent 60%),
-    radial-gradient(900px circle at 92% 18%, rgba(25, 135, 84, .14), transparent 55%),
-    radial-gradient(700px circle at 60% 110%, rgba(111, 66, 193, .10), transparent 55%),
+    radial-gradient(1200px circle at 12% 0%, rgba(13, 110, 253, .10), transparent 60%),
+    radial-gradient(900px circle at 92% 18%, rgba(25, 135, 84, .07), transparent 55%),
     linear-gradient(180deg, #f8fafc 0%, #f3f4f6 100%);
   min-height: 100vh;
 }
 
-/* Grain texture overlay */
-body.home-index::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: .08;
-  mix-blend-mode: multiply;
-  background-image:
-    repeating-linear-gradient(0deg, rgba(0, 0, 0, .06) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(90deg, rgba(0, 0, 0, .05) 0 1px, transparent 1px 4px);
-}
-
 
 /* ============================================================
-   2. PRODUCT CARD (home grid)
+   2. PRODUCT CARD
    ============================================================ */
 .home-card {
   border: 0;
@@ -44,22 +29,373 @@ body.home-index::before {
   transform: translateY(-2px);
 }
 
-/* Tiêu đề sản phẩm: cắt tối đa 2 dòng */
 .home-card-title {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   line-height: 1.3;
   min-height: 2.6em;
-  max-height: 2.6em;
-  /* fallback cho browser không hỗ trợ line-clamp */
+}
+
+.object-fit-cover {
+  object-fit: cover;
 }
 
 
 /* ============================================================
-   3. MISC UTILITIES (dùng riêng cho home)
+   3. HERO CAROUSEL SLIDESHOW
    ============================================================ */
-.object-fit-cover {
-  object-fit: cover;
+.sb-hero-slide {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 240px;
+  overflow: hidden;
+}
+
+.sb-hero-slide-body {
+  position: relative;
+  z-index: 2;
+  padding-bottom: 52px;
+  padding-top: 32px;
+}
+
+.sb-hero-slide-deco {
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: clamp(6rem, 16vw, 12rem);
+  line-height: 1;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.10;
+  color: #fff;
+}
+
+.sb-hero-slide-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 8px;
+}
+
+.sb-hero-slide-title {
+  font-size: clamp(2rem, 4.5vw, 3.8rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: #fff;
+  margin: 0 0 10px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sb-hero-slide-sub {
+  font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.80);
+  margin-bottom: 14px;
+}
+
+.sb-hero-slide-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.sb-hero-slide-link:hover {
+  color: #fff !important;
+  text-decoration: underline;
+}
+
+.sb-hero--gold {
+  background: linear-gradient(135deg, #6b4510 0%, #9d6a18 40%, #b8852a 100%);
+}
+
+.sb-hero--blue {
+  background: linear-gradient(135deg, #0c3060 0%, #1565c0 45%, #1976d2 100%);
+}
+
+.sb-hero--green {
+  background: linear-gradient(135deg, #0d3d1e 0%, #1b7a3e 45%, #2e9d56 100%);
+}
+
+.sb-hero--purple {
+  background: linear-gradient(135deg, #331054 0%, #6a1b9a 45%, #8e24aa 100%);
+}
+
+.sb-hero--orange {
+  background: linear-gradient(135deg, #7a2000 0%, #d84315 45%, #f4511e 100%);
+}
+
+.sb-hero--dark {
+  background: linear-gradient(135deg, #181818 0%, #2d2d2d 45%, #3d3d3d 100%);
+}
+
+.sb-hero-indicators {
+  bottom: 14px;
+  gap: 5px;
+  margin: 0;
+}
+
+.sb-hero-indicators [data-bs-slide-to] {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.40);
+  transition: background 250ms ease, transform 250ms ease;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+}
+
+.sb-hero-indicators [data-bs-slide-to].active {
+  background: #fff;
+  transform: scale(1.3);
+}
+
+.sb-hero-ctrl {
+  width: 44px;
+}
+
+@media (max-width:768px) {
+  .sb-hero-slide {
+    min-height: 180px;
+  }
+
+  .sb-hero-slide-body {
+    padding-bottom: 44px;
+  }
+
+  .sb-hero-slide-deco {
+    right: -20px;
+    opacity: 0.07;
+  }
+}
+
+
+/* ============================================================
+   4. CATEGORY BROWSE TABS (Shopee/Tiki style)
+   ============================================================ */
+.sb-browse-section {
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  /* Removed sticky to prevent overlap with product images */
+}
+
+.sb-browse-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 8px 0;
+}
+
+.sb-browse-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.sb-browse-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(0, 0, 0, 0.10);
+  background: transparent;
+  color: #555;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none !important;
+  white-space: nowrap;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease, transform 120ms ease;
+  flex-shrink: 0;
+}
+
+.sb-browse-tab:hover {
+  background: rgba(13, 110, 253, 0.05);
+  border-color: rgba(13, 110, 253, 0.25);
+  color: #0d6efd;
+  transform: translateY(-1px);
+}
+
+.sb-browse-tab.is-active {
+  background: #1a56db;
+  border-color: #1a56db;
+  color: #fff !important;
+  font-weight: 600;
+  box-shadow: 0 3px 10px rgba(26, 86, 219, 0.25);
+}
+
+.sb-browse-tab.is-active:hover {
+  transform: translateY(-1px);
+}
+
+.sb-browse-tab-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.sb-browse-tab-count {
+  font-size: 10.5px;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.10);
+  border-radius: 999px;
+  padding: 1px 6px;
+  line-height: 1.6;
+}
+
+.sb-browse-tab.is-active .sb-browse-tab-count {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+
+/* ============================================================
+   5. FILTER BAR — clean pill style
+   ============================================================ */
+.sb-filter-bar {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  padding: 8px 0;
+  /* Removed static to prevent overlap with product images */
+}
+
+.sb-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sb-filter-row::-webkit-scrollbar {
+  display: none;
+}
+
+/* Section label */
+.sb-filter-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.40);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+/* Divider between filter groups */
+.sb-filter-sep {
+  width: 1px;
+  height: 18px;
+  background: rgba(0, 0, 0, 0.10);
+  flex-shrink: 0;
+}
+
+/* Generic pill chip */
+.sb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(0, 0, 0, 0.10);
+  background: transparent;
+  color: #444;
+  font-size: 12.5px;
+  font-weight: 500;
+  text-decoration: none !important;
+  white-space: nowrap;
+  transition: background 130ms ease, border-color 130ms ease, color 130ms ease;
+  cursor: pointer;
+}
+
+.sb-chip:hover {
+  background: rgba(13, 110, 253, 0.05);
+  border-color: rgba(13, 110, 253, 0.25);
+  color: #1a56db;
+}
+
+.sb-chip.is-active {
+  background: #eff4ff;
+  border-color: #1a56db;
+  color: #1a56db;
+  font-weight: 600;
+}
+
+/* Reset chip */
+.sb-chip--reset {
+  border-color: rgba(0, 0, 0, 0.10);
+  color: #999;
+}
+
+.sb-chip--reset:hover {
+  background: rgba(220, 53, 69, 0.05);
+  border-color: rgba(220, 53, 69, 0.35);
+  color: #dc3545;
+}
+
+/* Price range inputs inside the filter bar */
+.sb-price-range {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sb-price-range input {
+  width: 96px;
+  padding: 4px 9px;
+  border: 1.5px solid rgba(0, 0, 0, 0.10);
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: #333;
+  background: #fafafa;
+  outline: none;
+  transition: border-color 130ms, background 130ms;
+}
+
+.sb-price-range input:focus {
+  border-color: #1a56db;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(26, 86, 219, 0.10);
+}
+
+.sb-price-range .sep {
+  color: #aaa;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* Mobile filter button override */
+.sb-mobile-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: #fff;
+  border: 1.5px solid rgba(0, 0, 0, 0.10);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  cursor: pointer;
+}
+
+@media (max-width: 767px) {
+  /* Removed media query tops since elements are no longer sticky */
+}
+
+/* Sticky-under-nav helper (kept for other elements if needed) */
+.sb-sticky-under-nav {
+  position: sticky;
+  top: calc(var(--sb-main-top, 64px) + 8px);
+  z-index: 1020;
 }

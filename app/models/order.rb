@@ -20,6 +20,7 @@ class Order < ApplicationRecord
   # validates :shipping_address, presence: true, if: :pending?
 
   after_create_commit :broadcast_sold
+  after_create_commit :generate_sepay_ref
   after_update_commit :broadcast_payment_updates
 
   def total_price
@@ -53,6 +54,27 @@ class Order < ApplicationRecord
     )
   end
 
+  # Tự động xác nhận thanh toán khi SePay webhook gọi về
+  def auto_confirm_by_sepay!(transaction_at: Time.current)
+    return if paid?
+
+    update!(
+      buyer_marked_paid_at: transaction_at,
+      admin_confirmed_paid_at: transaction_at,
+      sepay_paid_at: transaction_at,
+      status: :paid
+    )
+
+    NotificationService.notify!(
+      recipient: buyer,
+      actor: nil,
+      action: :payment_confirmed,
+      notifiable: self,
+      url: Rails.application.routes.url_helpers.order_path(self),
+      message: "Thanh toán đơn ##{id} đã được xác nhận tự động qua SePay."
+    )
+  end
+
   def cancel_by_admin!
     transaction do
       update!(status: :cancelled)
@@ -68,7 +90,71 @@ class Order < ApplicationRecord
     recipient_name.present? && recipient_phone.present? && shipping_address.present?
   end
 
+  # Thanh toán đơn hàng bằng SnapBid Coin
+  def pay_with_coins!
+    return if paid?
+
+    coins_needed = User.vnd_to_coins(total_price)
+    raise "Insufficient SnapBid Coins" if buyer.coin_balance < coins_needed
+
+    ActiveRecord::Base.transaction do
+      buyer.deduct_coins!(coins_needed)
+      update!(
+        buyer_marked_paid_at: Time.current,
+        admin_confirmed_paid_at: Time.current,
+        status: :paid
+      )
+    end
+
+    NotificationService.notify!(
+      recipient: buyer,
+      actor: nil,
+      action: :payment_confirmed,
+      notifiable: self,
+      url: Rails.application.routes.url_helpers.order_path(self),
+      message: "Bạn đã thanh toán thành công đơn ##{id} bằng SnapBid Coin."
+    )
+  end
+
+  # Thanh toán tự động nếu đủ tiền (Dùng sau khi chốt phiên hoặc mua ngay)
+  def auto_pay_if_possible!
+    return if paid? || cancelled?
+
+    coins_needed = User.vnd_to_coins(total_price)
+    if buyer.coin_balance >= coins_needed
+      pay_with_coins!
+    end
+  end
+
+  # Hủy đơn nếu sau 24h chưa thanh toán
+  def cancel_expired_24h!
+    return if paid? || cancelled?
+
+    transaction do
+      update!(status: :cancelled, cancelled_reason: "late_payment_24h")
+
+      listing.update!(
+        published_at: nil,
+        status: :draft
+      )
+    end
+
+    NotificationService.notify!(
+      recipient: buyer,
+      actor: nil,
+      action: :system_notification,
+      notifiable: self,
+      url: Rails.application.routes.url_helpers.order_path(self),
+      message: "Đơn hàng ##{id} đã bị hủy do quá hạn thanh toán 24 giờ. Phí đặt giá sẽ không được hoàn lại."
+    )
+  end
+
   private
+
+  def generate_sepay_ref
+    # VD: SNAPBID42 – SePay match nội dung CK chứa chuỗi này
+    update_column(:sepay_ref, "SNAPBID#{id}")
+  end
 
   def broadcast_sold
     ListingsChannel.broadcast_to(
