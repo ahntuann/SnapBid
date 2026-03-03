@@ -5,7 +5,7 @@
   data-listing-buy-now-price-value="<%= (@listing.buy_now_price || 0).to_i %>"
   data-listing-auction-ends-at-value="<%= @listing.auction_ends_at&.iso8601 %>"
 >
-  <!-- Flash realtime (stimulus sẽ fill) -->
+  <!-- Flash realtime -->
   <div data-listing-target="flash" class="d-none mb-3 alert" role="alert"></div>
 
   <!-- Breadcrumb -->
@@ -18,17 +18,45 @@
   <div class="row g-4">
     <!-- LEFT: Title + Gallery + Description -->
     <div class="col-12 col-lg-7">
-      <h1 class="h3 fw-semibold mb-2"><%= @listing.title %></h1>
 
-      <div class="text-muted mb-3">
+      <!-- Title row: tên + share URL + watchlist -->
+      <div class="d-flex align-items-start gap-2 mb-2 flex-wrap">
+        <h1 class="h3 fw-semibold mb-0 flex-grow-1"><%= @listing.title %></h1>
+
+        <!-- Share / Copy URL button -->
+        <button type="button"
+                class="btn btn-light btn-sm border rounded-pill flex-shrink-0"
+                style="font-size:13px;"
+                id="share-url-btn"
+                title="Sao chép liên kết"
+                onclick="
+                  navigator.clipboard.writeText(window.location.href).then(() => {
+                    const btn = document.getElementById('share-url-btn');
+                    const orig = btn.innerHTML;
+                    btn.innerHTML = '<i class=\'bi bi-check2 me-1\'></i>Đã sao chép';
+                    btn.classList.add('text-success');
+                    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('text-success'); }, 2000);
+                  });
+                ">
+          <i class="bi bi-link-45deg me-1"></i>Chia sẻ
+        </button>
+
+        <!-- Watchlist button (id khớp với Turbo Stream replace) -->
+        <div id="watchlist_button_<%= @listing.id %>" class="flex-shrink-0">
+          <%= render "listings/watchlist_button", listing: @listing %>
+        </div>
+      </div>
+
+      <div class="text-muted mb-3 small">
         <span class="me-2"><b>Danh mục:</b> <%= @listing.category&.name.presence || "-" %></span>
         <span class="text-muted">|</span>
         <span class="ms-2"><b>Tình trạng:</b> <%= @listing.condition.presence || "-" %></span>
       </div>
 
-      <!-- Gallery (ảnh lớn + thumbnails) -->
+      <!-- Gallery -->
       <div data-controller="gallery">
-        <div class="rounded-4 border bg-white overflow-hidden position-relative"> <div class="position-absolute top-0 end-0 p-3" style="z-index: 10;">
+        <div class="rounded-4 border bg-white overflow-hidden position-relative">
+          <div class="position-absolute top-0 end-0 p-3" style="z-index: 10;">
             <% if @listing.ai_verified? %>
               <span class="badge bg-success bg-opacity-75 backdrop-blur shadow fs-6 py-2 px-3">
                 <i class="bi bi-patch-check-fill me-1"></i> Xác minh bởi AI
@@ -81,113 +109,252 @@
       </div>
     </div>
 
-    <!-- RIGHT: Auction card + actions -->
+    <!-- RIGHT: Auction card -->
     <div class="col-12 col-lg-5">
-      <div class="bg-white border rounded-4 p-3 p-md-4">
-        <div class="d-flex align-items-center justify-content-between">
-          <div>
-            <div class="small text-muted">Giá hiện tại</div>
-            <div class="h4 mb-0 fw-semibold">
-              <span data-listing-target="currentPrice"><%= number_with_precision(@listing.current_price)%> ₫</span>
-            </div>
-          </div>
+      <div class="bg-white border rounded-4 overflow-hidden">
 
-          <span class="badge <%= @listing.sold? ? "text-bg-success" : (@listing.auction_ended? ? "text-bg-secondary" : "text-bg-primary") %>">
+        <!-- ── HEADER: badge trạng thái ── -->
+        <div class="d-flex align-items-center justify-content-between px-4 pt-4 pb-2">
+          <div class="text-uppercase small fw-semibold text-muted">Phiên đấu giá</div>
+          <span class="badge <%= @listing.sold? ? "text-bg-success" : (@listing.auction_ended? ? "text-bg-secondary" : "text-bg-primary") %> rounded-pill px-3 py-2">
             <span data-listing-target="status">
-              <% if @listing.sold? %>
-                Đã bán
-              <% elsif @listing.auction_ended? %>
-                Đã kết thúc
-              <% else %>
-                Đang diễn ra
+              <% if @listing.sold? %>Đã bán
+              <% elsif @listing.auction_ended? %>Đã kết thúc
+              <% else %>Đang diễn ra
               <% end %>
             </span>
           </span>
         </div>
 
-        <hr class="my-4">
+        <%# ── SECTION 1: Thời gian kết thúc cụ thể ── %>
+        <% if @listing.auction_ends_at %>
+          <div class="px-4 pb-3">
+            <div class="rounded-3 py-3 px-3" style="background:#f8f9fa;">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <i class="bi bi-calendar-event text-primary"></i>
+                <span class="small fw-semibold text-muted text-uppercase">Kết thúc lúc</span>
+              </div>
+              <div class="fw-bold" style="font-size:1rem; letter-spacing:.01em;">
+                <%= l(@listing.auction_ends_at, format: :long) rescue @listing.auction_ends_at.strftime("%H:%M, %d/%m/%Y") %>
+              </div>
+            </div>
+          </div>
 
-        <div class="text-uppercase small fw-semibold text-muted mb-2">Thông tin đấu giá</div>
-        <div class="row g-3 small">
-          <div class="col-6">
-            <div class="text-muted">Giá khởi điểm</div>
-            <div class="fw-semibold"><%= number_with_precision(@listing.start_price) || "-" %></div>
+          <%# ── SECTION 2: Đếm ngược ── %>
+          <% unless @listing.auction_ended? || @listing.sold? %>
+            <div class="px-4 pb-3"
+                 data-controller="countdown"
+                 data-countdown-end-at-value="<%= @listing.auction_ends_at.iso8601 %>">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-hourglass-split text-warning"></i>
+                <span class="small fw-semibold text-muted text-uppercase">Thời gian còn lại</span>
+              </div>
+              <div class="d-flex gap-2">
+                <% [
+                  ["days",    "Ngày"],
+                  ["hours",   "Giờ"],
+                  ["minutes", "Phút"],
+                  ["seconds", "Giây"]
+                ].each do |target, label| %>
+                  <div class="flex-fill text-center rounded-3 py-2 px-1"
+                       style="background:linear-gradient(135deg,#0d6efd15,#0d6efd08);border:1px solid #0d6efd22;">
+                    <div class="fw-bold" style="font-size:1.5rem; font-variant-numeric:tabular-nums; line-height:1;"
+                         data-countdown-target="<%= target %>">--</div>
+                    <div class="text-muted" style="font-size:10px; letter-spacing:.05em; text-transform:uppercase;">
+                      <%= label %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+
+        <hr class="mx-4 my-0">
+
+        <%# ── SECTION 3: Giá hiện tại + tiếp theo ── %>
+        <div class="px-4 py-3">
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="rounded-3 p-3 h-100" style="background:#f0fdf4; border:1px solid #bbf7d0;">
+                <div class="small text-muted mb-1">Giá hiện tại</div>
+                <div class="fw-bold text-success" style="font-size:1.15rem;"
+                     data-listing-target="currentPrice">
+                  <%= number_with_delimiter(@listing.current_price.to_i) %> ₫
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="rounded-3 p-3 h-100" style="background:#eff6ff; border:1px solid #bfdbfe;">
+                <div class="small text-muted mb-1">Giá bid tiếp theo</div>
+                <div class="fw-bold text-primary" style="font-size:1.15rem;"
+                     data-listing-target="minNextBid">
+                  <%= number_with_delimiter(@listing.min_next_bid.to_i) %> ₫
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="col-6">
-            <div class="text-muted">Giá hiện tại</div>
-            <div class="fw-semibold"><span data-listing-target="currentPrice"><%= number_with_precision(@listing.current_price) %></span></div>
-          </div>
-          <div class="col-6">
-            <div class="text-muted">Số lượt đặt</div>
-            <div class="fw-semibold"><%= number_with_precision(@listing.bids.count) %></div>
-          </div>
-          <div class="col-6">
-            <div class="text-muted">Kết thúc lúc</div>
-            <div class="fw-semibold"><%= @listing.auction_ends_at ? l(@listing.auction_ends_at, format: :short) : "-" %></div>
+
+          <!-- bid count -->
+          <div class="d-flex justify-content-between align-items-center mt-2 small text-muted">
+            <span><i class="bi bi-people me-1"></i>Lượt đặt: <span class="fw-semibold text-dark" data-listing-target="bidCount"><%= @listing.bids.count %></span></span>
+            <% if @listing.start_price %>
+              <span>Khởi điểm: <span class="fw-semibold"><%= number_with_delimiter(@listing.start_price.to_i) %> ₫</span></span>
+            <% end %>
           </div>
         </div>
 
-        <hr class="my-4">
+        <hr class="mx-4 my-0">
 
-        <!-- Bid + Buy now -->
-        <% if user_signed_in? %>
-          <% if !@listing.sold? && !@listing.auction_ended? %>
-            <div data-listing-target="bidForm">
-              <div class="d-flex align-items-center justify-content-between mb-2">
-                <div class="text-uppercase small fw-semibold text-muted">Đặt giá</div>
-                <div class="text-muted small">
-                  Phí đặt giá lần đầu: <span class="fw-bold text-primary">5 Coin</span><br>
-                  Các lần sau: <span class="fw-bold text-primary">1 Coin</span>
-                </div>
-              </div>
-              <div class="text-muted small mb-2">
-                Giá tối thiểu tiếp theo: <b><%= number_with_precision(@listing.min_next_bid) %></b>
-              </div>
-
-              <%= form_with model: [@listing, @bid], local: true, data: { action: "submit->listing#submitBid" } do |f| %>
-                <%= f.number_field :amount,
-                      step: "0.01",
-                      class: "form-control mb-2",
-                      placeholder: "Nhập giá (tối thiểu #{number_with_precision(@listing.min_next_bid)})",
-                      data: { listing_target: "amount", action: "input->listing#checkBuyNowThreshold" } %>
-
-                <%= hidden_field_tag :confirm_buy_now, "0", data: { listing_target: "confirmBuyNow" } %>
-
-                <%= f.submit t("buttons.place_bid"), class: "btn btn-primary w-100" %>
-              <% end %>
-            </div>
-
-            <% if @listing.buy_now_enabled? %>
-              <div data-listing-target="buyNowBox" class="mt-3">
-                <div class="text-muted small mb-2">
-                  Mua ngay: <b><%= number_with_precision(@listing.buy_now_price) %></b>
+        <%# ── SECTION 4: Form đặt giá ── %>
+        <div class="px-4 py-3">
+          <% if user_signed_in? %>
+            <% if !@listing.sold? && !@listing.auction_ended? %>
+              <div data-listing-target="bidForm">
+                <!-- Phí đặt giá -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="small text-muted">Phí đặt giá</span>
+                  <div class="text-end small">
+                    <span class="badge text-bg-light border me-1">Lần đầu: <b class="text-primary">5 Coin</b></span>
+                    <span class="badge text-bg-light border">Tiếp theo: <b class="text-primary">1 Coin</b></span>
+                  </div>
                 </div>
 
-                <%= button_to t("buttons.buy_now"),
-                      buy_now_listing_path(@listing),
-                      method: :post,
-                      class: "btn btn-outline-secondary w-100",
-                      data: { turbo_confirm: t("confirmations.buy_now") } %>
+                <%= form_with model: [@listing, @bid], local: true,
+                      data: { action: "submit->listing#submitBid" } do |f| %>
+
+                  <!-- Ô nhập giá hiển thị (format dấu phẩy, KHÔNG submit) -->
+                  <div class="mb-2 position-relative">
+                    <input type="text"
+                           id="bid_amount_display"
+                           class="form-control form-control-lg pe-5"
+                           placeholder="1,000,000"
+                           autocomplete="off"
+                           data-listing-target="amount"
+                           data-action="input->listing#formatAndCheck"
+                    >
+                    <!-- Hidden field thật chuyển raw number (bid[amount]) -->
+                    <%= hidden_field_tag "bid[amount]", "",
+                          id: "bid_amount_real",
+                          data: { listing_target: "amountHidden" } %>
+                    <span class="position-absolute top-50 end-0 translate-middle-y pe-3 text-muted fw-semibold">₫</span>
+                  </div>
+                  <div class="text-muted small mb-3">
+                    Tối thiểu: <b><span data-listing-target="minNextBidHint"><%= number_with_delimiter(@listing.min_next_bid.to_i) %></span> ₫</b>
+                  </div>
+
+                  <%= hidden_field_tag :confirm_buy_now, "0", data: { listing_target: "confirmBuyNow" } %>
+
+                  <!-- Nút Đặt giá -->
+                  <div class="d-grid mb-2">
+                    <%= f.submit t("buttons.place_bid"),
+                          class: "btn btn-primary btn-lg fw-bold py-3",
+                          style: "letter-spacing:.03em;" %>
+                  </div>
+
+                  <!-- Nút Mua ngay (cùng style, màu khác) -->
+                  <% if @listing.buy_now_enabled? && @listing.buy_now_price %>
+                    <div class="d-grid" data-listing-target="buyNowBox">
+                      <%= button_to buy_now_listing_path(@listing),
+                            method: :post,
+                            class: "btn btn-outline-primary btn-lg fw-bold py-3",
+                            style: "letter-spacing:.03em;",
+                            data: { turbo_confirm: t("confirmations.buy_now") } do %>
+                        <i class="bi bi-lightning-charge-fill me-1"></i>
+                        <%= t("buttons.buy_now") %>
+                        <span class="ms-2 fw-normal opacity-75" style="font-size:.85em;">
+                          <%= number_with_delimiter(@listing.buy_now_price.to_i) %> ₫
+                        </span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+
+            <% else %>
+              <div class="alert alert-secondary mb-0">
+                Phiên này đã kết thúc hoặc sản phẩm đã bán.
               </div>
             <% end %>
           <% else %>
-            <div class="alert alert-secondary mb-0">
-              Phiên này đã kết thúc hoặc sản phẩm đã bán.
+            <div class="alert alert-warning mb-0">
+              <%= t("pages.listings.login_to_bid") %>
             </div>
           <% end %>
-          <%= render "listings/watchlist_button", listing: @listing %>
-        <% else %>
-          <div class="alert alert-warning mb-0">
-            <%= t("pages.listings.login_to_bid") %>
+        </div>
+
+      </div><%# /auction card %>
+
+      <!-- Thông tin người bán -->
+      <div class="bg-white border rounded-4 p-3 mt-3">
+        <div class="text-uppercase small fw-semibold text-muted mb-2">Người bán</div>
+        <div class="d-flex align-items-center gap-3">
+          <!-- Avatar -->
+          <% seller = @listing.user %>
+          <% if seller.avatar.attached? %>
+            <%= image_tag url_for(seller.avatar), class: "rounded-circle border",
+                  style: "width:48px;height:48px;object-fit:cover;flex-shrink:0;" %>
+          <% else %>
+            <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center flex-shrink-0"
+                 style="width:48px;height:48px;">
+              <i class="bi bi-person-fill text-muted fs-5"></i>
+            </div>
+          <% end %>
+
+          <div class="flex-grow-1">
+            <div class="fw-semibold">
+              <%= seller.display_name %>
+              <% if seller.email_verified? %>
+                <i class="bi bi-patch-check-fill text-primary ms-1" title="Đã xác minh" style="font-size:13px;"></i>
+              <% end %>
+            </div>
+            <div class="text-muted small">Tham gia từ <%= seller.created_at.strftime("%m/%Y") %></div>
           </div>
-        <% end %>
+
+          <% if seller.seller? %>
+            <%= link_to seller_path(seller), class: "btn btn-outline-secondary btn-sm rounded-pill flex-shrink-0" do %>
+              <i class="bi bi-shop me-1"></i>Xem hồ sơ
+            <% end %>
+          <% end %>
+        </div>
       </div>
 
       <!-- Recent bids -->
+      <% all_bids   = @listing.bids.order(created_at: :desc).to_a %>
+      <% shown_bids = all_bids.first(5) %>
+      <% extra_bids = all_bids.drop(5) %>
+
       <div class="bg-white border rounded-4 p-3 p-md-4 mt-4">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-          <div class="text-uppercase small fw-semibold text-muted"><%= t("pages.listings.recent_bids") %></div>
-          <div class="small text-muted"><%= @listing.bids.count %> lượt</div>
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="text-uppercase small fw-semibold text-muted"><%= t("pages.listings.recent_bids") %></div>
+            <span class="badge text-bg-primary rounded-pill" data-listing-target="bidCount"><%= @listing.bids.count %></span>
+          </div>
+          <% if extra_bids.any? %>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#bids-extra-rows"
+                    aria-expanded="false"
+                    id="bids-toggle-btn">
+              <i class="bi bi-chevron-down me-1" id="bids-toggle-icon"></i>
+              <span id="bids-toggle-text">Xem tất cả (<%= extra_bids.size %> thêm)</span>
+            </button>
+            <script>
+              (function() {
+                var el = document.getElementById('bids-extra-rows');
+                if (!el) return;
+                el.addEventListener('show.bs.collapse', function() {
+                  document.getElementById('bids-toggle-icon').className = 'bi bi-chevron-up me-1';
+                  document.getElementById('bids-toggle-text').textContent = 'Thu gọn';
+                });
+                el.addEventListener('hide.bs.collapse', function() {
+                  document.getElementById('bids-toggle-icon').className = 'bi bi-chevron-down me-1';
+                  document.getElementById('bids-toggle-text').textContent = 'Xem tất cả (<%= extra_bids.size %> thêm)';
+                });
+              })();
+            </script>
+          <% end %>
         </div>
 
         <div class="table-responsive">
@@ -200,32 +367,53 @@
               </tr>
             </thead>
             <tbody data-listing-target="bids">
-              <% @listing.bids.order(created_at: :desc).limit(10).each do |bid| %>
+              <!-- 5 bids đầu luôn hiện -->
+              <% shown_bids.each do |bid| %>
                 <tr>
-                  <td class="text-truncate" style="max-width: 220px;"><%= bid.user.name.presence || bid.user.email %></td>
-                  <td class="fw-semibold"><%= number_with_precision(bid.amount) %></td>
+                  <td class="text-truncate" style="max-width:220px;"><%= bid.user.name.presence || bid.user.email %></td>
+                  <td class="fw-semibold"><%= number_with_delimiter(bid.amount.to_i) %> ₫</td>
                   <td class="text-end text-muted"><%= l(bid.created_at, format: :short) %></td>
                 </tr>
               <% end %>
 
               <% if @listing.bids.none? %>
-                <tr>
+                <tr data-empty-row>
                   <td colspan="3" class="text-muted text-center py-4">Chưa có lượt đặt giá nào</td>
                 </tr>
               <% end %>
             </tbody>
+
+            <!-- Extra rows (collapse) -->
+            <% if extra_bids.any? %>
+              <tbody id="bids-extra-rows" class="collapse">
+                <% extra_bids.each do |bid| %>
+                  <tr>
+                    <td class="text-truncate" style="max-width:220px;"><%= bid.user.name.presence || bid.user.email %></td>
+                    <td class="fw-semibold"><%= number_with_delimiter(bid.amount.to_i) %> ₫</td>
+                    <td class="text-end text-muted"><%= l(bid.created_at, format: :short) %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            <% end %>
           </table>
         </div>
-
       </div>
+
     </div>
   </div>
 </div>
+
 <% if @recommended_listings.present? %>
-  <div class="mt-5">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <div class="text-uppercase small fw-semibold text-muted">Sản phẩm gợi ý</div>
-      <%= link_to "Xem tất cả", root_path, class: "small text-decoration-none" %>
+  <div class="mt-5 pt-4" style="border-top: 2px solid #f0f0f0;">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <div class="fw-bold" style="font-size:1.15rem;">Gợi ý sản phẩm khác</div>
+        <div class="text-muted small mt-1">Các sản phẩm khác đang đấu giá mà bạn có thể thích</div>
+      </div>
+      <%= link_to root_path, class: "btn btn-outline-secondary btn-sm rounded-pill" do %>
+        Xem tất cả <i class="bi bi-arrow-right ms-1"></i>
+      <% end %>
     </div>
 
     <div class="row g-3">
@@ -235,4 +423,3 @@
     </div>
   </div>
 <% end %>
-

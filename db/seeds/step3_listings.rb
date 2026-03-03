@@ -14,6 +14,15 @@ categories = Category.limit(5).to_a
 # Create sample listings
 sample_listings = [
   {
+    title: "Sản phẩm test giá 10000",
+    category: categories.sample,
+    condition: "new",
+    start_price: 10000,
+    bid_increment: 1000,
+    buy_now_price: 100000,
+    auction_ends_at: 1.day.from_now
+  },
+  {
     title: "iPhone 13 Pro Max 256GB",
     category: categories.sample,
     condition: "new",

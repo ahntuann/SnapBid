@@ -1,0 +1,104 @@
+<%# sellers/show.html.erb — Trang hồ sơ người bán công khai %>
+
+<div class="pt-4 pb-5">
+
+  <%# ── Hero – Thông tin người bán ── %>
+  <div class="card border-0 shadow-sm mb-4" style="border-radius:20px; overflow:hidden;">
+    <!-- Cover gradient -->
+    <div style="height:120px; background:linear-gradient(135deg,#c88a1c 0%,#8a5a00 100%);"></div>
+
+    <div class="card-body px-4 pb-4" style="margin-top:-52px;">
+      <div class="d-flex align-items-end gap-3 mb-3 flex-wrap">
+        <!-- Avatar -->
+        <div class="flex-shrink-0">
+          <% if @seller.avatar.attached? %>
+            <%= image_tag url_for(@seller.avatar), class: "rounded-circle border border-3 border-white shadow",
+                  style: "width:90px;height:90px;object-fit:cover;" %>
+          <% else %>
+            <div class="rounded-circle border border-3 border-white shadow d-flex align-items-center justify-content-center"
+                 style="width:90px;height:90px;background:#f3f4f6;">
+              <i class="bi bi-person-fill text-muted" style="font-size:2.5rem;"></i>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Name + badges -->
+        <div class="flex-grow-1 pb-1">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <h1 class="h4 fw-bold mb-0"><%= @seller.display_name %></h1>
+            <span class="badge text-bg-warning rounded-pill px-3">
+              <i class="bi bi-shop me-1"></i>Người bán
+            </span>
+            <% if @seller.email_verified? %>
+              <span class="badge text-bg-success rounded-pill px-3">
+                <i class="bi bi-patch-check-fill me-1"></i>Đã xác minh
+              </span>
+            <% end %>
+          </div>
+          <div class="text-muted small mt-1">
+            <i class="bi bi-calendar3 me-1"></i>Tham gia từ
+            <%= @seller.created_at.strftime("%m/%Y") %>
+          </div>
+        </div>
+
+        <!-- Share / contact placeholder -->
+        <% if user_signed_in? && current_user != @seller %>
+          <button class="btn btn-outline-secondary btn-sm rounded-pill"
+                  onclick="navigator.clipboard.writeText(window.location.href).then(() => { this.innerHTML='<i class=\'bi bi-check2 me-1\'></i>Đã sao chép'; setTimeout(() => this.innerHTML='<i class=\'bi bi-share me-1\'></i>Chia sẻ', 2000); })">
+            <i class="bi bi-share me-1"></i>Chia sẻ
+          </button>
+        <% end %>
+      </div>
+
+      <%# ── Stats bar ── %>
+      <div class="row g-2 mt-1">
+        <div class="col-4">
+          <div class="text-center rounded-3 py-2 px-1" style="background:#f8f9fa;">
+            <div class="fw-bold fs-5 text-primary"><%= @total_listings %></div>
+            <div class="text-muted" style="font-size:12px;">Sản phẩm đăng</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="text-center rounded-3 py-2 px-1" style="background:#f0fdf4;">
+            <div class="fw-bold fs-5 text-success"><%= @sold_count %></div>
+            <div class="text-muted" style="font-size:12px;">Đã bán</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="text-center rounded-3 py-2 px-1" style="background:#eff6ff;">
+            <div class="fw-bold fs-5 text-info"><%= @active_count %></div>
+            <div class="text-muted" style="font-size:12px;">Đang đấu giá</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Listings grid ── %>
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <div class="fw-bold" style="font-size:1.1rem;">Sản phẩm đang đấu giá</div>
+      <div class="text-muted small">Các sản phẩm đang bán bởi <%= @seller.display_name %></div>
+    </div>
+  </div>
+
+  <% if @published_listings.empty? %>
+    <div class="text-center py-5 text-muted">
+      <i class="bi bi-box-seam fs-1 d-block mb-3 opacity-50"></i>
+      <p class="mb-0">Người bán này chưa có sản phẩm nào đang đấu giá.</p>
+    </div>
+  <% else %>
+    <div class="row g-3">
+      <% @published_listings.each do |listing| %>
+        <%= render "listings/grid_card", listing: listing %>
+      <% end %>
+    </div>
+
+    <% if @published_listings.total_pages > 1 %>
+      <div class="mt-4 d-flex justify-content-center">
+        <%= paginate @published_listings %>
+      </div>
+    <% end %>
+  <% end %>
+
+</div>

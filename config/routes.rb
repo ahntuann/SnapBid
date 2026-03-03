@@ -124,6 +124,8 @@ Rails.application.routes.draw do
     delete :destroy_avatar, on: :collection
   end
 
+  resources :sellers, only: [:show]
+
   get "/my-bids", to: "bids#mine", as: :my_bids
 
   # SePay webhook – SePay sẽ POST vào URL này khi nhận được chuyển khoản

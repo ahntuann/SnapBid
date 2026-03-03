@@ -26,4 +26,12 @@ puts "Created/Updated seller user: #{seller.email}"
   puts "Created/Updated buyer user: #{buyer.email}"
 end
 
+test_user1 = upsert_user!(email: "test1@test.com", name: "Test 1 900 coins", role: :user)
+test_user1.update!(snapbid_coins: 900)
+puts "Created/Updated test user 1: #{test_user1.email}"
+
+test_user2 = upsert_user!(email: "test2@test.com", name: "Test 2 900 coins", role: :user)
+test_user2.update!(snapbid_coins: 900)
+puts "Created/Updated test user 2: #{test_user2.email}"
+
 puts "== Done creating users =="

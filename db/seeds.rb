@@ -53,6 +53,26 @@ User.find_or_create_by!(email: "test_withdraw@example.com") do |u|
   u.snapbid_coins = 100
 end
 
+# ── Seller mẫu 1 ─────────────────────────────────────────────────────────────
+User.find_or_create_by!(email: "seller1@example.com") do |u|
+  u.name             = "Nguyễn Văn An"
+  u.role             = :user
+  u.is_seller        = true
+  u.password         = "password123"
+  u.email_verified_at = Time.current
+  u.snapbid_coins    = 200
+end
+
+# ── Seller mẫu 2 ─────────────────────────────────────────────────────────────
+User.find_or_create_by!(email: "seller2@example.com") do |u|
+  u.name             = "Trần Thị Bình"
+  u.role             = :user
+  u.is_seller        = true
+  u.password         = "password123"
+  u.email_verified_at = Time.current
+  u.snapbid_coins    = 150
+end
+
 
 %w[Thời\ trang Túi\ sách Điện\ tử Đồ\ thủ\ công Tranh-ảnh Đồ\ gỗ Khác].each do |name|
   Category.find_or_create_by!(name: name)

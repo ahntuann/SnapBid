@@ -19,8 +19,10 @@ class Bid < ApplicationRecord
       {
         type: "new_bid",
         current_price: listing.current_price,
+        bid_count: listing.bids.count,
+        min_next_bid: listing.min_next_bid,
         bid: {
-          user_name: user.name,
+          user_name: user.name.presence || user.email,
           amount: amount,
           created_at: I18n.l(created_at, format: :short)
         }
