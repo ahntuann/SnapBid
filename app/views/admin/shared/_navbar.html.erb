@@ -62,6 +62,12 @@
         <i class="bi bi-sliders"></i> Settings
       <% end %>
     </li>
+    <li>
+      <%= link_to admin_withdrawal_requests_path,
+            class: "admin-nav-link #{"active" if controller_name == "withdrawal_requests"}" do %>
+        <i class="bi bi-cash-coin"></i> Rút tiền
+      <% end %>
+    </li>
   </ul>
 
   <%# ── Footer / Logout ────────────────────────── %>

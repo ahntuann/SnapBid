@@ -1,45 +1,61 @@
-<footer class="sb-footer mt-auto">
-  <div class="container" style="max-width: 1100px;">
-    <div class="row g-4 py-4">
-      <div class="col-12 col-md-5">
-        <div class="fw-semibold mb-2">SnapBid</div>
-        <div class="text-muted small">
-          Theo dõi thời gian kết thúc theo thời gian thực, lưu sản phẩm quan tâm và săn deal phút chót.
+<footer class="sb-footer border-top pt-5 pb-4 mt-auto" style="background-color: var(--sb-surface);">
+  <div class="container" style="max-width: 1200px;">
+    <div class="row g-4 mb-4">
+      <div class="col-12 col-lg-4 pe-lg-5">
+        <h5 class="fw-bold mb-3" style="color: var(--sb-gold);">SnapBid</h5>
+        <p class="text-muted small lh-lg">
+          Nền tảng đấu giá trực tuyến. Theo dõi thời gian kết thúc theo thời gian thực, lưu sản phẩm quan tâm và săn deal phút chót một cách dễ dàng và minh bạch.
+        </p>
+        <div class="d-flex gap-3 mt-4">
+          <a class="text-muted text-decoration-none" href="https://www.facebook.com/snapbidofficial" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <i class="bi bi-facebook fs-5"></i>
+          </a>
+          <a class="text-muted text-decoration-none" href="#" aria-label="Instagram"><i class="bi bi-instagram fs-5"></i></a>
+          <a class="text-muted text-decoration-none" href="#" aria-label="TikTok"><i class="bi bi-tiktok fs-5"></i></a>
         </div>
       </div>
 
-      <div class="col-6 col-md-2">
-        <div class="fw-semibold mb-2">Khám phá</div>
-        <div class="d-grid gap-1 small">
-          <a href="<%= root_path(sort: "ending_soon") %>">Sắp kết thúc</a>
-          <a href="<%= root_path(sort: "newest") %>">Mới đăng</a>
-          <a href="<%= root_path %>">Tất cả</a>
+      <div class="col-6 col-md-4 col-lg-2">
+        <h6 class="fw-bold mb-3">Khám phá</h6>
+        <div class="d-flex flex-column gap-2 small">
+          <a href="<%= root_path(sort: "ending_soon") %>" class="text-muted text-decoration-none">Sắp kết thúc</a>
+          <a href="<%= root_path(sort: "newest") %>" class="text-muted text-decoration-none">Mới đăng</a>
+          <a href="<%= root_path %>" class="text-muted text-decoration-none">Tất cả sản phẩm</a>
         </div>
       </div>
 
-      <div class="col-6 col-md-2">
-        <div class="fw-semibold mb-2">Hỗ trợ</div>
-        <div class="d-grid gap-1 small">
-          <a href="<%= help_path %>">Trung tâm Hỗ trợ</a>
-          <a href="<%= help_path %>#faq">FAQ</a>
+      <div class="col-6 col-md-4 col-lg-3">
+        <h6 class="fw-bold mb-3">Thông tin liên hệ</h6>
+        <div class="d-flex flex-column gap-2 small text-muted">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-telephone-fill"></i> <span>0868 180 489</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-envelope-fill"></i> <span>snapbid01@gmail.com</span>
+          </div>
+          <div class="d-flex align-items-start gap-2">
+            <i class="bi bi-geo-alt-fill mt-1"></i> <span>Hà Nội, Việt Nam</span>
+          </div>
         </div>
       </div>
-
-      <div class="col-12 col-md-3">
-        <div class="fw-semibold mb-2">Kết nối</div>
-        <div class="d-flex gap-3">
-          <a class="text-muted" href="#" aria-label="Facebook"><i class="bi bi-facebook fs-5"></i></a>
-          <a class="text-muted" href="#" aria-label="Instagram"><i class="bi bi-instagram fs-5"></i></a>
-          <a class="text-muted" href="#" aria-label="TikTok"><i class="bi bi-tiktok fs-5"></i></a>
+      
+      <div class="col-12 col-md-4 col-lg-3">
+        <h6 class="fw-bold mb-3">Hỗ trợ khách hàng</h6>
+        <div class="d-flex flex-column gap-2 small">
+          <a href="<%= help_path %>" class="text-muted text-decoration-none">Trung tâm Hỗ trợ</a>
+          <a href="<%= help_path %>#faq" class="text-muted text-decoration-none">Câu hỏi thường gặp</a>
+          <a href="#" class="text-muted text-decoration-none">Chính sách bảo mật</a>
+          <a href="#" class="text-muted text-decoration-none">Điều khoản dịch vụ</a>
         </div>
       </div>
     </div>
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center py-3 border-top small text-muted">
-      <div>© <%= Time.current.year %> SnapBid</div>
-      <div class="d-flex gap-3">
-        <a class="text-muted" href="#">Điều khoản</a>
-        <a class="text-muted" href="#">Bảo mật</a>
+    <hr class="text-black-50 mb-3">
+    
+    <div class="d-flex flex-wrap justify-content-between align-items-center small text-muted">
+      <div>© <%= Time.current.year %> SnapBid. All rights reserved.</div>
+      <div class="d-flex gap-3 mt-2 mt-md-0">
+        <span>Thiết kế với <i class="bi bi-heart-fill text-danger mx-1"></i> tại Việt Nam</span>
       </div>
     </div>
   </div>

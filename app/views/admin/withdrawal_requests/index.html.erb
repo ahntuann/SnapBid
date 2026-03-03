@@ -1,0 +1,65 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">Yêu cầu rút tiền</h1>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover table-striped mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Người yêu cầu</th>
+            <th>Số lượng Coin</th>
+            <th>Ngân hàng</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @withdrawal_requests.empty? %>
+            <tr>
+              <td colspan="7" class="text-center text-muted py-4">Chưa có yêu cầu rút tiền nào</td>
+            </tr>
+          <% else %>
+            <% @withdrawal_requests.each do |req| %>
+              <tr>
+                <td>#<%= req.id %></td>
+                <td>
+                  <div class="fw-semibold"><%= req.user.name %></div>
+                  <div class="small text-muted"><%= req.user.email %></div>
+                </td>
+                <td class="fw-bold text-primary"><%= number_with_delimiter(req.amount) %></td>
+                <td>
+                  <div><%= req.bank_name %></div>
+                  <div class="small text-muted"><%= req.account_number %></div>
+                </td>
+                <td>
+                  <% case req.status %>
+                  <% when "pending" %>
+                    <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                  <% when "completed" %>
+                    <span class="badge bg-success">Đã duyệt</span>
+                  <% when "rejected" %>
+                    <span class="badge bg-danger">Từ chối</span>
+                  <% end %>
+                </td>
+                <td class="small text-muted"><%= l req.created_at, format: :short %></td>
+                <td>
+                  <%= link_to "Chi tiết", admin_withdrawal_request_path(req), class: "btn btn-sm btn-outline-primary" %>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<% if defined?(Kaminari) %>
+  <div class="mt-3">
+    <%= paginate @withdrawal_requests %>
+  </div>
+<% end %>

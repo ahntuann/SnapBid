@@ -994,3 +994,149 @@ a:hover {
     padding: 40px 20px 60px;
   }
 }
+
+/* ============================================================
+   Payment toast animation
+   ============================================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   13. CUSTOM TOASTS (Flash Messages)
+   ============================================================ */
+.toast-container {
+  z-index: 20000;
+  top: 1.5rem !important;
+  right: 1.5rem !important;
+  bottom: auto !important;
+}
+
+.sb-toast {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15) !important;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  min-width: 320px;
+}
+
+.sb-toast .toast-body {
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sb-toast i {
+  font-size: 1.25rem;
+}
+
+/* Success Toast */
+.sb-toast--success {
+  border-left: 5px solid #10b981 !important;
+}
+.sb-toast--success i {
+  color: #10b981;
+}
+
+/* Error/Alert Toast */
+.sb-toast--error {
+  border-left: 5px solid #ef4444 !important;
+}
+.sb-toast--error i {
+  color: #ef4444;
+}
+
+/* Info Toast */
+.sb-toast--info {
+  border-left: 5px solid var(--sb-gold) !important;
+}
+.sb-toast--info i {
+  color: var(--sb-gold);
+}
+
+.sb-toast .btn-close {
+  font-size: 0.8rem;
+  opacity: 0.6;
+  margin-right: 0.5rem;
+}
+
+/* Responsive: center on small screens */
+@media (max-width: 576px) {
+  .toast-container {
+    left: 1rem !important;
+    right: 1rem !important;
+    width: auto !important;
+    top: 1rem !important;
+  }
+  .sb-toast {
+    min-width: auto;
+  }
+}
+
+
+/* ============================================================
+   14. AUTH PAGES NAVBAR HIDE/HOVER
+   ============================================================ */
+
+/* Hide trigger zone on normal pages */
+.navbar-trigger-zone {
+  display: none;
+}
+
+/* On auth pages, show trigger zone, hide navbar initially */
+body[class^="sessions-"] .navbar-trigger-zone,
+body[class^="registrations-"] .navbar-trigger-zone,
+body[class^="passwords-"] .navbar-trigger-zone,
+body.user-sessions .navbar-trigger-zone {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  z-index: 1050;
+}
+
+/* Move navbar up, add transition */
+body[class^="sessions-"] .apple-navbar,
+body[class^="registrations-"] .apple-navbar,
+body[class^="passwords-"] .apple-navbar,
+body.user-sessions .apple-navbar {
+  transform: translateY(-100%);
+  transition: transform 0.35s cubic-bezier(0.28, 0.11, 0.32, 1);
+}
+
+/* Hovering the trigger zone OR the navbar itself reveals it */
+body[class^="sessions-"] .navbar-trigger-zone:hover~.apple-navbar,
+body[class^="registrations-"] .navbar-trigger-zone:hover~.apple-navbar,
+body[class^="passwords-"] .navbar-trigger-zone:hover~.apple-navbar,
+body.user-sessions .navbar-trigger-zone:hover~.apple-navbar,
+body[class^="sessions-"] .apple-navbar:hover,
+body[class^="registrations-"] .apple-navbar:hover,
+body[class^="passwords-"] .apple-navbar:hover,
+body.user-sessions .apple-navbar:hover {
+  transform: translateY(0);
+}
+
+/* Fix main content padding on auth pages so split panel takes full viewport */
+body[class^="sessions-"] .app-main,
+body[class^="registrations-"] .app-main,
+body[class^="passwords-"] .app-main,
+body.user-sessions .app-main {
+  padding-top: 0;
+}

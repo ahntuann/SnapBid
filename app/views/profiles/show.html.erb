@@ -1,34 +1,134 @@
-<div class="container" style="max-width: 900px;">
-  <div class="d-flex justify-content-between align-items-center mb-3">
+<div class="pt-4 pb-5" style="max-width:900px; margin:0 auto;">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-start mb-4">
     <div>
-      <h1 class="h4 mb-1">Thông tin tài khoản</h1>
-      <div class="text-muted">Email, tên hiển thị, ảnh đại diện</div>
+      <h1 class="h3 fw-bold mb-1">Hồ sơ của tôi</h1>
+      <div class="text-muted small">Thông tin tài khoản và vai trò</div>
     </div>
-    <%= link_to "Chỉnh sửa", edit_profile_path, class: "btn btn-outline-primary btn-sm" %>
+    <%= link_to "Chỉnh sửa", edit_profile_path, class: "btn btn-outline-secondary btn-sm rounded-pill" %>
   </div>
 
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <div class="d-flex gap-3 align-items-center">
+  <!-- Thông tin cơ bản -->
+  <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;">
+    <div class="card-body p-4">
+      <div class="d-flex gap-4 align-items-center flex-wrap">
+        <!-- Avatar -->
         <% if current_user.avatar.attached? %>
           <%= image_tag current_user.avatar.variant(resize_to_fill: [96, 96]),
-                class: "rounded-circle border",
+                class: "rounded-circle border flex-shrink-0",
                 style: "width:96px;height:96px;object-fit:cover;" %>
         <% else %>
-          <div class="rounded-circle bg-secondary-subtle d-flex align-items-center justify-content-center border"
+          <div class="rounded-circle bg-secondary-subtle d-flex align-items-center justify-content-center border flex-shrink-0"
                style="width:96px;height:96px;">
-            <i class="bi bi-person fs-2"></i>
+            <i class="bi bi-person fs-2 text-muted"></i>
           </div>
         <% end %>
 
+        <!-- Info -->
         <div class="flex-grow-1">
-          <div class="text-muted small">Email</div>
-          <div class="fw-semibold"><%= current_user.email %></div>
+          <div class="fw-bold fs-5 mb-1">
+            <%= current_user.display_name %>
+            <% if current_user.email_verified? %>
+              <i class="bi bi-patch-check-fill text-primary ms-1" title="Email đã xác minh" style="font-size:14px;"></i>
+            <% end %>
+          </div>
+          <div class="text-muted small mb-2"><%= current_user.email %></div>
 
-          <div class="mt-3 text-muted small">Tên hiển thị</div>
-          <div class="fw-semibold"><%= current_user.name.presence || "(Chưa có)" %></div>
+          <!-- Role badges -->
+          <div class="d-flex flex-wrap gap-2">
+            <% if current_user.seller? %>
+              <span class="badge text-bg-warning rounded-pill px-3 py-2">
+                <i class="bi bi-shop me-1"></i>Người bán
+              </span>
+            <% end %>
+            <span class="badge text-bg-light border rounded-pill px-3 py-2 text-dark">
+              <i class="bi bi-bag me-1"></i>Người mua
+            </span>
+            <% if current_user.cs? || current_user.admin? %>
+              <span class="badge text-bg-primary rounded-pill px-3 py-2">
+                <i class="bi bi-shield-fill me-1"></i><%= current_user.admin? ? "Admin" : "CS" %>
+              </span>
+            <% end %>
+          </div>
+
+          <div class="text-muted small mt-2">
+            <i class="bi bi-calendar3 me-1"></i>Tham gia từ <%= current_user.created_at.strftime("%m/%Y") %>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Seller profile panel — hiện khi là người bán -->
+  <% if current_user.seller? %>
+    <%
+      total_listings = current_user.listings.count
+      sold_count     = current_user.listings.joins(:order).merge(Order.where.not(status: :cancelled)).count
+      active_count   = current_user.listings.where.not(published_at: nil).left_outer_joins(:order).where(orders: { id: nil }).count
+    %>
+
+    <div class="card border-0 shadow-sm mb-4" style="border-radius:16px; overflow:hidden;">
+      <!-- Cover gradient -->
+      <div style="height:100px; background:linear-gradient(135deg,#c88a1c 0%,#8a5a00 100%); position:relative;">
+        <div class="position-absolute bottom-0 start-0 px-4 pb-3 text-white fw-semibold">
+          <i class="bi bi-shop me-2"></i>Hồ sơ người bán
+        </div>
+      </div>
+
+      <div class="card-body px-4 py-3">
+        <!-- Stats -->
+        <div class="row g-3 mb-3">
+          <div class="col-4">
+            <div class="text-center rounded-3 py-2" style="background:#f8f9fa;">
+              <div class="fw-bold fs-4 text-primary"><%= total_listings %></div>
+              <div class="text-muted" style="font-size:12px;">Đã đăng</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="text-center rounded-3 py-2" style="background:#f0fdf4;">
+              <div class="fw-bold fs-4 text-success"><%= sold_count %></div>
+              <div class="text-muted" style="font-size:12px;">Đã bán</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="text-center rounded-3 py-2" style="background:#eff6ff;">
+              <div class="fw-bold fs-4 text-info"><%= active_count %></div>
+              <div class="text-muted" style="font-size:12px;">Đang đấu giá</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-2 flex-wrap">
+          <%= link_to seller_path(current_user), class: "btn btn-primary btn-sm rounded-pill px-3" do %>
+            <i class="bi bi-eye me-1"></i>Xem hồ sơ công khai
+          <% end %>
+          <%= link_to seller_listings_path, class: "btn btn-outline-secondary btn-sm rounded-pill px-3" do %>
+            <i class="bi bi-grid me-1"></i>Quản lý sản phẩm
+          <% end %>
+          <%= link_to new_seller_listing_path, class: "btn btn-outline-primary btn-sm rounded-pill px-3" do %>
+            <i class="bi bi-plus-lg me-1"></i>Đăng sản phẩm mới
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <!-- Chưa phải người bán — gợi ý đăng sản phẩm -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius:16px; border: 2px dashed #e5e7eb !important;">
+      <div class="card-body px-4 py-4 d-flex align-items-center gap-4 flex-wrap">
+        <div class="flex-shrink-0 text-center" style="width:56px;">
+          <i class="bi bi-shop text-muted" style="font-size:2.5rem;"></i>
+        </div>
+        <div class="flex-grow-1">
+          <div class="fw-semibold mb-1">Bắt đầu bán hàng trên SnapBid</div>
+          <div class="text-muted small">Đăng sản phẩm đầu tiên của bạn và trở thành người bán. Miễn phí, dễ dàng, và an toàn.</div>
+        </div>
+        <%= link_to new_seller_listing_path, class: "btn btn-primary btn-sm rounded-pill px-4 flex-shrink-0" do %>
+          <i class="bi bi-plus-lg me-1"></i>Đăng sản phẩm
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
 </div>

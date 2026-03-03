@@ -6,6 +6,8 @@ class Listing < ApplicationRecord
   has_many_attached :images
 
   has_many :bids, dependent: :destroy
+  has_many :watchlists, dependent: :destroy
+  has_many :watchers, through: :watchlists, source: :user
   has_one :order, dependent: :restrict_with_exception
 
   enum :status, {
@@ -17,6 +19,12 @@ class Listing < ApplicationRecord
     published: 5,
     blocked: 6
   }
+
+  # Predefined condition values (used by filter dropdown + seller form)
+  CONDITIONS = %w[new like_new good fair].freeze
+
+  # Predefined gender values
+  GENDERS = %w[male female unisex].freeze
 
   scope :published, -> {
     where.not(published_at: nil).order(published_at: :desc)

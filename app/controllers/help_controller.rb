@@ -10,7 +10,7 @@ class HelpController < ApplicationController
 
   def selling; end
   def buying; end
-  def shipping; end
+  def wallet; end
   def account; end
   def policies; end
   def contact; end

@@ -33,6 +33,7 @@ class Seller::ListingsController < ApplicationController
     @listing = current_user.listings.new(listing_params)
 
     if @listing.save
+      current_user.promote_to_seller!
       redirect_to seller_listing_path(@listing), notice: "Đã tạo sản phẩm."
     else
       # flash.now[:alert] = @listing.errors.full_messages.to_sentence

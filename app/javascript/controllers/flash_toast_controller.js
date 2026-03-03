@@ -1,16 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Kết nối controller này vào phần tử chứa tất cả toast
-// Các toast con sẽ tự động show và tự dismiss sau 4 giây
 export default class extends Controller {
    connect() {
-      this.element.querySelectorAll(".toast").forEach(el => {
-         const toast = new bootstrap.Toast(el, { delay: 3000 })
-         toast.show()
-      })
+      // Show all toasts present on connect
+      this.showToasts()
 
-      // Xóa toast khỏi DOM trước khi Turbo lưu cache trang
-      // Ngăn toast cũ xuất hiện lại khi quay lại trang bằng nút Back
+      // Listen for new toasts added to this container
+      this.observer = new MutationObserver(() => this.showToasts())
+      this.observer.observe(this.element, { childList: true })
+
+      // Handler for Turbo cache
       this.beforeCacheHandler = () => {
          this.element.innerHTML = ""
       }
@@ -18,6 +17,14 @@ export default class extends Controller {
    }
 
    disconnect() {
+      if (this.observer) this.observer.disconnect()
       document.removeEventListener("turbo:before-cache", this.beforeCacheHandler)
+   }
+
+   showToasts() {
+      this.element.querySelectorAll(".toast:not(.showing):not(.show)").forEach(el => {
+         const toast = new bootstrap.Toast(el, { delay: 4000, autohide: true })
+         toast.show()
+      })
    }
 }

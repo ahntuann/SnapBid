@@ -1,0 +1,92 @@
+<div class="pt-4 pb-5" style="max-width:860px; margin:0 auto;">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h3 fw-bold mb-1">Lịch sử giao dịch Coin</h1>
+      <div class="text-muted small">Tất cả các giao dịch Coin trong tài khoản của bạn</div>
+    </div>
+    <%= link_to wallet_path, class: "btn btn-outline-secondary btn-sm rounded-pill" do %>
+      <i class="bi bi-arrow-left me-1"></i>Quay lại ví
+    <% end %>
+  </div>
+
+  <!-- Số dư -->
+  <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;">
+    <div class="card-body px-4 py-3 d-flex justify-content-between align-items-center">
+      <div>
+        <div class="text-muted small mb-1">Số dư hiện tại</div>
+        <div class="fw-bold" style="font-size:1.6rem;">
+          <i class="bi bi-coin text-warning me-1"></i>
+          <%= number_with_delimiter(current_user.coin_balance) %>
+          <span class="fs-6 fw-normal text-muted ms-1">Coin</span>
+        </div>
+      </div>
+      <%= link_to "Nạp thêm", wallet_path, class: "btn btn-primary btn-sm rounded-pill px-3" %>
+    </div>
+  </div>
+
+  <!-- Bảng giao dịch -->
+  <div class="card border-0 shadow-sm" style="border-radius:16px; overflow:hidden;">
+    <% if @transactions.empty? %>
+      <div class="card-body text-center py-5">
+        <i class="bi bi-clock-history fs-1 text-muted mb-3 d-block"></i>
+        <p class="text-muted mb-0">Chưa có giao dịch nào.</p>
+      </div>
+    <% else %>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-4">Thời gian</th>
+              <th>Phân loại</th>
+              <th>Thay đổi</th>
+              <th>Số dư sau</th>
+              <th class="pe-4">Mô tả</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @transactions.each do |tx| %>
+              <tr>
+                <td class="text-muted small ps-4 text-nowrap">
+                  <%= tx.created_at.strftime("%d/%m/%Y") %><br>
+                  <span class="opacity-75"><%= tx.created_at.strftime("%H:%M") %></span>
+                </td>
+                <td>
+                  <% badge_map = {
+                    "deposit"       => ["success",   "Nạp tiền"],
+                    "withdrawal"    => ["danger",    "Rút tiền"],
+                    "bid_fee"       => ["warning",   "Phí đặt giá"],
+                    "refund"        => ["info",      "Hoàn tiền"],
+                    "payment"       => ["secondary", "Thanh toán"],
+                    "welcome_bonus" => ["primary",   "Thưởng chào mừng"]
+                  } %>
+                  <% color, label = badge_map[tx.transaction_type] || ["light", tx.transaction_type.to_s.humanize] %>
+                  <span class="badge bg-<%= color %> bg-opacity-15 text-<%= color == "warning" ? "dark" : color %> rounded-pill px-2 py-1"
+                        style="font-size:12px;">
+                    <%= label %>
+                  </span>
+                </td>
+                <td class="fw-bold <%= tx.amount > 0 ? "text-success" : "text-danger" %>">
+                  <%= tx.amount > 0 ? "+" : "" %><%= number_with_delimiter(tx.amount) %>
+                  <span class="fw-normal text-muted small">C</span>
+                </td>
+                <td class="fw-semibold text-dark">
+                  <%= number_with_delimiter(tx.balance_after) %>
+                  <span class="text-muted small fw-normal">C</span>
+                </td>
+                <td class="small text-muted pe-4" style="max-width:220px;">
+                  <%= tx.description.presence || "—" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="px-4 py-3 border-top d-flex justify-content-center">
+        <%= paginate @transactions %>
+      </div>
+    <% end %>
+  </div>
+</div>

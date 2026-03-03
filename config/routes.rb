@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   get "/help", to: "help#index", as: :help
   get "/help/selling",  to: "help#selling",  as: :help_selling
   get "/help/buying",   to: "help#buying",   as: :help_buying
-  get "/help/shipping", to: "help#shipping", as: :help_shipping
+  get "/help/wallet",   to: "help#wallet",   as: :help_wallet
   get "/help/account",  to: "help#account",  as: :help_account
   get "/help/policies", to: "help#policies", as: :help_policies
   get "/help/contact",  to: "help#contact",  as: :help_contact
@@ -45,14 +45,21 @@ Rails.application.routes.draw do
 
   resources :listings, only: [:index, :show] do
     resources :bids, only: [:create]
+    resource :watchlist, only: [:create, :destroy]
     post :buy_now, on: :member
   end
 
   resources :orders, only: [:index, :show, :update] do
     member do
-      post :mark_paid  # buyer bấm "Tôi đã chuyển tiền"
+      post :mark_paid        # kept for backward compat
+      post :pay_with_coins   # thanh toán bằng SnapBid Coin
+      get  :status           # polling fallback – trả JSON {status, paid, ...}
     end
   end
+
+  resource :wallet, only: [:show]
+  resources :withdrawal_requests, only: [:index, :new, :create]
+  resources :coin_transactions, only: [:index]
 
   # namespace :admin do
   #   resources :orders, only: [:index, :show] do
@@ -76,6 +83,12 @@ Rails.application.routes.draw do
       member do
         post :confirm_paid  # admin bấm "Đã nhận tiền"
         patch :cancel
+      end
+    end
+    resources :withdrawal_requests, only: %i[index show] do
+      member do
+        post :approve
+        post :reject
       end
     end
   end
@@ -111,5 +124,10 @@ Rails.application.routes.draw do
     delete :destroy_avatar, on: :collection
   end
 
+  resources :sellers, only: [:show]
+
   get "/my-bids", to: "bids#mine", as: :my_bids
+
+  # SePay webhook – SePay sẽ POST vào URL này khi nhận được chuyển khoản
+  post "/webhooks/sepay", to: "webhooks/sepay#create", as: :sepay_webhook
 end

@@ -18,6 +18,7 @@ vi:
     formats:
       default: "%d/%m/%Y %H:%M"
       short: "%d/%m %H:%M"
+      long: "%H:%M, %d tháng %m năm %Y"
 
   devise:
     registrations:
@@ -179,11 +180,26 @@ vi:
     filters:
       category: "Danh mục"
       condition: "Tình trạng"
+      gender: "Giới tính"
+      price_range: "Khoảng giá"
+      price_min_placeholder: "Từ"
+      price_max_placeholder: "Đến"
       sort: "Sắp xếp"
       newest: "Mới nhất"
+      ending_soon: "Sắp kết thúc"
       price_asc: "Giá tăng dần"
       price_desc: "Giá giảm dần"
       all: "Tất cả"
+      buy_now_only: "Có giá mua ngay"
+    conditions:
+      new: "Mới 100%"
+      like_new: "Như mới"
+      good: "Tốt"
+      fair: "Bình thường"
+    genders:
+      male: "Nam"
+      female: "Nữ"
+      unisex: "Unisex"
     listing:
       price_from: "Giá khởi điểm"
       view_detail: "Xem chi tiết"

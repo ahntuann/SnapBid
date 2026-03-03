@@ -1,0 +1,112 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">Chi tiết Yêu cầu rút tiền #<%= @withdrawal_request.id %></h1>
+  <%= link_to "Quay lại", admin_withdrawal_requests_path, class: "btn btn-outline-secondary" %>
+</div>
+
+<div class="row">
+  <div class="col-md-6 mb-4">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-white fw-bold">Thông tin yêu cầu</div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <span class="text-muted">Trạng thái</span>
+            <span>
+              <% case @withdrawal_request.status %>
+              <% when "pending" %>
+                <span class="badge bg-warning text-dark fs-6">Chờ duyệt</span>
+              <% when "completed" %>
+                <span class="badge bg-success fs-6">Đã duyệt (Thành công)</span>
+              <% when "rejected" %>
+                <span class="badge bg-danger fs-6">Từ chối</span>
+              <% end %>
+            </span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <span class="text-muted">Người yêu cầu</span>
+            <span class="fw-semibold"><%= @withdrawal_request.user.name %> (<%= @withdrawal_request.user.email %>)</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <span class="text-muted">Số Coin rút</span>
+            <span class="fw-bold text-primary fs-5"><%= number_with_delimiter(@withdrawal_request.amount) %></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <span class="text-muted">Số tiền quy đổi VNĐ</span>
+            <span class="fw-bold text-danger fs-5"><%= number_to_currency(@withdrawal_request.amount * 1000, unit: "₫", precision: 0, delimiter: ".") %></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <span class="text-muted">Ngày tạo</span>
+            <span><%= @withdrawal_request.created_at.strftime("%d/%m/%Y %H:%M") %></span>
+          </li>
+          <% if @withdrawal_request.completed? && @withdrawal_request.transfer_image.attached? %>
+            <li class="list-group-item px-0">
+              <span class="text-muted d-block mb-2">Ảnh chứng từ chuyển khoản</span>
+              <%= image_tag @withdrawal_request.transfer_image, class: "img-fluid rounded border", style: "max-height: 200px" %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 mb-4">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-white fw-bold">Thông tin chuyển khoản</div>
+      <div class="card-body text-center">
+        <div class="mb-3 text-start">
+          <p class="mb-1 text-muted small">Tên ngân hàng</p>
+          <div class="fw-bold shadow-sm p-2 bg-light rounded"><%= @withdrawal_request.bank_name %></div>
+        </div>
+        <div class="mb-3 text-start">
+          <p class="mb-1 text-muted small">Số tài khoản</p>
+          <div class="fw-bold shadow-sm p-2 bg-light rounded d-flex justify-content-between align-items-center">
+            <span id="accountNumber"><%= @withdrawal_request.account_number %></span>
+            <button class="btn btn-sm btn-outline-secondary py-0" onclick="navigator.clipboard.writeText('<%= @withdrawal_request.account_number %>').then(() => alert('Đã sao chép!'))">Copy</button>
+          </div>
+        </div>
+        <div class="mb-3 text-start">
+          <p class="mb-1 text-muted small">Tên người nhận</p>
+          <div class="fw-bold shadow-sm p-2 bg-light rounded"><%= @withdrawal_request.account_name %></div>
+        </div>
+        <div class="mb-3 text-start">
+          <p class="mb-1 text-muted small">Nội dung</p>
+          <div class="fw-bold shadow-sm p-2 bg-light rounded d-flex justify-content-between align-items-center">
+            <span>Rut tien SnapBid <%= @withdrawal_request.id %></span>
+            <button class="btn btn-sm btn-outline-secondary py-0" onclick="navigator.clipboard.writeText('Rut tien SnapBid <%= @withdrawal_request.id %>').then(() => alert('Đã sao chép!'))">Copy</button>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if @withdrawal_request.pending? %>
+  <div class="card shadow-sm mt-2 border-danger-subtle">
+    <div class="card-header bg-white text-danger fw-bold border-danger-subtle">
+      Xử lý yêu cầu
+    </div>
+    <div class="card-body text-center py-4">
+      <p class="mb-4">Chỉ thao tác sau khi bạn đã kiểm tra kỹ và thực hiện chuyển khoản (nếu duyệt).</p>
+      
+      <div class="row justify-content-center">
+        <div class="col-md-5">
+          <%= button_to reject_admin_withdrawal_request_path(@withdrawal_request), method: :post, form: { data: { turbo_confirm: "Bạn có chắc chắn muốn TỪ CHỐI yêu cầu này? Hệ thống sẽ hoàn lại #{@withdrawal_request.amount} Coin cho người dùng." } }, class: "btn btn-outline-danger w-100 py-2 fw-semibold mb-3" do %>
+            <i class="bi bi-x-circle me-1"></i> Từ chối & Hoàn tiền
+          <% end %>
+        </div>
+        
+        <div class="col-md-7">
+          <%= form_with url: approve_admin_withdrawal_request_path(@withdrawal_request), method: :post, local: true, class: "border rounded p-3 bg-light text-start shadow-sm" do |f| %>
+            <div class="mb-3">
+              <%= f.label :transfer_image, "Ảnh bằng chứng chuyển khoản (bắt buộc)", class: "form-label fw-bold small text-dark" %>
+              <%= f.file_field :transfer_image, class: "form-control form-control-sm", accept: "image/*", required: true %>
+            </div>
+            
+            <%= button_tag type: "submit", data: { turbo_confirm: "Bạn đã chuyển khoản đầy đủ cho người dùng, đính kèm ảnh và muốn DUYỆT yêu cầu này?" }, class: "btn btn-success w-100 py-2 fw-semibold" do %>
+              <i class="bi bi-check-circle me-1"></i> Đã chuyển khoản & Duyệt
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
