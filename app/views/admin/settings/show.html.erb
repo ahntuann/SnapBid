@@ -1,10 +1,10 @@
-<h1>System Settings</h1>
+<h1>Cài đặt hệ thống</h1>
 
-<p><b>AI threshold:</b> <%= @settings.ai_threshold %></p>
-<p><b>Commission %:</b> <%= @settings.commission_percent %></p>
-<p><b>Min bid step:</b> <%= @settings.min_bid_step %></p>
+<p><b>Ngưỡng AI:</b> <%= @settings.ai_threshold %></p>
+<p><b>Hoa hồng %:</b> <%= @settings.commission_percent %></p>
+<p><b>Bước giá tối thiểu:</b> <%= @settings.min_bid_step %></p>
 
-<p><b>Admin QR payload (ENV):</b></p>
+<p><b>Mã QR Admin (ENV):</b></p>
 <pre><%= @admin_qr_payload %></pre>
 
-<%= link_to "Edit", edit_admin_settings_path %>
+<%= link_to "Chỉnh sửa", edit_admin_settings_path %>

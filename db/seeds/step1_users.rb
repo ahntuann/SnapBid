@@ -21,16 +21,22 @@ puts "Created/Updated CS user: #{cs_user.email}"
 seller = upsert_user!(email: "seller@test.com", name: "Seller User", role: :user)
 puts "Created/Updated seller user: #{seller.email}"
 
-["buyer1@test.com", "buyer2@test.com", "buyer3@test.com"].each_with_index do |email, idx|
-  buyer = upsert_user!(email: email, name: "Buyer #{idx+1}", role: :user)
-  puts "Created/Updated buyer user: #{buyer.email}"
-end
+# buyer1 → Nguyễn Thị Thanh Hà
+upsert_user!(email: "thanhha1990@gmail.com",  name: "Nguyễn Thị Thanh Hà", role: :user).tap { |u| puts "Created/Updated: #{u.email}" }
+# buyer2 → Trần Minh Quân
+upsert_user!(email: "minhquan557@gmail.com",  name: "Trần Minh Quân",       role: :user).tap { |u| puts "Created/Updated: #{u.email}" }
+# buyer3 → Lê Phương Linh
+upsert_user!(email: "linhlinh98@gmail.com",   name: "Lê Phương Linh",      role: :user).tap { |u| puts "Created/Updated: #{u.email}" }
+# buyer4 → Hoàng Văn Đức
+upsert_user!(email: "vanduc.hvd@gmail.com",   name: "Hoàng Văn Đức",       role: :user).tap { |u| puts "Created/Updated: #{u.email}" }
+# buyer5 → Phạm Thị Nga
+upsert_user!(email: "ngapham2001@gmail.com",  name: "Phạm Thị Nga",        role: :user).tap { |u| puts "Created/Updated: #{u.email}" }
 
-test_user1 = upsert_user!(email: "test1@test.com", name: "Test 1 900 coins", role: :user)
+test_user1 = upsert_user!(email: "huongngo88@gmail.com",  name: "Ngô Thị Hương", role: :user)
 test_user1.update!(snapbid_coins: 900)
 puts "Created/Updated test user 1: #{test_user1.email}"
 
-test_user2 = upsert_user!(email: "test2@test.com", name: "Test 2 900 coins", role: :user)
+test_user2 = upsert_user!(email: "tuanbv2005@gmail.com",  name: "Bùi Văn Tuấn",  role: :user)
 test_user2.update!(snapbid_coins: 900)
 puts "Created/Updated test user 2: #{test_user2.email}"
 

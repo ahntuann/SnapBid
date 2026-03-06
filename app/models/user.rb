@@ -5,9 +5,6 @@ class User < ApplicationRecord
 
   enum :role, { user: 0, cs: 1, admin: 2 }
 
-  scope :sellers, -> { where(is_seller: true) }
-  scope :buyers,  -> { where(is_seller: false) }
-
   has_many :otps, dependent: :destroy
   has_many :listings
   has_many :orders, foreign_key: :buyer_id, dependent: :nullify
@@ -25,24 +22,6 @@ class User < ApplicationRecord
 
   after_initialize do
     self.role ||= :user if new_record?
-  end
-
-  # ── Seller / Buyer helpers ────────────────────────────────────────────────
-  def seller?
-    is_seller?
-  end
-
-  def buyer?
-    !is_seller
-  end
-
-  # Upgrades this user to seller (idempotent)
-  def promote_to_seller!
-    update!(is_seller: true) unless is_seller?
-  end
-
-  def display_name
-    name.presence || email.split("@").first
   end
 
   # ── Coin helpers ─────────────────────────────────────────────────────────

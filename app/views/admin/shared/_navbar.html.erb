@@ -5,7 +5,7 @@
     <span class="brand-icon"><i class="bi bi-hammer"></i></span>
     <span class="brand-text">
       <span class="brand-name">SnapBid</span>
-      <span class="brand-sub">Admin Panel</span>
+      <span class="brand-sub">Quản trị</span>
     </span>
   <% end %>
 
@@ -17,7 +17,7 @@
     <li>
       <%= link_to admin_root_path,
             class: "admin-nav-link #{"active" if controller_name == "dashboard"}" do %>
-        <i class="bi bi-grid-1x2"></i> Dashboard
+        <i class="bi bi-grid-1x2"></i> Bảng điều khiển
       <% end %>
     </li>
   </ul>
@@ -29,25 +29,25 @@
     <li>
       <%= link_to admin_listings_path,
             class: "admin-nav-link #{"active" if controller_name == "listings"}" do %>
-        <i class="bi bi-tag"></i> Listings
+        <i class="bi bi-tag"></i> Sản phẩm
       <% end %>
     </li>
     <li>
       <%= link_to admin_orders_path,
             class: "admin-nav-link #{"active" if controller_name == "orders"}" do %>
-        <i class="bi bi-bag-check"></i> Orders
+        <i class="bi bi-bag-check"></i> Đơn hàng
       <% end %>
     </li>
     <li>
       <%= link_to admin_users_path,
             class: "admin-nav-link #{"active" if controller_name == "users"}" do %>
-        <i class="bi bi-people"></i> Users
+        <i class="bi bi-people"></i> Người dùng
       <% end %>
     </li>
     <li>
       <%= link_to admin_categories_path,
             class: "admin-nav-link #{"active" if controller_name == "categories"}" do %>
-        <i class="bi bi-grid"></i> Categories
+        <i class="bi bi-grid"></i> Danh mục
       <% end %>
     </li>
     <li>
@@ -59,7 +59,7 @@
     <li>
       <%= link_to admin_settings_path,
             class: "admin-nav-link #{"active" if controller_name == "settings"}" do %>
-        <i class="bi bi-sliders"></i> Settings
+        <i class="bi bi-sliders"></i> Cài đặt
       <% end %>
     </li>
     <li>
