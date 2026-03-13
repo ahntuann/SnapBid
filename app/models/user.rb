@@ -24,6 +24,19 @@ class User < ApplicationRecord
     self.role ||= :user if new_record?
   end
 
+  # ── Account lock helpers ────────────────────────────────────────────────
+  def locked?
+    locked_at.present?
+  end
+
+  def lock_account!(reason: nil)
+    update!(locked_at: Time.current)
+  end
+
+  def unlock_account!
+    update!(locked_at: nil)
+  end
+
   # ── Coin helpers ─────────────────────────────────────────────────────────
   def coin_balance
     snapbid_coins
@@ -32,6 +45,7 @@ class User < ApplicationRecord
   # Ghi nhận thay đổi coin và tạo log CoinTransaction
   def process_coin_transaction!(amount:, transaction_type:, description: nil, subject: nil)
     return if amount == 0
+    raise "User account is locked" if locked?
     
     ActiveRecord::Base.transaction do
       if amount > 0

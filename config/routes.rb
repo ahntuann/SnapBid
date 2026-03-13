@@ -77,7 +77,11 @@ Rails.application.routes.draw do
         patch :unblock
       end
     end
-    resources :users, only: %i[index show]
+    resources :users, only: %i[index show] do
+      post :adjust_coins, on: :member
+      post :lock_account, on: :member
+      post :unlock_account, on: :member
+    end
     resources :categories
     resources :orders, only: %i[index show] do
       member do

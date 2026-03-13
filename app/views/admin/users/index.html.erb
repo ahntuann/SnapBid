@@ -24,8 +24,9 @@
       <thead>
         <tr>
           <th>User</th>
+          <th>Coin</th>
           <th>Vai trò</th>
-          <th>Ngày tạo</th>
+          <th>Trạng thái</th>
           <th class="text-end">Hành động</th>
         </tr>
       </thead>
@@ -39,13 +40,35 @@
               <div style="font-size:12px;color:#94a3b8;"><%= u.email %></div>
             </td>
             <td>
+              <div class="fw-semibold" style="color:#0f766e;"><%= number_with_delimiter(u.snapbid_coins) %> coin</div>
+              <div style="font-size:12px;color:#94a3b8;">Deposit ref: <%= u.deposit_ref %></div>
+            </td>
+            <td>
               <% if u.admin? %>
                 <span class="admin-badge blocked">Admin</span>
               <% else %>
                 <span class="admin-badge na">User</span>
               <% end %>
             </td>
-            <td style="font-size:13px;color:#64748b;"><%= u.created_at.strftime("%d/%m/%Y") %></td>
+            <td>
+              <div class="d-flex flex-column gap-1">
+                <% if u.locked? %>
+                  <span class="admin-badge blocked" style="background-color:#dc2626;"><i class="bi bi-lock"></i> Đã khóa</span>
+                <% else %>
+                  <span class="admin-badge active" style="background-color:#10b981;"><i class="bi bi-unlock"></i> Hoạt động</span>
+                <% end %>
+
+                <% if u.email_verified? %>
+                  <span class="admin-badge active">Email ✓</span>
+                <% else %>
+                  <span class="admin-badge blocked">Email ✗</span>
+                <% end %>
+
+                <% if u.is_seller? %>
+                  <span class="admin-badge na">Seller</span>
+                <% end %>
+              </div>
+            </td>
             <td class="text-end">
               <%= link_to admin_user_path(u), class: "admin-btn admin-btn-outline admin-btn-sm" do %>
                 <i class="bi bi-eye"></i> Xem
@@ -56,7 +79,7 @@
 
         <% if @users.blank? %>
           <tr>
-            <td colspan="4" style="text-align:center;color:#94a3b8;padding:40px 0;">
+            <td colspan="5" style="text-align:center;color:#94a3b8;padding:40px 0;">
               <i class="bi bi-people" style="font-size:28px;display:block;margin-bottom:8px;"></i>
               Không có user nào.
             </td>
