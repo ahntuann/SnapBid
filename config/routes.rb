@@ -112,6 +112,7 @@ Rails.application.routes.draw do
   end
 
   namespace :seller do
+    get :reports, to: "reports#index"
     resources :listings do
       post :submit_ai_verification, on: :member
     end

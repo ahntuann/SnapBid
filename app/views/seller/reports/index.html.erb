@@ -1,0 +1,291 @@
+<div class="container pt-5 mt-4" style="max-width: 1180px;">
+  <% revenue_cmp = @comparisons[:revenue] %>
+  <% avg_cmp = @comparisons[:average_order_value] %>
+  <% sell_rate_cmp = @comparisons[:sell_through_rate] %>
+  <% payment_cmp = @comparisons[:payment_completion_rate] %>
+  <% sold_cmp = @comparisons[:sold_count] %>
+  <% active_cmp = @comparisons[:active_count] %>
+
+  <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-4">
+    <div>
+      <h1 class="h3 mb-1">Phân tích và Báo cáo</h1>
+      <div class="text-muted">Theo dõi hiệu suất bán hàng của bạn trong <%= @range_label.downcase %>.</div>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+      <%= link_to "Sản phẩm của tôi", seller_listings_path, class: "btn btn-outline-secondary btn-sm" %>
+      <%= link_to "Thêm sản phẩm", new_seller_listing_path, class: "btn btn-primary btn-sm" %>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2 flex-wrap mb-4">
+    <% [["7d", "7 ngày"], ["30d", "30 ngày"], ["90d", "90 ngày"], ["all", "Toàn thời gian"]].each do |value, label| %>
+      <%= link_to label,
+            seller_reports_path(range: value),
+            class: "btn btn-sm #{value == @range ? 'btn-dark' : 'btn-outline-secondary'} rounded-pill px-3" %>
+    <% end %>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="card border-0 shadow-sm h-100" style="border-radius:18px;">
+        <div class="card-body">
+          <div class="text-muted small mb-2">Doanh thu ước tính</div>
+          <div class="h3 mb-1 fw-bold text-success"><%= number_to_currency(@gross_revenue, unit: "", precision: 0, delimiter: ".") %> đ</div>
+          <div class="small text-muted">Từ <%= @sold_count %> đơn thành công</div>
+          <div class="small mt-2 <%= revenue_cmp[:direction] >= 0 ? 'text-success' : 'text-danger' %>">
+            <i class="bi <%= revenue_cmp[:direction] >= 0 ? 'bi-arrow-up-right' : 'bi-arrow-down-right' %>"></i>
+            <% if revenue_cmp[:percent].nil? %>
+              Mới phát sinh so với <%= @comparison_label || 'kỳ trước' %>
+            <% else %>
+              <%= revenue_cmp[:percent].abs %>% so với <%= @comparison_label %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="card border-0 shadow-sm h-100" style="border-radius:18px;">
+        <div class="card-body">
+          <div class="text-muted small mb-2">Giá trị đơn trung bình</div>
+          <div class="h3 mb-1 fw-bold text-primary"><%= number_to_currency(@average_order_value, unit: "", precision: 0, delimiter: ".") %> đ</div>
+          <div class="small text-muted">Mỗi đơn hàng đã chốt</div>
+          <div class="small mt-2 <%= avg_cmp[:direction] >= 0 ? 'text-success' : 'text-danger' %>">
+            <i class="bi <%= avg_cmp[:direction] >= 0 ? 'bi-arrow-up-right' : 'bi-arrow-down-right' %>"></i>
+            <% if avg_cmp[:percent].nil? %>
+              Chưa có mốc so sánh trước đó
+            <% else %>
+              <%= avg_cmp[:percent].abs %>% so với <%= @comparison_label %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="card border-0 shadow-sm h-100" style="border-radius:18px;">
+        <div class="card-body">
+          <div class="text-muted small mb-2">Tỷ lệ bán thành công</div>
+          <div class="h3 mb-1 fw-bold text-warning"><%= @sell_through_rate %>%</div>
+          <div class="small text-muted"><%= @sold_count %> / <%= @published_count %> sản phẩm công khai</div>
+          <div class="small mt-2 <%= sell_rate_cmp[:direction] >= 0 ? 'text-success' : 'text-danger' %>">
+            <i class="bi <%= sell_rate_cmp[:direction] >= 0 ? 'bi-arrow-up-right' : 'bi-arrow-down-right' %>"></i>
+            <%= sell_rate_cmp[:delta].to_i.abs %> điểm % so với <%= @comparison_label || 'kỳ trước' %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="card border-0 shadow-sm h-100" style="border-radius:18px;">
+        <div class="card-body">
+          <div class="text-muted small mb-2">Tỷ lệ hoàn tất thanh toán</div>
+          <div class="h3 mb-1 fw-bold text-dark"><%= @payment_completion_rate %>%</div>
+          <div class="small text-muted"><%= @paid_orders_count %> / <%= @sold_count %> đơn đã thanh toán</div>
+          <div class="small mt-2 <%= payment_cmp[:direction] >= 0 ? 'text-success' : 'text-danger' %>">
+            <i class="bi <%= payment_cmp[:direction] >= 0 ? 'bi-arrow-up-right' : 'bi-arrow-down-right' %>"></i>
+            <%= payment_cmp[:delta].to_i.abs %> điểm % so với <%= @comparison_label || 'kỳ trước' %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+      <div class="rounded-4 border bg-white p-3 h-100 shadow-sm">
+        <div class="small text-muted mb-1">So sánh số đơn đã bán</div>
+        <div class="d-flex align-items-end gap-2">
+          <div class="h4 mb-0 fw-bold text-success"><%= @sold_count %></div>
+          <div class="small <%= sold_cmp[:direction] >= 0 ? 'text-success' : 'text-danger' %>">
+            <%= sold_cmp[:delta].to_i >= 0 ? '+' : '' %><%= sold_cmp[:delta].to_i %> so với <%= @comparison_label || 'kỳ trước' %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="rounded-4 border bg-white p-3 h-100 shadow-sm">
+        <div class="small text-muted mb-1">So sánh số listing đang hoạt động</div>
+        <div class="d-flex align-items-end gap-2">
+          <div class="h4 mb-0 fw-bold text-info"><%= @active_count %></div>
+          <div class="small <%= active_cmp[:direction] >= 0 ? 'text-success' : 'text-danger' %>">
+            <%= active_cmp[:delta].to_i >= 0 ? '+' : '' %><%= active_cmp[:delta].to_i %> so với <%= @comparison_label || 'kỳ trước' %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="rounded-4 border bg-white p-3 h-100 shadow-sm">
+        <div class="small text-muted mb-1">Tín hiệu thanh toán</div>
+        <div class="d-flex align-items-end gap-2">
+          <div class="h4 mb-0 fw-bold text-dark"><%= @paid_orders_count %></div>
+          <div class="small text-muted">đơn đã hoàn tất trong <%= @range_label.downcase %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-lg-8">
+      <div class="card border-0 shadow-sm h-100" style="border-radius:18px;">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <div class="fw-semibold">Tổng quan hiệu suất</div>
+              <div class="text-muted small">Tóm tắt tình trạng listings trong <%= @range_label.downcase %></div>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-6 col-md-3">
+              <div class="rounded-3 p-3 h-100" style="background:#f8f9fa;">
+                <div class="text-muted small">Sản phẩm công khai</div>
+                <div class="fw-bold fs-3 text-primary"><%= @published_count %></div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="rounded-3 p-3 h-100" style="background:#eff6ff;">
+                <div class="text-muted small">Đang đấu giá</div>
+                <div class="fw-bold fs-3 text-info"><%= @active_count %></div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="rounded-3 p-3 h-100" style="background:#f0fdf4;">
+                <div class="text-muted small">Đã bán</div>
+                <div class="fw-bold fs-3 text-success"><%= @sold_count %></div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="rounded-3 p-3 h-100" style="background:#fff7ed;">
+                <div class="text-muted small">Sắp kết thúc 24h</div>
+                <div class="fw-bold fs-3" style="color:#c2410c;"><%= @ending_soon_count %></div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="rounded-3 border p-3 h-100">
+                <div class="fw-semibold mb-2">Cần chú ý</div>
+                <div class="d-flex justify-content-between small mb-2">
+                  <span class="text-muted">Đơn thanh toán thất bại</span>
+                  <span class="fw-semibold text-danger"><%= @cancelled_count %></span>
+                </div>
+                <div class="d-flex justify-content-between small">
+                  <span class="text-muted">Đơn chưa thanh toán</span>
+                  <span class="fw-semibold"><%= @sold_count - @paid_orders_count %></span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="rounded-3 border p-3 h-100">
+                <div class="fw-semibold mb-2">Hành động nhanh</div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <%= link_to "Xem sản phẩm đang bán", seller_listings_path(tab: "active"), class: "btn btn-sm btn-outline-primary" %>
+                  <%= link_to "Xem đơn đã bán", seller_listings_path(tab: "sold"), class: "btn btn-sm btn-outline-success" %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+      <div class="card border-0 shadow-sm h-100" style="border-radius:18px;">
+        <div class="card-body">
+          <div class="fw-semibold mb-3">Danh mục nổi bật</div>
+
+          <% if @top_categories.empty? %>
+            <div class="text-muted small">Chưa đủ dữ liệu để phân tích danh mục.</div>
+          <% else %>
+            <% max_count = @top_categories.map(&:last).max.to_f %>
+            <% @top_categories.each do |category_name, count| %>
+              <div class="mb-3">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span><%= category_name %></span>
+                  <span class="fw-semibold"><%= count %></span>
+                </div>
+                <div class="progress" role="progressbar" aria-valuenow="<%= count %>" aria-valuemin="0" aria-valuemax="<%= max_count.to_i %>" style="height:8px;">
+                  <div class="progress-bar bg-warning" style="width:<%= max_count.zero? ? 0 : ((count / max_count) * 100).round %>%;"></div>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-xl-7">
+      <div class="card border-0 shadow-sm h-100" style="border-radius:18px;">
+        <div class="card-body">
+          <div class="fw-semibold mb-3">Giao dịch gần đây</div>
+
+          <% if @recent_orders.empty? %>
+            <div class="text-muted small">Chưa có giao dịch nào trong giai đoạn này.</div>
+          <% else %>
+            <div class="table-responsive">
+              <table class="table align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Sản phẩm</th>
+                    <th>Người mua</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Giá trị</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @recent_orders.each do |order| %>
+                    <tr>
+                      <td>
+                        <div class="fw-semibold"><%= order.listing.title %></div>
+                        <div class="small text-muted"><%= l(order.created_at, format: :short) rescue order.created_at.strftime("%d/%m/%Y %H:%M") %></div>
+                      </td>
+                      <td><%= order.buyer.display_name %></td>
+                      <td>
+                        <span class="badge rounded-pill <%= order.paid? ? 'text-bg-success' : 'text-bg-warning' %>">
+                          <%= order.paid? ? 'Đã thanh toán' : 'Chờ thanh toán' %>
+                        </span>
+                      </td>
+                      <td class="text-end fw-semibold"><%= number_to_currency(order.total_price, unit: "", precision: 0, delimiter: ".") %> đ</td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-5">
+      <div class="card border-0 shadow-sm h-100" style="border-radius:18px;">
+        <div class="card-body">
+          <div class="fw-semibold mb-3">Listings gần đây</div>
+
+          <% if @recent_listings.empty? %>
+            <div class="text-muted small">Chưa có listing nào trong giai đoạn này.</div>
+          <% else %>
+            <div class="d-flex flex-column gap-3">
+              <% @recent_listings.each do |listing| %>
+                <div class="rounded-3 border p-3">
+                  <div class="d-flex justify-content-between gap-2">
+                    <div>
+                      <div class="fw-semibold"><%= link_to listing.title, seller_listing_path(listing), class: "text-decoration-none" %></div>
+                      <div class="small text-muted"><%= listing.category&.name.presence || "Chưa phân loại" %> • <%= listing.created_at.strftime("%d/%m/%Y") %></div>
+                    </div>
+                    <span class="badge rounded-pill <%= listing.order.present? ? 'text-bg-success' : 'text-bg-primary' %>">
+                      <%= listing.order.present? ? 'Đã bán' : 'Đang bán' %>
+                    </span>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

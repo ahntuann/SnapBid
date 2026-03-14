@@ -44,6 +44,14 @@
                 "aria-haspopup": "true" %>
           </li>
 
+          <% if current_user.seller? %>
+            <li class="nav-item">
+              <%= link_to "Báo Cáo", seller_reports_path,
+                  class: "nav-link",
+                  aria: { label: "Phân tích và báo cáo dành cho người bán" } %>
+            </li>
+          <% end %>
+
           <li class="nav-item">
             <%= link_to "Đấu Giá Của Tôi", my_bids_path,
                 class: "nav-link js-mega-trigger",
@@ -244,6 +252,7 @@
         <div class="apple-mega-col">
           <div class="apple-mega-title">Bán hàng</div>
           <a class="apple-mega-link" href="<%= seller_listings_path %>">Đăng bán & quản lý</a>
+          <a class="apple-mega-link" href="<%= seller_reports_path %>">Phân tích & báo cáo</a>
           <a class="apple-mega-link" href="#">Tạo phiên đấu giá</a>
           <a class="apple-mega-link" href="#">Sản phẩm nháp</a>
           <a class="apple-mega-link" href="#">Lịch sử bán</a>
