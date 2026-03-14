@@ -28,6 +28,7 @@ module Webhooks
 
       # Chỉ xử lý giao dịch NHẬN tiền
       unless payload["transferType"] == "in"
+        Rails.logger.info("[SePay Webhook] Not an inbound transfer, ignoring")
         return render json: { success: false, message: "Not an inbound transfer" }, status: :ok
       end
 
@@ -35,9 +36,11 @@ module Webhooks
       content         = payload["content"].to_s.upcase
       amount_vnd      = payload["transferAmount"].to_i
 
+      Rails.logger.info("[SePay Webhook] Processing: TxID=#{transaction_id}, Amount=#{amount_vnd} VND, Content=#{content}")
+
       # Tránh xử lý trùng
       if CoinDeposit.exists?(sepay_transaction_id: transaction_id)
-        Rails.logger.info("[SePay Webhook] Transaction #{transaction_id} already processed")
+        Rails.logger.info("[SePay Webhook] Transaction #{transaction_id} already processed, skipping")
         return render json: { success: true, message: "Already processed" }, status: :ok
       end
 
@@ -48,18 +51,23 @@ module Webhooks
         return render json: { success: false, message: "No deposit ref found" }, status: :ok
       end
 
-      user = User.find_by(id: match[1].to_i)
+      user_id = match[1].to_i
+      user = User.find_by(id: user_id)
       unless user
-        Rails.logger.warn("[SePay Webhook] User not found for ref #{match[0]}")
+        Rails.logger.warn("[SePay Webhook] User ##{user_id} not found")
         return render json: { success: false, message: "User not found" }, status: :ok
       end
 
+      Rails.logger.info("[SePay Webhook] Found user ##{user.id} (#{user.email}), Amount: #{amount_vnd} VND")
+
       if amount_vnd < User::COIN_EXCHANGE_RATE
-        Rails.logger.warn("[SePay Webhook] Amount #{amount_vnd} too small to credit any coins")
+        Rails.logger.warn("[SePay Webhook] Amount #{amount_vnd} too small to credit any coins (threshold: #{User::COIN_EXCHANGE_RATE})")
         return render json: { success: false, message: "Amount too small" }, status: :ok
       end
 
       coins = user.credit_coins!(amount_vnd: amount_vnd, transaction_id: transaction_id)
+
+      Rails.logger.info("[SePay Webhook] Successfully credited #{coins} coins to user ##{user.id}, new balance: #{user.reload.snapbid_coins}")
 
       NotificationService.notify!(
         recipient: user,
@@ -67,16 +75,24 @@ module Webhooks
         action: :payment_confirmed,
         notifiable: nil,
         url: "/wallet",
-        message: "Nạp thành công #{coins} SnapBid Coin (#{ActiveSupport::NumberHelper.number_to_delimited(amount_vnd)}₫). Số dư hiện tại: #{user.reload.coin_balance} coin."
+        message: "Nạp thành công #{coins} SnapBid Coin (#{ActionController::Base.helpers.number_with_delimiter(amount_vnd)}₫). Số dư hiện tại: #{user.coin_balance} coin."
       )
 
-      Rails.logger.info("[SePay Webhook] Credited #{coins} coins to user ##{user.id}")
+      # Attempt auto-pay on any pending orders the user might have
+      processed_orders = 0
+      user.orders.pending.find_each do |order|
+        if order.auto_pay_if_possible!
+          processed_orders += 1
+          Rails.logger.info("[SePay Webhook] Auto-paid Order ##{order.id} for user ##{user.id}")
+        end
+      end
 
-      render json: { success: true, message: "Credited #{coins} coins to user ##{user.id}" }, status: :ok
+      render json: { success: true, message: "Credited #{coins} coins to user ##{user.id}. Auto-paid #{processed_orders} orders.", coins: coins, balance: user.snapbid_coins }, status: :ok
 
     rescue => e
-      Rails.logger.error("[SePay Webhook] Error: #{e.message}\n#{e.backtrace.first(5).join("\n")}")
-      render json: { success: false, message: "Internal error" }, status: :ok
+      Rails.logger.error("[SePay Webhook] Error: #{e.message}")
+      Rails.logger.error("[SePay Webhook] Backtrace: #{e.backtrace[0..4].join("\n")}")
+      render json: { success: false, message: "Internal error: #{e.message}" }, status: :ok
     end
 
     private

@@ -5,11 +5,19 @@ module Admin
     before_action :set_order, only: [:show, :confirm_paid, :cancel]
 
     def index
-      @orders = Order.order(created_at: :desc)
-      @orders = @orders.where(kind: Order.kinds[params[:kind]]) if params[:kind].present?
-      @orders = @orders.where(status: Order.statuses[params[:status]]) if params[:status].present?
+      base = Order.all
+      base = base.where(kind: Order.kinds[params[:kind]]) if params[:kind].present?
+      base = base.where(status: Order.statuses[params[:status]]) if params[:status].present?
 
-      @orders = @orders.page(params[:page]).per(10)
+      @stats = {
+        total:     Order.count,
+        pending:   Order.pending.count,
+        paid:      Order.paid.count,
+        cancelled: Order.cancelled.count,
+        revenue:   Order.paid.sum(:price)
+      }
+
+      @orders = base.order(created_at: :desc).page(params[:page]).per(10)
     end
 
     def show

@@ -66,5 +66,9 @@ class HomeController < ApplicationController
 
     @conditions = Listing::CONDITIONS
     @listings = scope.page(params[:page]).per(12)
+
+    # Additional sections at the bottom
+    @daily_discoveries = Listing.published.order(Arel.sql('RANDOM()')).limit(12)
+    @you_may_like = Listing.published.order(Arel.sql('RANDOM()')).limit(12)
   end
 end

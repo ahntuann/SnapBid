@@ -6,7 +6,6 @@ class User < ApplicationRecord
   enum :role, { user: 0, cs: 1, admin: 2 }
 
   scope :sellers, -> { where(is_seller: true) }
-  scope :buyers,  -> { where(is_seller: false) }
 
   has_many :otps, dependent: :destroy
   has_many :listings
@@ -27,22 +26,33 @@ class User < ApplicationRecord
     self.role ||= :user if new_record?
   end
 
-  # ── Seller / Buyer helpers ────────────────────────────────────────────────
+  # ── Display helpers ──────────────────────────────────────────────────────
+  def display_name
+    name.presence || email
+  end
+
   def seller?
     is_seller?
   end
 
-  def buyer?
-    !is_seller
-  end
-
-  # Upgrades this user to seller (idempotent)
   def promote_to_seller!
-    update!(is_seller: true) unless is_seller?
+    return self if seller?
+
+    update!(is_seller: true)
+    self
   end
 
-  def display_name
-    name.presence || email.split("@").first
+  # ── Account lock helpers ────────────────────────────────────────────────
+  def locked?
+    locked_at.present?
+  end
+
+  def lock_account!(reason: nil)
+    update!(locked_at: Time.current)
+  end
+
+  def unlock_account!
+    update!(locked_at: nil)
   end
 
   # ── Coin helpers ─────────────────────────────────────────────────────────
@@ -51,8 +61,10 @@ class User < ApplicationRecord
   end
 
   # Ghi nhận thay đổi coin và tạo log CoinTransaction
-  def process_coin_transaction!(amount:, transaction_type:, description: nil, subject: nil)
+  # force: true - bypass lock check (dùng cho admin/webhook)
+  def process_coin_transaction!(amount:, transaction_type:, description: nil, subject: nil, force: false)
     return if amount == 0
+    raise "User account is locked" if locked? && !force
     
     ActiveRecord::Base.transaction do
       if amount > 0
@@ -78,7 +90,8 @@ class User < ApplicationRecord
   end
 
   # Credit coins sau khi nhận được VND (1000 VND = 1 coin)
-  def credit_coins!(amount_vnd:, transaction_id: nil)
+  # force: true - bypass lock check (dùng cho webhook)
+  def credit_coins!(amount_vnd:, transaction_id: nil, force: true)
     coins = (amount_vnd.to_i / COIN_EXCHANGE_RATE).to_i
     return 0 if coins <= 0
 
@@ -87,6 +100,7 @@ class User < ApplicationRecord
         amount: coins,
         transaction_type: :deposit,
         description: "Nạp #{coins} coin từ chuyển khoản",
+        force: force
       )
       coin_deposits.create!(
         amount_vnd: amount_vnd.to_i,
@@ -114,13 +128,18 @@ class User < ApplicationRecord
   end
 
   def coins_spent_on_listing(listing_id)
-    count = bids.where(listing_id: listing_id).count
-    return 0 if count == 0
-    5 + (count - 1) * 1
+    listing = listing_id.is_a?(Listing) ? listing_id : Listing.find_by(id: listing_id)
+    return 0 unless listing
+    return 0 unless bids.where(listing_id: listing.id).exists?
+
+    listing.first_bid_fee_coins
   end
 
   def coins_needed_for_next_bid(listing_id)
-    bids.where(listing_id: listing_id).exists? ? 1 : 5
+    listing = listing_id.is_a?(Listing) ? listing_id : Listing.find_by(id: listing_id)
+    return 0 unless listing
+
+    bids.where(listing_id: listing.id).exists? ? 0 : listing.first_bid_fee_coins
   end
 
   def email_verified?

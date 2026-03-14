@@ -1,20 +1,20 @@
-<h1>Edit Settings</h1>
+<h1>Chỉnh sửa cài đặt</h1>
 
 <%= form_with model: @settings, url: admin_settings_path do |f| %>
   <div>
-    <%= f.label :ai_threshold %><br>
+    <%= f.label :ai_threshold, "Ngưỡng AI" %><br>
     <%= f.number_field :ai_threshold, step: 0.01 %>
   </div>
 
   <div>
-    <%= f.label :commission_percent %><br>
+    <%= f.label :commission_percent, "Hoa hồng %" %><br>
     <%= f.number_field :commission_percent, step: 0.01 %>
   </div>
 
   <div>
-    <%= f.label :min_bid_step %><br>
+    <%= f.label :min_bid_step, "Bước giá tối thiểu" %><br>
     <%= f.number_field :min_bid_step, step: 1 %>
   </div>
 
-  <%= f.submit "Save" %>
+  <%= f.submit "Lưu" %>
 <% end %>

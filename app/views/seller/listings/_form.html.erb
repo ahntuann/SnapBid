@@ -1,8 +1,7 @@
-<%= form_with model: [:seller, listing], multipart: true, data: { turbo: false } do |f| %>
-  
+<%= form_with model: [:seller, listing], multipart: true, data: { turbo: false }, id: "listingStepperForm" do |f| %>
   <%# --- PHẦN HIỂN THỊ LỖI --- %>
   <% if listing.errors.any? %>
-    <div class="alert alert-danger shadow-sm">
+    <div class="alert alert-danger shadow-sm mb-4">
       <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill"></i> Có lỗi xảy ra:</div>
       <ul class="mb-0 small">
         <% listing.errors.full_messages.each do |msg| %>
@@ -12,229 +11,440 @@
     </div>
   <% end %>
 
-  <div class="row g-4">
-    <div class="col-12 col-lg-8">
-      
-      <div class="card shadow-sm mb-4 border-primary">
-        <div class="card-header bg-primary text-white fw-bold">
-          <i class="bi bi-bag-check-fill"></i> BƯỚC 1: CHỌN MẪU TÚI
-        </div>
-        <div class="card-body bg-light">
-          <%= f.label :reference_item_id, "Bạn muốn bán loại túi nào?", class: "form-label fw-bold h5 text-dark" %>
+  <%# Stepper Progress Bar %>
+  <div class="sb-stepper-header d-flex justify-content-between mb-4 position-relative">
+    <div class="sb-step-item active" data-step="1">
+      <div class="sb-step-circle">1</div>
+      <div class="sb-step-label">Hình ảnh</div>
+    </div>
+    <div class="sb-step-item" data-step="2">
+      <div class="sb-step-circle">2</div>
+      <div class="sb-step-label">Thông tin</div>
+    </div>
+    <div class="sb-step-item" data-step="3">
+      <div class="sb-step-circle">3</div>
+      <div class="sb-step-label">Giá & Thời gian</div>
+    </div>
+    <div class="sb-step-line position-absolute top-50 start-0 w-100 translate-middle-y z-n1" style="border-top: 2px dashed #dee2e6;"></div>
+  </div>
+
+  <%# Wrapper for Card contents %>
+  <div class="card shadow-sm border-0 sb-stepper-body">
+    <div class="card-body p-4">
+
+      <%# BƯỚC 1: HÌNH ẢNH %>
+      <div class="sb-step-content active" id="step-1">
+        <h4 class="fw-bold mb-4 text-primary"><i class="bi bi-camera-fill me-2"></i>1. Ảnh sản phẩm</h4>
+
+        <div class="mb-4">
+          <%= f.label :reference_item_id, "Túi mẫu (Tùy chọn cho AI đối chiếu)", class: "form-label fw-bold" %>
           <%= f.collection_select :reference_item_id, 
                 ReferenceItem.all, :id, :name, 
-                { prompt: "-- Vui lòng chọn đúng mẫu túi --" }, 
-                { class: "form-select form-select-lg border-2 border-primary mb-2", id: "reference_select" } %>
-          <div class="form-text text-dark"><i class="bi bi-info-circle"></i> Hệ thống sẽ hiển thị 8 ảnh mẫu chuẩn Auth để bạn chụp theo.</div>
-        </div>
-      </div>
-
-      <div id="image-upload-area" class="d-none mb-4">
-        <div class="card shadow-sm border-warning">
-          <div class="card-header bg-warning text-dark fw-bold">
-            <i class="bi bi-camera-fill"></i> BƯỚC 2: CHỤP ẢNH THEO MẪU (BẮT BUỘC)
+                { prompt: "-- Chọn túi mẫu nếu có --" }, 
+                { class: "form-select form-select-lg mb-2 shadow-sm" } %>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="form-text"><i class="bi bi-info-circle"></i> Nếu bạn chọn đúng túi mẫu thì khả năng AI duyệt sẽ nhanh và chính xác hơn.</div>
+            <a href="#" class="small text-decoration-none" data-bs-toggle="collapse" data-bs-target="#missingReferenceHelp">Không tìm thấy túi mẫu?</a>
           </div>
-          <div class="card-body">
-            <div class="alert alert-warning small mb-3">
-              Bạn cần tải lên đủ <b>8 ảnh</b> tương ứng với 8 góc độ mẫu bên dưới. AI sẽ so sánh trực tiếp ảnh của bạn với ảnh mẫu để kiểm định.
+          <div class="collapse mt-2" id="missingReferenceHelp">
+            <div class="alert alert-info small mb-0">
+              <i class="bi bi-info-circle-fill me-1"></i> <strong>Không sao cả!</strong> Bạn hoàn toàn có thể bỏ trống phần này. Chỉ cần nhập chi tiết Tên và Thương Hiệu ở phần Tiêu Đề, đội ngũ quản trị hoặc hệ thống AI sẽ tự động phân loại giúp bạn.
             </div>
-            
-            <div class="row g-3" id="slots-container">
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-bold d-block">Tải Ảnh Lên <span class="text-danger">*</span></label>
+          <div class="alert alert-light border border-2 border-primary border-dashed rounded text-center p-5 position-relative sb-upload-area">
+            <i class="bi bi-images display-4 text-primary mb-3"></i>
+            <h5 class="fw-bold mb-1">Kéo thả ảnh hoặc chọn tệp</h5>
+            <p class="text-muted small mb-3">Hỗ trợ JPG, PNG, WEBP. Tối đa 20MB</p>
+            <%= f.file_field :images, multiple: true, accept: "image/*", id: "listingImagesInput", class: "stretched-link opacity-0", style: "cursor: pointer; z-index: 2;" %>
+            <button type="button" class="btn btn-primary px-4 position-relative z-1" onclick="document.getElementById('listingImagesInput').click()">Chọn ảnh ngay</button>
+          </div>
+          <%= hidden_field_tag "listing[cover_image_index]", 0, id: "listingCoverImageIndex" %>
+          <div class="form-text mt-2">
+            Chọn ảnh bìa bằng nút <strong>Đặt làm ảnh bìa</strong> trên từng ảnh preview.
+          </div>
+        </div>
+
+        <div id="imagePreviewContainer" class="row g-2 mt-3">
+          <%# Existing uploaded images in edit view %>
+          <% if listing.images.attached? %>
+            <% listing.images.each_with_index do |img, idx| %>
+              <div class="col-6 col-md-3" data-preview-card data-index="<%= idx %>">
+                <div class="ratio ratio-1x1 border rounded position-relative overflow-hidden <%= "border-primary" if idx == 0 %>">
+                  <%= image_tag img.variant(resize_to_fill: [400, 400]), class: "w-100 h-100 object-fit-cover rounded" %>
+                  <span class="badge text-bg-primary position-absolute top-0 start-0 m-2 <%= "d-none" unless idx == 0 %>" data-cover-badge>
+                    Ảnh bìa
+                  </span>
+                </div>
+                <button type="button"
+                        class="btn btn-sm btn-light border w-100 mt-2 js-cover-select"
+                        data-cover-index="<%= idx %>">
+                  Đặt làm ảnh bìa
+                </button>
               </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card shadow-sm mb-3">
-        <div class="card-header fw-bold bg-white">
-          <i class="bi bi-card-text"></i> BƯỚC 3: THÔNG TIN CHI TIẾT
-        </div>
-        <div class="card-body">
-          <div class="mb-3">
-            <%= f.label :title, "Tiêu đề tin đăng", class: "form-label" %>
-            <%= f.text_field :title, class: "form-control", placeholder: "VD: Túi Dior Lady màu hồng size M..." %>
-          </div>
-
-          <div class="row g-3 mb-3">
-            <div class="col-12 col-md-6">
-              <%= f.label :category_id, "Danh mục", class: "form-label" %>
-              <%= f.collection_select :category_id,
-                    Category.ordered, :id, :name,
-                    { include_blank: "Chọn danh mục" },
-                    { class: "form-select" } %>
-            </div>
-            <div class="col-12 col-md-6">
-              <%= f.label :condition, "Tình trạng", class: "form-label" %>
-              <%= f.select :condition,
-                    options_for_select([["Mới (New)", "new"], ["Đã sử dụng (Used)", "used"]], listing.condition),
-                    { include_blank: "Chọn tình trạng" },
-                    class: "form-select" %>
-            </div>
-          </div>
-
-          <div class="">
-            <%= f.label :seller_note, "Mô tả của người bán", class: "form-label" %>
-            <%= f.text_area :seller_note, rows: 5, class: "form-control", placeholder: "Mô tả kỹ về tình trạng, vết xước, phụ kiện đi kèm..." %>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-12 col-lg-4">
-      <div class="card shadow-sm mb-3">
-        <div class="card-header fw-bold bg-white">
-          <i class="bi bi-cash-coin"></i> THIẾT LẬP GIÁ
-        </div>
-        <div class="card-body">
-          <div class="row g-3">
-            <div class="col-12">
-              <%= f.label :start_price, "Giá khởi điểm (VND)", class: "form-label fw-bold text-success" %>
-              <%= f.number_field :start_price, class: "form-control border-success", step: "1000", placeholder: "VD: 1,000,000" %>
-            </div>
-
-            <div class="col-12">
-              <%= f.label :bid_increment, "Bước giá tối thiểu (VND)", class: "form-label" %>
-              <%= f.number_field :bid_increment, class: "form-control", step: "1000", placeholder: "VD: 50,000" %>
-            </div>
-
-            <div class="col-12">
-              <%= f.label :auction_ends_at, "Kết thúc lúc", class: "form-label" %>
-              <%= f.datetime_local_field :auction_ends_at, class: "form-control" %>
-            </div>
-
-            <hr class="my-2">
-
-            <div class="col-12">
-              <%= f.label :buy_now_price, "Giá mua ngay (Tuỳ chọn)", class: "form-label" %>
-              <%= f.number_field :buy_now_price, class: "form-control", step: "1000", placeholder: "VD: 5,000,000" %>
-              <div class="form-text small">Người mua có thể chốt đơn ngay lập tức với giá này.</div>
-            </div>
-            
-            <div class="col-12">
-              <%= f.label :reserve_price, "Giá dự phòng (Tuỳ chọn)", class: "form-label" %>
-              <%= f.number_field :reserve_price, class: "form-control", step: "1000" %>
-            </div>
-            
-            <div class="col-12">
-              <%= f.label :published_at, "Hẹn giờ đăng (Tuỳ chọn)", class: "form-label" %>
-              <%= f.datetime_local_field :published_at, class: "form-control" %>
-            </div>
-          </div>
-
-          <div class="d-grid gap-2 mt-4">
-            <%= f.submit submit_text, class: "btn btn-primary btn-lg" %>
-            <% if listing.persisted? %>
-              <%= link_to "Xem trước tin đăng", seller_listing_path(listing), class: "btn btn-outline-secondary" %>
             <% end %>
-          </div>
+          <% end %>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+          <button type="button" class="btn btn-primary btn-lg sb-next-btn px-5">Tiếp theo <i class="bi bi-arrow-right ms-1"></i></button>
         </div>
       </div>
 
-      <% if listing.persisted? %>
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <div class="fw-bold mb-2 text-primary">TRẠNG THÁI KIỂM ĐỊNH AI</div>
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="badge bg-secondary p-2"><%= listing.status_text %></span>
-              
-              <%= button_to "Gửi kiểm định ngay",
-                    submit_ai_verification_seller_listing_path(listing),
-                    method: :post,
-                    class: "btn btn-sm btn-outline-primary",
-                    disabled: listing.submitted_for_ai? %>
-            </div>
+      <%# BƯỚC 2: THÔNG TIN CHI TIẾT %>
+      <div class="sb-step-content d-none" id="step-2">
+        <h4 class="fw-bold mb-4 text-primary"><i class="bi bi-card-text me-2"></i>2. Thông tin chi tiết</h4>
 
-            <% if listing.ai_note.present? %>
-              <div class="bg-light p-2 rounded border small fst-italic">
-                <i class="bi bi-robot"></i> <b>AI Note:</b> <%= listing.ai_note %>
+        <div class="mb-4">
+          <%= f.label :title, "Tiêu đề tin đăng <span class='text-danger'>*</span>".html_safe, class: "form-label fw-bold" %>
+          <%= f.text_field :title, class: "form-control form-control-lg", placeholder: "VD: Túi Dior Lady màu hồng size M..." %>
+        </div>
+
+        <div class="mb-4">
+          <%= f.label :category_id, "Danh mục <span class='text-danger'>*</span>".html_safe, class: "form-label fw-bold d-block" %>
+          <div class="row g-2">
+            <% Category.ordered.each do |cat| %>
+              <div class="col-6 col-md-4 col-lg-3">
+                <div class="sb-category-check">
+                  <%= f.radio_button :category_id, cat.id, class: "btn-check", id: "cat_#{cat.id}" %>
+                  <label class="btn btn-outline-primary w-100 text-start d-flex align-items-center justify-content-between rounded-3 py-2 px-3" for="cat_<%= cat.id %>">
+                    <span class="fw-semibold text-truncate"><%= cat.name %></span>
+                    <i class="bi bi-check-circle-fill fs-5 d-none"></i>
+                    <i class="bi bi-circle fs-5 sb-uncheck"></i>
+                  </label>
+                </div>
               </div>
             <% end %>
           </div>
         </div>
-      <% end %>
+
+        <div class="row g-4 mb-4">
+          <div class="col-12 col-md-6">
+            <%= f.label :condition, "Tình trạng <span class='text-danger'>*</span>".html_safe, class: "form-label fw-bold" %>
+            <%= f.select :condition,
+                  options_for_select([["Mới (New)", "new"], ["Đã sử dụng (Used)", "used"]], listing.condition),
+                  { include_blank: "Chọn tình trạng" },
+                  class: "form-select form-select-lg" %>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <%= f.label :seller_note, "Mô tả của người bán", class: "form-label fw-bold" %>
+          <%= f.text_area :seller_note, rows: 6, class: "form-control", placeholder: "Mô tả kỹ về tình trạng, vết xước, phụ kiện đi kèm để người mua an tâm..." %>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+          <button type="button" class="btn btn-outline-secondary btn-lg sb-prev-btn px-4"><i class="bi bi-arrow-left me-1"></i> Quay lại</button>
+          <button type="button" class="btn btn-primary btn-lg sb-next-btn px-5">Tiếp theo <i class="bi bi-arrow-right ms-1"></i></button>
+        </div>
+      </div>
+
+      <%# BƯỚC 3: GIÁ & THỜI GIAN %>
+      <div class="sb-step-content d-none" id="step-3">
+        <h4 class="fw-bold mb-4 text-primary"><i class="bi bi-cash-coin me-2"></i>3. Giá & Thời gian</h4>
+
+        <div class="row g-4 mb-3">
+          <div class="col-12 col-md-6">
+            <%= f.label :start_price, "Giá khởi điểm (VND) <span class='text-danger'>*</span>".html_safe, class: "form-label fw-bold text-success" %>
+            <div class="input-group input-group-lg border-success rounded">
+              <%= f.number_field :start_price, class: "form-control border-success border-end-0", step: "1000", placeholder: "1,000,000" %>
+              <span class="input-group-text bg-white border-success border-start-0 text-success fw-bold">₫</span>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <%= f.label :bid_increment, "Bước giá tối thiểu (VND) <span class='text-danger'>*</span>".html_safe, class: "form-label fw-bold" %>
+            <div class="input-group input-group-lg">
+              <%= f.number_field :bid_increment, class: "form-control border-end-0", step: "1000", placeholder: "50,000" %>
+              <span class="input-group-text bg-light border-start-0 text-muted">₫</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <div class="col-12">
+            <%= f.label :auction_ends_at, "Thời gian kết thúc Đấu giá <span class='text-danger'>*</span>".html_safe, class: "form-label fw-bold" %>
+            <%= f.datetime_local_field :auction_ends_at, class: "form-control form-control-lg" %>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <h5 class="fw-semibold mb-3">Tùy chọn nâng cao</h5>
+        
+        <div class="row g-4 mb-4">
+          <div class="col-12 col-md-4">
+            <%= f.label :buy_now_price, "Giá mua ngay", class: "form-label fw-bold" %>
+            <%= f.number_field :buy_now_price, class: "form-control", step: "1000", placeholder: "VD: 5,000,000" %>
+            <div class="form-text small">Cho phép chốt đơn ngay lập tức.</div>
+          </div>
+          <div class="col-12 col-md-4">
+            <%= f.label :reserve_price, "Giá dự phòng", class: "form-label fw-bold" %>
+            <%= f.number_field :reserve_price, class: "form-control", step: "1000" %>
+            <div class="form-text small">Giá tối thiểu để chấp nhận.</div>
+          </div>
+          <div class="col-12 col-md-4">
+            <%= f.label :published_at, "Hẹn giờ đăng", class: "form-label fw-bold" %>
+            <%= f.datetime_local_field :published_at, class: "form-control" %>
+            <div class="form-text small">Nếu để trống, sẽ đăng ngay.</div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-5">
+          <button type="button" class="btn btn-outline-secondary btn-lg sb-prev-btn px-4"><i class="bi bi-arrow-left me-1"></i> Quay lại</button>
+          <%= f.submit submit_text, class: "btn btn-success btn-lg fw-bold px-5" %>
+        </div>
+      </div>
     </div>
   </div>
 <% end %>
 
-<%# --- SCRIPT XỬ LÝ LOGIC HIỂN THỊ 8 ẢNH MẪU --- %>
+<%# --- STYLES & SCRIPT CHO WIZARD W/ IMAGE PREVIEW --- %>
+<style>
+.sb-stepper-header { z-index: 1; }
+.sb-step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: white;
+  padding: 0 1rem;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+.sb-step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f8f9fa;
+  border: 2px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+.sb-step-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6c757d;
+}
+.sb-step-item.active .sb-step-circle {
+  background: #0d6efd;
+  border-color: #0d6efd;
+  color: white;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2);
+}
+.sb-step-item.active .sb-step-label {
+  color: #0d6efd;
+  font-weight: 600;
+}
+.sb-step-item.completed .sb-step-circle {
+  background: #198754;
+  border-color: #198754;
+  color: white;
+}
+
+/* Category Checkboxes Grid */
+.sb-category-check .btn-check:checked + label {
+  background-color: #e6f0ff;
+  border-width: 2px;
+}
+.sb-category-check .btn-check:checked + label .bi-check-circle-fill {
+  display: block !important;
+}
+.sb-category-check .btn-check:checked + label .sb-uncheck {
+  display: none !important;
+}
+.sb-category-check label {
+  border: 2px solid #dee2e6;
+  color: #495057;
+  transition: all 0.2s;
+  background-color: #fff;
+}
+.sb-category-check label:hover {
+  border-color: #0d6efd;
+  background-color: #f8f9fa;
+}
+
+.sb-upload-area {
+  transition: background 0.2s, border-color 0.2s;
+}
+.sb-upload-area:hover {
+  background: #f4f8ff;
+  border-color: #0d6efd !important;
+}
+.sb-step-content {
+  animation: fadeIn 0.4s ease-in-out;
+}
+.js-cover-select.active {
+  border-color: #0d6efd !important;
+  color: #0d6efd;
+  font-weight: 600;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
 <script>
 document.addEventListener("turbo:load", function() {
-  const select = document.getElementById("reference_select");
-  const container = document.getElementById("slots-container");
-  const uploadArea = document.getElementById("image-upload-area");
+  const form = document.getElementById("listingStepperForm");
+  if (!form) return;
 
-  // Danh sách tên 8 góc chụp chuẩn (Phải khớp thứ tự Admin upload)
-  const angles = [
-    "1. Mặt trước (Front)", "2. Mặt sau (Back)", 
-    "3. Góc trái (Left)", "4. Góc phải (Right)",
-    "5. Logo (Close-up)", "6. Đáy túi (Bottom)",
-    "7. Bên trong (Inside)", "8. Code/Tem (Tag)"
+  const steps = [
+    document.getElementById("step-1"),
+    document.getElementById("step-2"),
+    document.getElementById("step-3")
   ];
+  const stepItems = document.querySelectorAll(".sb-step-item");
+  let currentStep = 0;
 
-  if (select) {
-    select.addEventListener("change", function() {
-      const itemId = this.value;
-      
-      // Nếu user bỏ chọn -> Ẩn khu vực ảnh
-      if (!itemId) {
-        uploadArea.classList.add("d-none");
-        return;
+  function showStep(index) {
+    steps.forEach((El, i) => {
+      if (!El) return;
+      if (i === index) {
+        El.classList.remove("d-none");
+        El.classList.add("active");
+        stepItems[i].classList.add("active");
+        stepItems[i].classList.remove("completed");
+      } else {
+        El.classList.add("d-none");
+        El.classList.remove("active");
+        if (i < index) {
+          stepItems[i].classList.add("completed");
+          stepItems[i].classList.remove("active");
+        } else {
+          stepItems[i].classList.remove("completed", "active");
+        }
       }
-
-      // Hiện khu vực ảnh & Loading
-      uploadArea.classList.remove("d-none");
-      container.innerHTML = '<div class="col-12 text-center p-4"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Đang tải bộ ảnh mẫu...</p></div>';
-
-      // Gọi API lấy ảnh
-      fetch(`/reference_items/${itemId}/preview_images`)
-        .then(res => {
-          if (!res.ok) throw new Error("Không tải được ảnh mẫu");
-          return res.json();
-        })
-        .then(data => {
-          container.innerHTML = ""; // Xóa loading
-
-          // Tạo vòng lặp 8 lần để render 8 ô
-          for (let i = 0; i < 8; i++) {
-            // Lấy link ảnh mẫu (nếu admin up thiếu thì dùng ảnh placeholder)
-            const sampleUrl = (data.images[i] && data.images[i].url) 
-              ? data.images[i].url 
-              : "https://via.placeholder.com/400x400?text=No+Reference";
-
-            const angleName = angles[i] || `Góc chụp ${i+1}`;
-
-            const html = `
-              <div class="col-6 col-md-4 col-xl-3">
-                <div class="card h-100 text-center border shadow-sm">
-                  <div class="card-header py-1 bg-secondary text-white small fw-bold text-truncate">
-                    ${angleName}
-                  </div>
-                  <div class="card-body p-2 d-flex flex-column">
-                    <div class="ratio ratio-1x1 mb-2 border rounded overflow-hidden position-relative bg-light">
-                      <img src="${sampleUrl}" class="object-fit-contain w-100 h-100">
-                      <span class="position-absolute top-0 start-0 badge bg-danger m-1 opacity-75">MẪU</span>
-                    </div>
-
-                    <div class="mt-auto">
-                       <label class="form-label small text-muted mb-1">Ảnh của bạn:</label>
-                       <input type="file" 
-                             name="listing[images][]" 
-                             class="form-control form-control-sm" 
-                             accept="image/*" 
-                             required>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `;
-            container.insertAdjacentHTML('beforeend', html);
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          container.innerHTML = '<div class="alert alert-danger col-12">Lỗi tải ảnh mẫu. Vui lòng thử lại sau.</div>';
-        });
     });
+    // Scroll to top of form
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Next Buttons
+  form.querySelectorAll(".sb-next-btn").forEach((btn, idx) => {
+    btn.addEventListener("click", function() {
+      // Basic validation for step logic if needed
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        showStep(currentStep);
+      }
+    });
+  });
+
+  // Prev Buttons
+  form.querySelectorAll(".sb-prev-btn").forEach((btn, idx) => {
+    btn.addEventListener("click", function() {
+      if (currentStep > 0) {
+        currentStep--;
+        showStep(currentStep);
+      }
+    });
+  });
+
+  // Image Preview Logic
+  const imgInput = document.getElementById("listingImagesInput");
+  const previewContainer = document.getElementById("imagePreviewContainer");
+  const coverInput = document.getElementById("listingCoverImageIndex");
+
+  function setCoverIndex(index) {
+    if (!previewContainer || !coverInput) return;
+
+    coverInput.value = String(index);
+
+    previewContainer.querySelectorAll("[data-cover-index]").forEach((btn) => {
+      const isActive = Number(btn.dataset.coverIndex) === Number(index);
+      btn.classList.toggle("active", isActive);
+    });
+
+    previewContainer.querySelectorAll("[data-preview-card]").forEach((card) => {
+      const cardIndex = Number(card.dataset.index);
+      const ratio = card.querySelector(".ratio");
+      const badge = card.querySelector("[data-cover-badge]");
+      const isCover = cardIndex === Number(index);
+
+      if (ratio) {
+        ratio.classList.toggle("border-primary", isCover);
+      }
+      if (badge) {
+        badge.classList.toggle("d-none", !isCover);
+      }
+    });
+  }
+
+  if (previewContainer) {
+    previewContainer.addEventListener("click", function(event) {
+      const btn = event.target.closest(".js-cover-select");
+      if (!btn) return;
+
+      setCoverIndex(Number(btn.dataset.coverIndex));
+    });
+  }
+
+  function buildPreviewCard(src, name, index) {
+    const col = document.createElement("div");
+    col.className = "col-6 col-md-3 mt-3 fadeIn";
+    col.setAttribute("data-preview-card", "");
+    col.setAttribute("data-index", String(index));
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "ratio ratio-1x1 border rounded position-relative shadow-sm overflow-hidden bg-light";
+
+    const img = document.createElement("img");
+    img.src = src;
+    img.className = "object-fit-cover w-100 h-100";
+
+    const fileName = document.createElement("div");
+    fileName.className = "position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-50 text-white small px-2 py-1 text-truncate";
+    fileName.textContent = name;
+
+    const badge = document.createElement("span");
+    badge.className = "badge text-bg-primary position-absolute top-0 start-0 m-2 d-none";
+    badge.setAttribute("data-cover-badge", "");
+    badge.textContent = "Ảnh bìa";
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn btn-sm btn-light border w-100 mt-2 js-cover-select";
+    button.setAttribute("data-cover-index", String(index));
+    button.textContent = "Đặt làm ảnh bìa";
+
+    wrapper.appendChild(img);
+    wrapper.appendChild(fileName);
+    wrapper.appendChild(badge);
+    col.appendChild(wrapper);
+    col.appendChild(button);
+
+    return col;
+  }
+  
+  if (imgInput && previewContainer) {
+    imgInput.addEventListener("change", function() {
+      previewContainer.innerHTML = "";
+      
+      const files = Array.from(this.files);
+      if (files.length === 0) return;
+
+      files.forEach((file, index) => {
+        if (!file.type.startsWith("image/")) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const col = buildPreviewCard(e.target.result, file.name, index);
+          previewContainer.appendChild(col);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      setCoverIndex(0);
+    });
+  }
+
+  if (previewContainer && previewContainer.querySelectorAll("[data-preview-card]").length > 0) {
+    setCoverIndex(Number(coverInput?.value || 0));
   }
 });
 </script>

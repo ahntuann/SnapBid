@@ -71,13 +71,19 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root to: "dashboard#index"
+    get "test_webhook", to: "dashboard#test_webhook", as: :test_webhook
+    post "send_test_webhook", to: "dashboard#send_test_webhook", as: :send_test_webhook
     resources :listings, only: %i[index show] do
       member do
         patch :block
         patch :unblock
       end
     end
-    resources :users, only: %i[index show]
+    resources :users, only: %i[index show] do
+      post :adjust_coins, on: :member
+      post :lock_account, on: :member
+      post :unlock_account, on: :member
+    end
     resources :categories
     resources :orders, only: %i[index show] do
       member do
@@ -106,6 +112,7 @@ Rails.application.routes.draw do
   end
 
   namespace :seller do
+    get :reports, to: "reports#index"
     resources :listings do
       post :submit_ai_verification, on: :member
     end
@@ -121,6 +128,8 @@ Rails.application.routes.draw do
   end
 
   resource :profile, only: %i[show edit update] do
+    get :edit_shop, on: :collection
+    patch :update_shop, on: :collection
     delete :destroy_avatar, on: :collection
   end
 

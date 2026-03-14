@@ -10,21 +10,24 @@ class BuyNowService
       raise NotAvailable unless listing.buy_now_available?
       raise NotAvailable if listing.user_id == user.id # seller can't buy own item
 
-      # Trừ phí "đặt giá" cho Mua Ngay như một lần đặt giá (nếu lần đầu tốn 5, lần sau tốn 1, tính giống bid thông thường)
-      coins_needed = user.coins_needed_for_next_bid(listing.id)
+      # Trừ phí đặt giá nếu đây là lần tham gia đầu tiên trên listing.
+      # Mức phí = 10% giá mua ngay (quy đổi coin).
+      coins_needed = user.coins_needed_for_next_bid(listing)
       if user.snapbid_coins < coins_needed
         raise NotAvailable, "Không đủ SnapBid Coin để tham gia Mua Ngay (Cần #{coins_needed} coin). Vui lòng nạp thêm."
       end
-      user.process_coin_transaction!(
-        amount: -coins_needed,
-        transaction_type: :bid_fee,
-        description: "Phí tham gia mua ngay cho sản phẩm ##{listing.id}",
-        subject: listing
-      )
+      if coins_needed.positive?
+        user.process_coin_transaction!(
+          amount: -coins_needed,
+          transaction_type: :bid_fee,
+          description: "Phí đặt giá lần đầu (10% giá mua ngay) cho sản phẩm ##{listing.id}",
+          subject: listing
+        )
+      end
       
       # Tạo một record bid ảo hoặc đếm trực tiếp từ helper đã cộng
       # Tổng số coin chia cho listing = trước đó + lần này
-      coins_spent = user.coins_spent_on_listing(listing.id) + coins_needed
+      coins_spent = user.coins_spent_on_listing(listing) + coins_needed
       discount_amount = coins_spent * 1000 # 1 coin = 1000d
       
       final_price = listing.buy_now_price

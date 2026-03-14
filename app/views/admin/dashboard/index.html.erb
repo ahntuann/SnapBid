@@ -1,4 +1,4 @@
-<%= content_for :page_title, "Dashboard" %>
+<%= content_for :page_title, "Bảng điều khiển" %>
 
 <%# ── Chart.js ──────────────────────────────────────────── %>
 <%= content_for :head do %>
@@ -7,7 +7,7 @@
 
 <%# ── Page Header ─────────────────────────────────────────── %>
 <div class="admin-page-header">
-  <h1>Dashboard</h1>
+  <h1>Bảng điều khiển</h1>
   <p class="subtitle">Tổng quan hệ thống SnapBid · Cập nhật <%= Time.current.strftime("%d/%m/%Y %H:%M") %></p>
 </div>
 
@@ -17,7 +17,7 @@
   <a href="<%= admin_users_path %>" class="admin-stat-card">
     <div class="admin-stat-icon blue"><i class="bi bi-people-fill"></i></div>
     <div class="admin-stat-body">
-      <div class="admin-stat-label">Users</div>
+      <div class="admin-stat-label">Người dùng</div>
       <div class="admin-stat-value"><%= @users_count %></div>
       <span class="admin-stat-link">Xem tất cả <i class="bi bi-arrow-right"></i></span>
     </div>
@@ -26,7 +26,7 @@
   <a href="<%= admin_listings_path %>" class="admin-stat-card">
     <div class="admin-stat-icon amber"><i class="bi bi-tag-fill"></i></div>
     <div class="admin-stat-body">
-      <div class="admin-stat-label">Listings</div>
+      <div class="admin-stat-label">Sản phẩm</div>
       <div class="admin-stat-value"><%= @listings_count %></div>
       <span class="admin-stat-link">Xem tất cả <i class="bi bi-arrow-right"></i></span>
     </div>
@@ -35,7 +35,7 @@
   <a href="<%= admin_orders_path %>" class="admin-stat-card">
     <div class="admin-stat-icon green"><i class="bi bi-bag-check-fill"></i></div>
     <div class="admin-stat-body">
-      <div class="admin-stat-label">Orders</div>
+      <div class="admin-stat-label">Đơn hàng</div>
       <div class="admin-stat-value"><%= @orders_count %></div>
       <span class="admin-stat-link">Xem tất cả <i class="bi bi-arrow-right"></i></span>
     </div>
@@ -68,7 +68,7 @@
   <div class="admin-card" style="margin-bottom:0;">
     <div class="admin-card-header">
       <span class="admin-card-title"><i class="bi bi-graph-up me-1"></i> Hoạt động 7 ngày qua</span>
-      <span style="font-size:12px;color:#94a3b8;">listings & users mới</span>
+      <span style="font-size:12px;color:#94a3b8;">sản phẩm & người dùng mới</span>
     </div>
     <div class="admin-card-body">
       <canvas id="activityChart" height="110"></canvas>
@@ -93,7 +93,7 @@
   <%# Recent Listings %>
   <div class="admin-card" style="margin-bottom:0;">
     <div class="admin-card-header">
-      <span class="admin-card-title"><i class="bi bi-tag me-1"></i> Listings gần đây</span>
+      <span class="admin-card-title"><i class="bi bi-tag me-1"></i> Sản phẩm gần đây</span>
       <%= link_to "Xem tất cả", admin_listings_path, class: "admin-stat-link" %>
     </div>
     <table class="admin-table">
@@ -130,13 +130,13 @@
   <%# Recent Orders %>
   <div class="admin-card" style="margin-bottom:0;">
     <div class="admin-card-header">
-      <span class="admin-card-title"><i class="bi bi-bag-check me-1"></i> Orders gần đây</span>
+      <span class="admin-card-title"><i class="bi bi-bag-check me-1"></i> Đơn hàng gần đây</span>
       <%= link_to "Xem tất cả", admin_orders_path, class: "admin-stat-link" %>
     </div>
     <table class="admin-table">
       <thead>
         <tr>
-          <th>Listing</th>
+          <th>Sản phẩm</th>
           <th>Trạng thái</th>
           <th>Giá</th>
         </tr>
@@ -197,7 +197,7 @@
         labels,
         datasets: [
           {
-            label: 'Listings mới',
+            label: 'Sản phẩm mới',
             data: listingData,
             borderColor: '#c9a84c',
             backgroundColor: 'rgba(201,168,76,0.1)',
@@ -208,7 +208,7 @@
             tension: 0.4
           },
           {
-            label: 'Users mới',
+            label: 'Người dùng mới',
             data: userData,
             borderColor: '#3b82f6',
             backgroundColor: 'rgba(59,130,246,0.08)',

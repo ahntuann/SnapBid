@@ -1,10 +1,10 @@
 <div class="container py-4">
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <div>
-      <div class="text-muted small">Edit listing #<%= @listing.id %></div>
+      <div class="text-muted small">Chỉnh sửa sản phẩm #<%= @listing.id %></div>
       <h1 class="h3 mb-0"><%= @listing.title %></h1>
     </div>
-    <%= link_to "Back", admin_listing_path(@listing), class: "btn btn-outline-secondary" %>
+    <%= link_to "Quay lại", admin_listing_path(@listing), class: "btn btn-outline-secondary" %>
   </div>
 
   <div class="card shadow-sm">
@@ -54,14 +54,14 @@
           </div>
 
           <div class="col-12 col-lg-4">
-            <%= f.label :published_at, "Published at", class: "form-label" %>
+            <%= f.label :published_at, "Ngày đăng", class: "form-label" %>
             <%= f.datetime_field :published_at, class: "form-control" %>
             <div class="form-text">Để trống = chưa publish.</div>
           </div>
 
           <% if @listing.respond_to?(:ai_status) %>
             <div class="col-12 col-lg-4">
-              <%= f.label :ai_status, "AI status", class: "form-label" %>
+              <%= f.label :ai_status, "Trạng thái AI", class: "form-label" %>
               <%= f.select :ai_status, [["verified","verified"],["rejected","rejected"],["uncertain","uncertain"]], {}, class: "form-select" %>
             </div>
           <% end %>
