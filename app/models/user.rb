@@ -35,6 +35,13 @@ class User < ApplicationRecord
     is_seller?
   end
 
+  def promote_to_seller!
+    return self if seller?
+
+    update!(is_seller: true)
+    self
+  end
+
   # ── Account lock helpers ────────────────────────────────────────────────
   def locked?
     locked_at.present?
@@ -121,13 +128,18 @@ class User < ApplicationRecord
   end
 
   def coins_spent_on_listing(listing_id)
-    count = bids.where(listing_id: listing_id).count
-    return 0 if count == 0
-    5 + (count - 1) * 1
+    listing = listing_id.is_a?(Listing) ? listing_id : Listing.find_by(id: listing_id)
+    return 0 unless listing
+    return 0 unless bids.where(listing_id: listing.id).exists?
+
+    listing.first_bid_fee_coins
   end
 
   def coins_needed_for_next_bid(listing_id)
-    bids.where(listing_id: listing_id).exists? ? 1 : 5
+    listing = listing_id.is_a?(Listing) ? listing_id : Listing.find_by(id: listing_id)
+    return 0 unless listing
+
+    bids.where(listing_id: listing.id).exists? ? 0 : listing.first_bid_fee_coins
   end
 
   def email_verified?

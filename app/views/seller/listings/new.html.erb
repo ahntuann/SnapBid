@@ -1,6 +1,11 @@
-<div class="d-flex align-items-center justify-content-between mb-3">
-  <h1 class="h3 mb-0">Đăng bán sản phẩm</h1>
-  <%= link_to "Quay lại", seller_listings_path, class: "btn btn-outline-secondary" %>
-</div>
+<div class="container py-4" style="max-width: 900px;">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h3 mb-0 fw-bold">Đăng bán sản phẩm</h1>
+      <p class="text-muted mb-0">Hoàn thành các bước dưới đây để sản phẩm lên sàn đấu giá</p>
+    </div>
+    <%= link_to "Hủy", seller_listings_path, class: "btn btn-outline-secondary" %>
+  </div>
 
-<%= render "form", listing: @listing, url: seller_listings_path, method: :post, submit_text: "Tạo sản phẩm" %>
+  <%= render "form", listing: @listing, url: seller_listings_path, method: :post, submit_text: "Tạo sản phẩm" %>
+</div>

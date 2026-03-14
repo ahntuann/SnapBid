@@ -96,6 +96,14 @@ class Listing < ApplicationRecord
       !auction_ended?
   end
 
+  # Phí đặt giá lần đầu = 10% giá mua ngay, quy đổi ra coin.
+  # Nếu listing không bật mua ngay thì phí mặc định là 0.
+  def first_bid_fee_coins
+    return 0 unless buy_now_enabled?
+
+    User.vnd_to_coins(buy_now_price.to_d * 0.1)
+  end
+
   def current_price
     return order.price.to_d if order.present?
 
