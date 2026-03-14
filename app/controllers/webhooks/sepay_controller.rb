@@ -78,7 +78,16 @@ module Webhooks
         message: "Nạp thành công #{coins} SnapBid Coin (#{ActionController::Base.helpers.number_with_delimiter(amount_vnd)}₫). Số dư hiện tại: #{user.coin_balance} coin."
       )
 
-      render json: { success: true, message: "Credited #{coins} coins to user ##{user.id}", coins: coins, balance: user.snapbid_coins }, status: :ok
+      # Attempt auto-pay on any pending orders the user might have
+      processed_orders = 0
+      user.orders.pending.find_each do |order|
+        if order.auto_pay_if_possible!
+          processed_orders += 1
+          Rails.logger.info("[SePay Webhook] Auto-paid Order ##{order.id} for user ##{user.id}")
+        end
+      end
+
+      render json: { success: true, message: "Credited #{coins} coins to user ##{user.id}. Auto-paid #{processed_orders} orders.", coins: coins, balance: user.snapbid_coins }, status: :ok
 
     rescue => e
       Rails.logger.error("[SePay Webhook] Error: #{e.message}")

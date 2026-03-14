@@ -92,37 +92,46 @@ class Order < ApplicationRecord
 
   # Thanh toán đơn hàng bằng SnapBid Coin
   def pay_with_coins!
-    return if paid?
+    return false if paid?
 
     coins_needed = User.vnd_to_coins(total_price)
     raise "Insufficient SnapBid Coins" if buyer.coin_balance < coins_needed
 
+    success = false
+
     ActiveRecord::Base.transaction do
       buyer.deduct_coins!(coins_needed)
-      update!(
+      self.update!(
         buyer_marked_paid_at: Time.current,
         admin_confirmed_paid_at: Time.current,
         status: :paid
       )
+      success = true
     end
 
-    NotificationService.notify!(
-      recipient: buyer,
-      actor: nil,
-      action: :payment_confirmed,
-      notifiable: self,
-      url: Rails.application.routes.url_helpers.order_path(self),
-      message: "Bạn đã thanh toán thành công đơn ##{id} bằng SnapBid Coin."
-    )
+    if success
+      NotificationService.notify!(
+        recipient: buyer,
+        actor: nil,
+        action: :payment_confirmed,
+        notifiable: self,
+        url: Rails.application.routes.url_helpers.order_path(self),
+        message: "Bạn đã thanh toán thành công đơn ##{id} bằng SnapBid Coin."
+      )
+    end
+    
+    success
   end
 
   # Thanh toán tự động nếu đủ tiền (Dùng sau khi chốt phiên hoặc mua ngay)
   def auto_pay_if_possible!
-    return if paid? || cancelled?
+    return false if paid? || cancelled?
 
     coins_needed = User.vnd_to_coins(total_price)
     if buyer.coin_balance >= coins_needed
       pay_with_coins!
+    else
+      false
     end
   end
 
