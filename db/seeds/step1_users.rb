@@ -18,8 +18,15 @@ puts "Created/Updated admin user: #{admin.email}"
 cs_user = upsert_user!(email: "cs@test.com", name: "CS User", role: :cs)
 puts "Created/Updated CS user: #{cs_user.email}"
 
-seller = upsert_user!(email: "seller@test.com", name: "Seller User", role: :user)
-puts "Created/Updated seller user: #{seller.email}"
+seller = upsert_user!(email: "seller@test.com", name: "Nguyễn Văn Bán", role: :user)
+seller.update!(
+  is_seller: true,
+  snapbid_coins: 500,
+  shop_name: "SnapShop - Hàng Hiệu Chính Hãng",
+  bio: "Chuyên cung cấp hàng hiệu chính hãng: thời trang, điện tử, phụ kiện cao cấp. Cam kết hàng thật 100%, bao kiểm hàng trước khi thanh toán. Giao hàng nhanh toàn quốc, đổi trả trong 7 ngày.",
+  location: "Hà Nội"
+)
+puts "Created/Updated seller user: #{seller.email} (id=#{seller.id})"
 
 # buyer1 → Nguyễn Thị Thanh Hà
 upsert_user!(email: "thanhha1990@gmail.com",  name: "Nguyễn Thị Thanh Hà", role: :user).tap { |u| puts "Created/Updated: #{u.email}" }

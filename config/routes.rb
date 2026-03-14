@@ -71,6 +71,8 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root to: "dashboard#index"
+    get "test_webhook", to: "dashboard#test_webhook", as: :test_webhook
+    post "send_test_webhook", to: "dashboard#send_test_webhook", as: :send_test_webhook
     resources :listings, only: %i[index show] do
       member do
         patch :block
@@ -125,6 +127,8 @@ Rails.application.routes.draw do
   end
 
   resource :profile, only: %i[show edit update] do
+    get :edit_shop, on: :collection
+    patch :update_shop, on: :collection
     delete :destroy_avatar, on: :collection
   end
 

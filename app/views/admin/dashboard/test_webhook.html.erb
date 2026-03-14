@@ -1,0 +1,254 @@
+<%= content_for :page_title, "Test SePay Webhook" %>
+
+<div class="admin-page-header d-flex flex-wrap justify-content-between align-items-end gap-3">
+  <div>
+    <h1>Test SePay Webhook</h1>
+    <p class="subtitle">Kiểm tra cấu hình và tạo test transaction nạp coin</p>
+  </div>
+
+  <%= link_to "Quay lại", admin_root_path, class: "btn btn-outline-secondary" %>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <span class="admin-card-title"><i class="bi bi-gear"></i> Cấu hình</span>
+      </div>
+      <div class="admin-card-body">
+        <div class="mb-3">
+          <label class="form-label">SePay API Key</label>
+          <% if @webhook_configured %>
+            <div class="alert alert-success" role="alert">
+              <i class="bi bi-check-circle"></i> Đã cấu hình
+              <br/>
+              <small class="form-text text-muted mt-2 d-block">
+                Key: <%= @sepay_api_key.first(10) %>...
+              </small>
+            </div>
+          <% else %>
+            <div class="alert alert-danger" role="alert">
+              <i class="bi bi-exclamation-circle"></i> Chưa cấu hình
+              <br/>
+              <small class="form-text text-muted mt-2 d-block">
+                Set <code>SEPAY_API_KEY</code> trong environment variables hoặc <code>credentials.yml.enc</code>
+              </small>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Webhook URL</label>
+          <div class="input-group">
+            <input type="text" class="form-control" value="<%= sepay_webhook_url %>" readonly>
+            <button class="btn btn-outline-secondary" type="button" onclick="navigator.clipboard.writeText('<%= sepay_webhook_url %>')">
+              <i class="bi bi-clipboard"></i> Copy
+            </button>
+          </div>
+          <small class="form-text text-muted">Gửi URL này cho SePay để cấu hình webhook</small>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Deposit Ref Format</label>
+          <div class="bg-light p-3 rounded" style="font-family: monospace;">
+            SBC{user_id}
+            <br/>
+            <small class="text-muted">Ví dụ: SBC123 cho user #123</small>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Exchange Rate</label>
+          <div class="bg-light p-3 rounded border">
+            <strong>1 SnapBid Coin = <%= number_with_delimiter(User::COIN_EXCHANGE_RATE) %> VND</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <span class="admin-card-title"><i class="bi bi-play-fill"></i> Test Manual Webhook</span>
+      </div>
+      <div class="admin-card-body">
+        <form id="webhook-form" onsubmit="testWebhook(event)">
+          <div class="mb-3">
+            <label class="form-label">Chọn User</label>
+            <select id="test_user_id" name="test_user_id" class="form-select" required>
+              <option value="">-- Chọn user --</option>
+              <% @test_users.each do |u| %>
+                <option value="<%= u.id %>">
+                  #<%= u.id %> - <%= u.email %> (<%= u.name %>)
+                </option>
+              <% end %>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Số tiền chuyển (VND)</label>
+            <input type="number" id="test_amount" name="test_amount" class="form-control" placeholder="1000" min="1000" step="1000" required>
+            <small class="form-text text-muted">Tối thiểu: <%= number_with_delimiter(User::COIN_EXCHANGE_RATE) %> VND</small>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-play"></i> Gửi Test Webhook
+          </button>
+        </form>
+
+        <div id="webhook-result" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="admin-card mt-3">
+  <div class="admin-card-header">
+    <span class="admin-card-title"><i class="bi bi-clock-history"></i> Recent Deposits</span>
+  </div>
+  <div class="admin-card-body">
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>VND</th>
+            <th>Coins</th>
+            <th>SePay Tx ID</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @recent_deposits.each do |d| %>
+            <tr>
+              <td>
+                <div class="fw-semibold"><%= link_to "##{d.user_id} (#{d.user.email})", admin_user_path(d.user), style: "text-decoration:none;" %></div>
+              </td>
+              <td><%= number_with_delimiter(d.amount_vnd) %> ₫</td>
+              <td><span style="color:#0f766e;"><%= d.coins_credited %> coin</span></td>
+              <td><code style="font-size:11px;"><%= d.sepay_transaction_id.present? ? d.sepay_transaction_id : "(manual test)" %></code></td>
+              <td style="font-size:13px;"><%= d.created_at.strftime("%d/%m %H:%M") %></td>
+            </tr>
+          <% end %>
+
+          <% if @recent_deposits.blank? %>
+            <tr>
+              <td colspan="5" style="text-align:center;color:#94a3b8;padding:30px 0;">
+                Chưa có deposit nào.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+function testWebhook(e) {
+  e.preventDefault();
+  const resultDiv = document.getElementById('webhook-result');
+  const userId = document.getElementById('test_user_id').value;
+  const amount = document.getElementById('test_amount').value;
+
+  resultDiv.innerHTML = '<div class="alert alert-info"><i class="bi bi-hourglass-split"></i> Đang xử lý...</div>';
+
+  fetch('<%= admin_send_test_webhook_path %>', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': '<%= form_authenticity_token %>'
+    },
+    body: JSON.stringify({
+      test_user_id: userId,
+      test_amount: amount
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      resultDiv.innerHTML = `
+        <div class="alert alert-success">
+          <i class="bi bi-check-circle"></i> Thành công!
+          <br/>
+          <small>User: ${data.user.email}</small>
+          <br/>
+          <small>Coins: +${data.coins_credited}</small>
+          <br/>
+          <small>Số dư mới: ${data.new_balance}</small>
+        </div>
+      `;
+      setTimeout(() => location.reload(), 2000);
+    } else {
+      resultDiv.innerHTML = `
+        <div class="alert alert-danger">
+          <i class="bi bi-exclamation-circle"></i> Lỗi
+          <br/>
+          <small>${data.error || data.message}</small>
+        </div>
+      `;
+    }
+  })
+  .catch(err => {
+    resultDiv.innerHTML = `
+      <div class="alert alert-danger">
+        <i class="bi bi-exclamation-circle"></i> Network error: ${err.message}
+      </div>
+    `;
+  });
+}
+</script>
+
+<style>
+.admin-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.admin-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-card-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.admin-card-body {
+  padding: 20px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table tbody tr {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.admin-table td,
+.admin-table th {
+  padding: 12px 4px;
+}
+
+.admin-table th {
+  background-color: #f1f5f9;
+  font-weight: 600;
+  color: #475569;
+  font-size: 12px;
+  text-align: left;
+}
+</style>

@@ -149,6 +149,9 @@
               <li><hr class="dropdown-divider"></li>
               <li><%= link_to "Đơn hàng",  orders_path,  class: "dropdown-item" %></li>
               <li><%= link_to "Tài khoản", profile_path, class: "dropdown-item" %></li>
+              <% if user_signed_in? && current_user.seller? %>
+                <li><%= link_to "Trang của tôi", seller_path(current_user), class: "dropdown-item" %></li>
+              <% end %>
               <% if current_user.admin? %>
                 <li><%= link_to "Admin", admin_root_path, class: "dropdown-item" %></li>
               <% end %>
@@ -283,6 +286,9 @@
           <a class="apple-mega-link" href="<%= my_bids_path %>">Đấu giá của tôi</a>
           <a class="apple-mega-link" href="<%= orders_path %>">Đơn hàng</a>
           <a class="apple-mega-link" href="<%= profile_path %>">Tài khoản</a>
+          <% if user_signed_in? && current_user.seller? %>
+            <a class="apple-mega-link" href="<%= seller_path(current_user) %>">Trang của tôi</a>
+          <% end %>
           <a class="apple-mega-link" href="#">Sản phẩm đã lưu</a>
         </div>
 

@@ -4,9 +4,14 @@
   <div class="d-flex justify-content-between align-items-start mb-4">
     <div>
       <h1 class="h3 fw-bold mb-1">Hồ sơ của tôi</h1>
-      <div class="text-muted small">Thông tin tài khoản và vai trò</div>
+      <div class="text-muted small">Thông tin tài khoản và quyền truy cập</div>
     </div>
-    <%= link_to "Chỉnh sửa", edit_profile_path, class: "btn btn-outline-secondary btn-sm rounded-pill" %>
+    <div class="d-flex gap-2 flex-wrap justify-content-end">
+      <%= link_to "Sửa tài khoản", edit_profile_path, class: "btn btn-outline-secondary btn-sm rounded-pill" %>
+      <% if current_user.seller? %>
+        <%= link_to "Sửa gian hàng", edit_shop_profile_path, class: "btn btn-warning btn-sm rounded-pill" %>
+      <% end %>
+    </div>
   </div>
 
   <!-- Thông tin cơ bản -->
@@ -77,6 +82,35 @@
       </div>
 
       <div class="card-body px-4 py-3">
+        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-3">
+          <div>
+            <div class="fw-semibold">Thông tin gian hàng</div>
+            <div class="text-muted small">Nội dung này xuất hiện trên trang công khai của người bán.</div>
+          </div>
+          <%= link_to "Sửa gian hàng", edit_shop_profile_path, class: "btn btn-outline-warning btn-sm rounded-pill" %>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <div class="rounded-3 border p-3 h-100">
+              <div class="text-muted small mb-1">Tên gian hàng</div>
+              <div class="fw-semibold"><%= current_user.shop_name.presence || "Chưa cập nhật" %></div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="rounded-3 border p-3 h-100">
+              <div class="text-muted small mb-1">Khu vực</div>
+              <div class="fw-semibold"><%= current_user.location.presence || "Chưa cập nhật" %></div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="rounded-3 border p-3 h-100">
+              <div class="text-muted small mb-1">Giới thiệu gian hàng</div>
+              <div class="fw-semibold"><%= current_user.bio.presence || "Chưa cập nhật mô tả gian hàng." %></div>
+            </div>
+          </div>
+        </div>
+
         <!-- Stats -->
         <div class="row g-3 mb-3">
           <div class="col-4">

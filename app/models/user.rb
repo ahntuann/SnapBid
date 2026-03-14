@@ -5,6 +5,8 @@ class User < ApplicationRecord
 
   enum :role, { user: 0, cs: 1, admin: 2 }
 
+  scope :sellers, -> { where(is_seller: true) }
+
   has_many :otps, dependent: :destroy
   has_many :listings
   has_many :orders, foreign_key: :buyer_id, dependent: :nullify
@@ -22,6 +24,15 @@ class User < ApplicationRecord
 
   after_initialize do
     self.role ||= :user if new_record?
+  end
+
+  # ── Display helpers ──────────────────────────────────────────────────────
+  def display_name
+    name.presence || email
+  end
+
+  def seller?
+    is_seller?
   end
 
   # ── Account lock helpers ────────────────────────────────────────────────
@@ -43,9 +54,10 @@ class User < ApplicationRecord
   end
 
   # Ghi nhận thay đổi coin và tạo log CoinTransaction
-  def process_coin_transaction!(amount:, transaction_type:, description: nil, subject: nil)
+  # force: true - bypass lock check (dùng cho admin/webhook)
+  def process_coin_transaction!(amount:, transaction_type:, description: nil, subject: nil, force: false)
     return if amount == 0
-    raise "User account is locked" if locked?
+    raise "User account is locked" if locked? && !force
     
     ActiveRecord::Base.transaction do
       if amount > 0
@@ -71,7 +83,8 @@ class User < ApplicationRecord
   end
 
   # Credit coins sau khi nhận được VND (1000 VND = 1 coin)
-  def credit_coins!(amount_vnd:, transaction_id: nil)
+  # force: true - bypass lock check (dùng cho webhook)
+  def credit_coins!(amount_vnd:, transaction_id: nil, force: true)
     coins = (amount_vnd.to_i / COIN_EXCHANGE_RATE).to_i
     return 0 if coins <= 0
 
@@ -80,6 +93,7 @@ class User < ApplicationRecord
         amount: coins,
         transaction_type: :deposit,
         description: "Nạp #{coins} coin từ chuyển khoản",
+        force: force
       )
       coin_deposits.create!(
         amount_vnd: amount_vnd.to_i,
